@@ -32,13 +32,6 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <title>{title}</title>
-  </head>
-  <body>
-    <Nav />
-    <main>
-      <slot />
-    </main>
-    <Footer />
 
     <script is:inline>
       (function (C, A, L) {
@@ -74,6 +67,13 @@ const {
       Cal("init", "ninety", { origin: "https://cal.com" });
       Cal.ns.ninety("ui", { hideEventTypeDetails: false, layout: "month_view" });
     </script>
+  </head>
+  <body>
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <Footer />
 
     <script>
       const observer = new IntersectionObserver(

@@ -1,7 +1,4 @@
 ---
-// Toggle showCalendly = true and set CALENDLY_URL to embed the real widget.
-const showCalendly = false;
-const CALENDLY_URL = 'https://calendly.com/your-handle/60min';
 ---
 
 <section id="booking" class="bg-ivory py-16 md:py-24">
@@ -23,36 +20,27 @@ const CALENDLY_URL = 'https://calendly.com/your-handle/60min';
     </div>
 
     <div class="reveal">
-      {showCalendly ? (
-        <div class="border border-ink/15 bg-paper/50 p-4 md:p-6 rounded-[6px]">
-          <div
-            class="calendly-inline-widget bg-ivory"
-            data-url={CALENDLY_URL}
-            style="min-width:320px;height:720px;"
-          ></div>
-          <script async src="https://assets.calendly.com/assets/external/widget.js"></script>
-        </div>
-      ) : (
-        <div class="border border-ink/15 py-12 md:py-16 px-6 text-center bg-paper/40 rounded-[6px]">
-          <div class="max-w-lg mx-auto">
-            <div class="index-label mb-5">Online booking · Coming soon</div>
-            <h3 class="font-serif text-3xl md:text-4xl text-ink leading-tight">
-              Until the calendar is set up,<br />write a short note.
-            </h3>
-            <p class="mt-4 text-ink/70 leading-relaxed">
-              Include your preferred length and a rough day.
-              Replies arrive within one working day.
-            </p>
-            <a href="mailto:hello@groundedtouch.de" class="btn-primary mt-7">
-              Write to book
-              <span aria-hidden="true">→</span>
-            </a>
-            <p class="mt-6 text-[11px] uppercase tracking-widelabel text-stone">
-              hello@groundedtouch.de
-            </p>
-          </div>
-        </div>
-      )}
+      <div class="border border-ink/15 bg-ivory p-2 md:p-3 rounded-[6px] overflow-hidden">
+        <div id="cal-booking-inline" style="width:100%;min-width:320px;min-height:720px;"></div>
+      </div>
     </div>
   </div>
+
+  <script is:inline>
+    Cal("init", "booking", { origin: "https://cal.com" });
+    Cal.ns.booking("inline", {
+      elementOrSelector: "#cal-booking-inline",
+      calLink: "grounded-touch",
+      config: { layout: "month_view", theme: "light" },
+    });
+    Cal.ns.booking("ui", {
+      hideEventTypeDetails: false,
+      layout: "month_view",
+      cssVarsPerTheme: {
+        light: {
+          "cal-brand": "#A54A28"
+        }
+      }
+    });
+  </script>
 </section>
