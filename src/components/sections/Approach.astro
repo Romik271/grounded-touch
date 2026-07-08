@@ -1,0 +1,58 @@
+---
+const principles = [
+  {
+    n: '01',
+    word: 'Slow',
+    text: 'The pace of the session follows the breath, not the clock. Nothing arrives before the body is ready.',
+  },
+  {
+    n: '02',
+    word: 'Attentive',
+    text: 'Each touch listens before it moves. Pressure and rhythm are decided by what the tissue answers back.',
+  },
+  {
+    n: '03',
+    word: 'Responsive',
+    text: 'No fixed protocol. Areas that need less are given less; areas that ask for more are met with more.',
+  },
+  {
+    n: '04',
+    word: 'Unforced',
+    text: 'No routine to complete. Sessions end when the work is done — sometimes earlier, sometimes exactly on time.',
+  },
+];
+---
+
+<section id="approach" class="bg-ivory py-16 md:py-24">
+  <div class="container-editorial">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-10 md:mb-14">
+      <div class="md:col-span-4 reveal">
+        <div class="index-label">N° 02 — Approach</div>
+      </div>
+      <div class="md:col-span-8 reveal">
+        <h2 class="h-section max-w-2xl">
+          Four principles<br />
+          shape every session.
+        </h2>
+        <p class="mt-5 lede">
+          The work is quiet, considered, and unhurried.
+          It does not fix, treat, or diagnose — it makes room for the body to arrive.
+        </p>
+      </div>
+    </div>
+
+    <div class="border-t border-line">
+      {principles.map((p) => (
+        <div class="reveal grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-10 border-b border-line py-7 md:py-10">
+          <div class="md:col-span-2 index-num">{p.n}</div>
+          <div class="md:col-span-4">
+            <h3 class="font-serif text-3xl md:text-4xl text-ink">{p.word}</h3>
+          </div>
+          <div class="md:col-span-6">
+            <p class="text-ink/80 leading-relaxed max-w-prose2">{p.text}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

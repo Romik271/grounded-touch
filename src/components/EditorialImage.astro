@@ -1,0 +1,65 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  ratio?: string;   // e.g. "4/5", "3/4", "16/10"
+  caption?: string;
+  variant?: 'stone' | 'wood';
+  rounded?: boolean;
+  priority?: boolean;
+}
+const {
+  src,
+  alt,
+  ratio = '4/5',
+  caption,
+  variant = 'stone',
+  rounded = true,
+  priority = false,
+} = Astro.props;
+
+const round = rounded ? 'rounded-[6px]' : '';
+
+const bg = variant === 'wood'
+  ? 'linear-gradient(140deg,#C8AE86 0%,#B08A5F 55%,#8C6740 100%)'
+  : 'linear-gradient(140deg,#E5D9C2 0%,#C9B79A 55%,#93826A 100%)';
+---
+
+<figure class="relative w-full">
+  <div class={`relative w-full overflow-hidden bg-paper ${round}`} style={`aspect-ratio:${ratio};`}>
+    <img
+      src={src}
+      alt={alt}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      decoding="async"
+      class="absolute inset-0 w-full h-full object-cover"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+    />
+    <div class="absolute inset-0" style={`display:none; background:${bg};`} aria-hidden="true">
+      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" class="w-full h-full opacity-70">
+        <defs>
+          <linearGradient id="shade" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#000" stop-opacity="0" />
+            <stop offset="1" stop-color="#000" stop-opacity="0.25" />
+          </linearGradient>
+        </defs>
+        <rect width="400" height="500" fill="url(#shade)" />
+        <g fill="none" stroke="#1C1611" stroke-opacity="0.25" stroke-width="1">
+          <line x1="0" y1="120" x2="400" y2="80" />
+          <line x1="0" y1="260" x2="400" y2="230" />
+          <line x1="0" y1="400" x2="400" y2="380" />
+        </g>
+        <g fill="#1C1611" fill-opacity="0.08">
+          <circle cx="120" cy="180" r="60" />
+          <circle cx="260" cy="330" r="90" />
+        </g>
+      </svg>
+    </div>
+  </div>
+  {caption && (
+    <figcaption class="mt-3 text-[11px] uppercase tracking-widelabel text-stone">
+      {caption}
+    </figcaption>
+  )}
+</figure>

@@ -1,0 +1,64 @@
+---
+const faqs = [
+  {
+    q: 'How does it feel?',
+    a: 'Slow, warm, and quiet. Most people describe a soft heaviness settling in — the kind that arrives when the body finally lets go. Pressure adjusts to what you actually feel, not to a protocol. If something feels off, you can say so at any point.',
+  },
+  {
+    q: 'Where does it happen?',
+    a: 'In a small private studio in Munich. Warm, dimly lit, with a comfortable table, linen, and clean air. The exact address is shared after your booking is confirmed.',
+  },
+  {
+    q: 'What should I wear?',
+    a: 'Wear whatever feels easy to arrive in. During the session, you undress to a level you are comfortable with — usually underwear. You are covered with a warm sheet throughout; only the area being worked on is uncovered.',
+  },
+  {
+    q: 'Payment',
+    a: 'Cash or bank transfer after the session. Card and Apple Pay are not accepted at this time. A simple receipt is available on request.',
+  },
+  {
+    q: 'Cancellation',
+    a: 'You can cancel or reschedule up to 24 hours before your session at no cost. Late cancellations or missed appointments may be charged in full — the time was set aside for you.',
+  },
+  {
+    q: 'Boundaries',
+    a: 'This is non-sexual bodywork. Any suggestion otherwise ends the session immediately. Every person is welcome regardless of gender, body, or background. Consent is checked before and during — you can pause or stop at any point without explanation.',
+  },
+];
+---
+
+<section id="faq" class="bg-ivory py-16 md:py-24">
+  <div class="container-editorial">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-8 md:mb-12">
+      <div class="md:col-span-4 reveal">
+        <div class="index-label">N° 06 — Questions</div>
+      </div>
+      <div class="md:col-span-8 reveal">
+        <h2 class="h-section max-w-2xl">
+          Before your first visit.
+        </h2>
+      </div>
+    </div>
+
+    <div class="max-w-4xl border-t border-ink/20">
+      {faqs.map((f) => (
+        <details class="reveal group border-b border-ink/20 py-5 md:py-6">
+          <summary class="flex items-center justify-between gap-6 cursor-pointer list-none">
+            <span class="font-serif text-xl md:text-2xl text-ink pr-4">{f.q}</span>
+            <span
+              class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-ink/60 group-hover:text-ink transition-transform duration-500 ease-gentle group-open:rotate-45"
+              aria-hidden="true"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                <path d="M7 1v12M1 7h12" />
+              </svg>
+            </span>
+          </summary>
+          <div class="pt-4 pr-10 text-ink/75 leading-relaxed max-w-prose2">
+            {f.a}
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

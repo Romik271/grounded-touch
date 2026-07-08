@@ -1,0 +1,54 @@
+---
+const commitments = [
+  {
+    n: '01',
+    title: 'Non-sexual bodywork',
+    text: 'Any suggestion otherwise ends the session immediately, without discussion.',
+  },
+  {
+    n: '02',
+    title: 'Consent, checked continuously',
+    text: 'You can pause, adjust, or stop at any moment. Nothing is done without a clear yes.',
+  },
+  {
+    n: '03',
+    title: 'Not medical treatment',
+    text: 'Grounded Touch is not therapy, healing, or diagnosis. If you are in pain, please see a doctor first.',
+  },
+  {
+    n: '04',
+    title: 'Everyone is welcome',
+    text: 'Regardless of gender, body, age, or background. Everyone is met with the same attention.',
+  },
+];
+---
+
+<section class="bg-ivory py-16 md:py-24">
+  <div class="container-editorial">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-10 md:mb-14">
+      <div class="md:col-span-4 reveal">
+        <div class="index-label">N° 07 — Ground rules</div>
+      </div>
+      <div class="md:col-span-8 reveal">
+        <h2 class="h-section max-w-2xl">
+          What the studio<br />
+          stands for.
+        </h2>
+        <p class="mt-5 lede">
+          Written before the first booking, and unchanged since.
+          Reviews from real guests will appear here once the studio has served them.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+      {commitments.map((c) => (
+        <div class="reveal">
+          <div class="index-num mb-4">{c.n}</div>
+          <h3 class="font-serif text-2xl md:text-3xl text-ink mb-3">{c.title}</h3>
+          <p class="text-ink/75 leading-relaxed max-w-prose2">{c.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

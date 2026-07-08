@@ -1,0 +1,49 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-ivory pt-10 pb-14">
+  <div class="container-editorial">
+    <div class="pt-12 border-t border-ink/20 grid grid-cols-1 md:grid-cols-12 gap-10">
+      <div class="md:col-span-5">
+        <div class="font-serif text-2xl text-ink">
+          Grounded Touch<span class="text-terra">.</span>
+        </div>
+        <p class="mt-3 text-sm text-stone max-w-xs leading-relaxed">
+          Slow, attentive bodywork.<br />Munich.
+        </p>
+      </div>
+
+      <div class="md:col-span-3">
+        <div class="index-label mb-3">Studio</div>
+        <ul class="space-y-1.5 text-sm text-ink/85">
+          <li>By appointment · Tue — Sat</li>
+          <li>Munich, Germany</li>
+          <li><a href="mailto:hello@groundedtouch.de" class="hover:text-terra">hello@groundedtouch.de</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <div class="index-label mb-3">Site</div>
+        <ul class="space-y-1.5 text-sm text-ink/85">
+          <li><a href="#approach" class="hover:text-terra">Approach</a></li>
+          <li><a href="#sessions" class="hover:text-terra">Sessions</a></li>
+          <li><a href="#faq" class="hover:text-terra">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <div class="index-label mb-3">Legal</div>
+        <ul class="space-y-1.5 text-sm text-ink/85">
+          <li><a href="/impressum" class="hover:text-terra">Impressum</a></li>
+          <li><a href="/datenschutz" class="hover:text-terra">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-line flex flex-col md:flex-row md:justify-between gap-2 text-[12px] text-stone">
+      <span>© {year} Grounded Touch</span>
+      <span class="uppercase tracking-widelabel">This is not medical treatment</span>
+    </div>
+  </div>
+</footer>

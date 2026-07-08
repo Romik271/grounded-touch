@@ -1,0 +1,15 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+  tone?: 'bone' | 'sand';
+}
+const { id, class: className = '', tone = 'bone' } = Astro.props;
+const bg = tone === 'sand' ? 'bg-sand/40' : 'bg-bone';
+---
+
+<section id={id} class={`${bg} py-24 md:py-36 ${className}`}>
+  <div class="container-narrow reveal">
+    <slot />
+  </div>
+</section>

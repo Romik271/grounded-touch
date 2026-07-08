@@ -1,0 +1,58 @@
+---
+import EditorialImage from '../EditorialImage.astro';
+---
+
+<section class="bg-ivory">
+  <div class="container-editorial pt-4 md:pt-8 pb-16 md:pb-24">
+    <div class="flex items-center justify-between text-[11px] uppercase tracking-widelabel text-stone mb-10 md:mb-14">
+      <span>Grounded Touch — Munich</span>
+      <span class="hidden sm:inline">Est. 2026 · By appointment</span>
+      <span>N° 01 · Studio</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+      <div class="lg:col-span-7 reveal">
+        <h1 class="h-display">
+          The body that carries you<br class="hidden md:block" />
+          deserves time <span class="text-stone">to recover.</span>
+        </h1>
+
+        <p class="mt-6 lede">
+          Slow, attentive bodywork in a small Munich studio —
+          for people who walk, cycle, climb, stand, or move all day,
+          and whose legs and feet quietly do the work.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href="https://cal.com/grounded-touch/60-min?overlayCalendar=true"
+            data-cal-link="grounded-touch/60-min"
+            data-cal-namespace="sixty"
+            data-cal-config='{"layout":"month_view"}'
+            class="btn-primary"
+          >
+            Book a session
+            <span aria-hidden="true">→</span>
+          </a>
+          <a href="#approach" class="btn-outline">
+            The approach
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 reveal">
+        <EditorialImage
+          src="/images/hero.jpg"
+          alt="Bodywork on the leg in a warm daylit studio — Grounded Touch, Munich"
+          ratio="3/4"
+          variant="stone"
+          priority
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="container-editorial">
+    <div class="rule"></div>
+  </div>
+</section>

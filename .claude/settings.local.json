@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/roman.bashmakov/.local/bin/**)",
+      "Bash(/Users/roman.bashmakov/.local/share/fnm/fnm exec *)",
+      "Bash(ls -la /reference/)",
+      "Read(//Users/roman.bashmakov/**)",
+      "Read(//Users/roman.bashmakov/Desktop/**)",
+      "Bash(echo \"started PID $!\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /tmp/gt-home.html -w \"HTTP %{http_code}  size=%{size_download}\\\\n\" http://127.0.0.1:4321/)",
+      "Bash(curl -s -o /tmp/gt-imp.html -w \"impressum HTTP=%{http_code} bytes=%{size_download}\\\\n\" http://127.0.0.1:4321/impressum)",
+      "Bash(curl -s -o /tmp/gt-dat.html -w \"datenschutz HTTP=%{http_code} bytes=%{size_download}\\\\n\" http://127.0.0.1:4321/datenschutz)",
+      "Bash(kill 95066)",
+      "Bash(wait 95066)",
+      "Bash(echo \"PID $!\")",
+      "Bash(curl -s -o /tmp/gt-home.html -w \"HTTP=%{http_code} bytes=%{size_download}\\\\n\" http://127.0.0.1:4321/)",
+      "Bash(curl -sI http://127.0.0.1:4321/images/hero.jpg)",
+      "Bash(kill %1)",
+      "Bash(wait)",
+      "Bash(curl -s http://127.0.0.1:4321/ -o /tmp/home.html)",
+      "Bash(pkill -f \"astro preview\")"
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply bg-ivory text-ink font-sans;
+    font-feature-settings: "kern", "liga", "calt";
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif text-ink;
+    font-weight: 500;
+    font-variation-settings: "opsz" 96;
+    letter-spacing: -0.015em;
+    line-height: 1.06;
+  }
+  ::selection {
+    background: #A54A28;
+    color: #F4EFE6;
+  }
+}
+
+@layer components {
+  .container-editorial {
+    @apply mx-auto w-full max-w-7xl px-6 md:px-10 lg:px-14;
+  }
+  .container-tight {
+    @apply mx-auto w-full max-w-3xl px-6 md:px-10;
+  }
+
+  /* Small uppercase index label */
+  .index-label {
+    @apply text-[11px] uppercase tracking-widelabel text-stone font-sans;
+  }
+  .index-num {
+    @apply text-[11px] tracking-widelabel text-stone font-sans tabular-nums;
+  }
+
+  /* Buttons — pill, outlined, ink-based */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-full bg-ink text-ivory px-6 py-3 text-sm transition-colors duration-500 ease-gentle hover:bg-terra;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2 rounded-full border border-ink/25 text-ink px-6 py-3 text-sm transition-colors duration-500 ease-gentle hover:border-ink hover:bg-ink hover:text-ivory;
+  }
+  .btn-link {
+    @apply inline-flex items-center gap-2 text-sm text-ink border-b border-ink/40 pb-0.5 transition-colors duration-500 ease-gentle hover:border-terra hover:text-terra;
+  }
+
+  .rule {
+    @apply block h-px w-full bg-line;
+  }
+  .rule-strong {
+    @apply block h-px w-full bg-ink/20;
+  }
+
+  /* Section title — large, calm, no italics */
+  .h-display {
+    @apply font-serif text-[40px] sm:text-5xl md:text-6xl lg:text-[68px] text-ink;
+    font-weight: 500;
+    font-variation-settings: "opsz" 144;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+  .h-section {
+    @apply font-serif text-[32px] sm:text-4xl md:text-5xl text-ink;
+    font-weight: 500;
+    font-variation-settings: "opsz" 96;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+  .lede {
+    @apply text-[17px] md:text-lg text-stone leading-relaxed max-w-prose2;
+  }
+}
+
+/* Fade-in on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 1s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 1s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Subtle grain to make ivory feel like paper */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image:
+    radial-gradient(rgba(28,22,17,1) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
