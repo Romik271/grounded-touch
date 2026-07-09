@@ -1,7 +1,8 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://groundedtouch.de',
-  integrations: [tailwind()],
+  site: 'https://www.groundedtouch.de',
+  integrations: [tailwind(), sitemap()],
 });
