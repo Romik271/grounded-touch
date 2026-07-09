@@ -1,7 +1,7 @@
 ---
 ---
 
-<section id="booking" class="bg-ivory py-8 md:py-10">
+<section id="booking" class="bg-ivory pt-8 pb-2 md:pt-10 md:pb-4">
   <div class="container-editorial">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-4 md:mb-6">
       <div class="md:col-span-4 reveal">
@@ -19,12 +19,20 @@
       </div>
     </div>
 
-    <div class="reveal">
+    <div class="reveal cal-embed-wrap">
       <div class="border border-ink/15 bg-ivory rounded-[6px] overflow-hidden">
-        <div id="cal-booking-inline" style="width:100%;min-width:320px;min-height:720px;"></div>
+        <div id="cal-booking-inline" style="width:100%;min-width:320px;"></div>
       </div>
     </div>
   </div>
+
+  <style>
+    #cal-booking-inline { min-height: 520px; }
+    #cal-booking-inline iframe { display: block; width: 100%; }
+    @media (max-width: 767px) {
+      #cal-booking-inline { min-height: 460px; }
+    }
+  </style>
 
   <script is:inline>
     Cal("init", "booking", { origin: "https://cal.com" });

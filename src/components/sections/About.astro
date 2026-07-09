@@ -15,11 +15,11 @@ import EditorialImage from '../EditorialImage.astro';
       </div>
     </div>
 
-    <div class="max-w-4xl border-t border-ink/20">
+    <div class="border-t border-ink/20">
       <details class="reveal group border-b border-ink/20 py-5 md:py-6">
         <summary class="flex items-center justify-between gap-6 cursor-pointer list-none">
           <span class="font-serif text-xl md:text-2xl text-ink pr-4">
-            A short introduction about the person behind Grounded Touch.
+            The person behind Grounded Touch.
           </span>
           <span
             class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-ink/60 group-hover:text-ink transition-transform duration-500 ease-gentle group-open:rotate-45"
@@ -46,9 +46,59 @@ import EditorialImage from '../EditorialImage.astro';
             <p class="mt-3">My approach is slow and attentive. I do not try to force change, but rather give your body and mind space for relaxation and joy.</p>
             <p class="mt-3">Each session is a conversation through touch — adjusting to what your body is asking for in that moment.</p>
             <p class="mt-3">Grounded Touch is a small private space in Munich where you can slow down, disconnect, and give your body some undivided attention.</p>
+            <div class="mt-8">
+              <div class="index-label mb-3">Training</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button type="button" class="js-lightbox block w-full text-left" data-src="/images/2026-07-09_085899-1.jpg" aria-label="Open certificate">
+                  <img src="/images/2026-07-09_085899-1.jpg" alt="Thai bodywork training certificate" loading="lazy" class="w-full h-auto border border-ink/10" />
+                </button>
+                <button type="button" class="js-lightbox block w-full text-left" data-src="/images/2026-07-09_085899-2.jpg" aria-label="Open certificate">
+                  <img src="/images/2026-07-09_085899-2.jpg" alt="Thai bodywork training certificate" loading="lazy" class="w-full h-auto border border-ink/10" />
+                </button>
+              </div>
+              <p class="mt-2 text-xs text-stone">Thai bodywork training — Chiang Mai, Thailand</p>
+            </div>
           </div>
         </div>
       </details>
     </div>
   </div>
+
+  <div id="cert-lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center bg-ink/85 p-6" role="dialog" aria-modal="true" aria-hidden="true">
+    <button type="button" id="cert-lightbox-close" aria-label="Close" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-ivory/80 hover:text-ivory transition-colors duration-300">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2l14 14M16 2L2 16" /></svg>
+    </button>
+    <img id="cert-lightbox-img" src="" alt="" class="max-w-full max-h-full object-contain" />
+  </div>
+
+  <script>
+    const lb = document.getElementById('cert-lightbox');
+    const lbImg = document.getElementById('cert-lightbox-img');
+    const lbClose = document.getElementById('cert-lightbox-close');
+    const open = (src) => {
+      if (!lb || !lbImg) return;
+      lbImg.setAttribute('src', src);
+      lb.classList.remove('hidden');
+      lb.classList.add('flex');
+      lb.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => {
+      if (!lb || !lbImg) return;
+      lb.classList.add('hidden');
+      lb.classList.remove('flex');
+      lb.setAttribute('aria-hidden', 'true');
+      lbImg.setAttribute('src', '');
+      document.body.style.overflow = '';
+    };
+    document.querySelectorAll('.js-lightbox').forEach((el) => {
+      el.addEventListener('click', () => {
+        const src = el.getAttribute('data-src');
+        if (src) open(src);
+      });
+    });
+    lb?.addEventListener('click', (e) => { if (e.target === lb) close(); });
+    lbClose?.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  </script>
 </section>
