@@ -19,7 +19,10 @@
       "Bash(kill %1)",
       "Bash(wait)",
       "Bash(curl -s http://127.0.0.1:4321/ -o /tmp/home.html)",
-      "Bash(pkill -f \"astro preview\")"
+      "Bash(pkill -f \"astro preview\")",
+      "Bash(cp \"/Users/roman.bashmakov/Desktop/grounded-touch/referecene/ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\" \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\")",
+      "Bash(cp \"/Users/roman.bashmakov/Desktop/grounded-touch/referecene/0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\" \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\")",
+      "Bash(npm run *)"
     ]
   }
 }
