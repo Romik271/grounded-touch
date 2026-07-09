@@ -6,7 +6,7 @@ const faqs = [
   },
   {
     q: 'Where does it happen?',
-    a: 'In a private space in Munich Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is shared after your booking is confirmed.',
+    a: 'At my place:\nA private space in Munich-Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is provided after your booking is confirmed.\n\nAt your place:\nAvailable within Munich. Please provide your address when booking.',
   },
   {
     q: 'What should I wear?',
@@ -27,7 +27,7 @@ const faqs = [
 ];
 ---
 
-<section id="faq" class="bg-ivory py-16 md:py-24">
+<section id="faq" class="bg-ivory py-8 md:py-10">
   <div class="container-editorial">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-8 md:mb-12">
       <div class="md:col-span-4 reveal">
@@ -54,7 +54,7 @@ const faqs = [
               </svg>
             </span>
           </summary>
-          <div class="pt-4 pr-10 text-ink/75 leading-relaxed max-w-prose2">
+          <div class="pt-4 pr-10 text-ink/75 leading-relaxed max-w-prose2 whitespace-pre-line">
             {f.a}
           </div>
         </details>
