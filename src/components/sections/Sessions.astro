@@ -5,9 +5,8 @@ const rows = [
     price: '65',
     title: 'A short pause',
     text: 'Time enough to settle from head to feet. Ideal for a first visit.',
-    calLink: 'grounded-touch/60-min',
+    calLink: 'grounded-touch/60-min-thai-bodywork',
     calNs: 'sixty',
-    calHref: 'https://cal.com/grounded-touch/60-min?overlayCalendar=true',
   },
   {
     duration: '90',
@@ -16,7 +15,6 @@ const rows = [
     text: 'More room for the body to unwind. The work reaches deeper without pushing.',
     calLink: 'grounded-touch/90-min-thai-massage',
     calNs: 'ninety',
-    calHref: 'https://cal.com/grounded-touch/90-min-thai-massage?overlayCalendar=true',
   },
 ];
 ---
@@ -39,12 +37,12 @@ const rows = [
 
     <div class="space-y-4 md:space-y-5">
       {rows.map((r) => (
-        <a
-          href={r.calHref}
+        <button
+          type="button"
           data-cal-link={r.calLink}
           data-cal-namespace={r.calNs}
           data-cal-config='{"layout":"month_view"}'
-          class="reveal grid grid-cols-12 gap-4 md:gap-10 items-start bg-paper hover:bg-line/50 rounded-[6px] px-5 md:px-8 py-7 md:py-10 transition-colors duration-500 ease-gentle"
+          class="reveal grid grid-cols-12 gap-4 md:gap-10 items-start bg-paper hover:bg-line/50 rounded-[6px] px-5 md:px-8 py-7 md:py-10 transition-colors duration-500 ease-gentle text-left w-full"
         >
           <div class="col-span-3 md:col-span-2">
             <span class="font-serif text-5xl md:text-7xl text-ink tabular-nums leading-none">{r.duration}</span>
@@ -64,7 +62,7 @@ const rows = [
               <span aria-hidden="true">→</span>
             </span>
           </div>
-        </a>
+        </button>
       ))}
     </div>
   </div>
