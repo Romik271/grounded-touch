@@ -22,7 +22,23 @@
       "Bash(pkill -f \"astro preview\")",
       "Bash(cp \"/Users/roman.bashmakov/Desktop/grounded-touch/referecene/ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\" \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\")",
       "Bash(cp \"/Users/roman.bashmakov/Desktop/grounded-touch/referecene/0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\" \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\")",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(sips -s format webp -s formatOptions 80 --resampleWidth 1200 \"ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\" --out \"hero.webp\")",
+      "Bash(sips -s format webp -s formatOptions 80 --resampleWidth 1200 \"cb6309da-ccb4-4c0d-a16a-776fa0d5ab76.png\" --out \"about.webp\")",
+      "Bash(sips -s format webp -s formatOptions 80 --resampleWidth 1200 \"0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\" --out \"legs.webp\")",
+      "Bash(sips -s format webp -s formatOptions 75 --resampleWidth 1600 \"2026-07-09_085899-1.jpg\" --out \"cert-1.webp\")",
+      "Bash(sips -s format webp -s formatOptions 75 --resampleWidth 1600 \"2026-07-09_085899-2.jpg\" --out \"cert-2.webp\")",
+      "Bash(mkdir -p /tmp/gt-resize)",
+      "Bash(sips --resampleWidth 1200 \"ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\" --out /tmp/gt-resize/hero.png)",
+      "Bash(sips --resampleWidth 1200 \"cb6309da-ccb4-4c0d-a16a-776fa0d5ab76.png\" --out /tmp/gt-resize/about.png)",
+      "Bash(sips --resampleWidth 1200 \"0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\" --out /tmp/gt-resize/legs.png)",
+      "Bash(sips --resampleWidth 1600 \"2026-07-09_085899-1.jpg\" --out /tmp/gt-resize/cert-1.jpg)",
+      "Bash(sips -s format jpeg -s formatOptions 82 /tmp/gt-resize/hero.png --out hero-opt.jpg)",
+      "Bash(sips -s format jpeg -s formatOptions 82 /tmp/gt-resize/about.png --out about-opt.jpg)",
+      "Bash(sips -s format jpeg -s formatOptions 82 /tmp/gt-resize/legs.png --out legs-opt.jpg)",
+      "Bash(sips -s format jpeg -s formatOptions 78 /tmp/gt-resize/cert-1.jpg --out cert-1-opt.jpg)",
+      "Bash(sips -s format jpeg -s formatOptions 78 /tmp/gt-resize/cert-2.jpg --out cert-2-opt.jpg)",
+      "Bash(git *)"
     ]
   }
 }
