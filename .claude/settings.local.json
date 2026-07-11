@@ -45,7 +45,9 @@
       "Bash(sips -s format avif \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/hero-opt.jpg\" --out /tmp/testhero.avif)",
       "Bash(npx --version)",
       "Bash(node sharp-convert.mjs)",
-      "Bash(grep -oE '<picture>[^<]*\\(<source[^>]*>[^<]*\\){1,2}' /Users/roman.bashmakov/Desktop/grounded-touch/dist/index.html)"
+      "Bash(grep -oE '<picture>[^<]*\\(<source[^>]*>[^<]*\\){1,2}' /Users/roman.bashmakov/Desktop/grounded-touch/dist/index.html)",
+      "Bash(grep -oE '<picture>[^<]*\\(<source[^>]*>[^<]*\\){1,2}<img[^>]*>' /Users/roman.bashmakov/Desktop/grounded-touch/dist/index.html)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }
