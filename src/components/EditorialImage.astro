@@ -7,6 +7,8 @@ interface Props {
   variant?: 'stone' | 'wood';
   rounded?: boolean;
   priority?: boolean;
+  webp?: string;
+  avif?: string;
 }
 const {
   src,
@@ -16,6 +18,8 @@ const {
   variant = 'stone',
   rounded = true,
   priority = false,
+  webp,
+  avif,
 } = Astro.props;
 
 const round = rounded ? 'rounded-[6px]' : '';
@@ -27,15 +31,19 @@ const bg = variant === 'wood'
 
 <figure class="relative w-full">
   <div class={`relative w-full overflow-hidden bg-paper ${round}`} style={`aspect-ratio:${ratio};`}>
-    <img
-      src={src}
-      alt={alt}
-      loading={priority ? 'eager' : 'lazy'}
-      fetchpriority={priority ? 'high' : 'auto'}
-      decoding="async"
-      class="absolute inset-0 w-full h-full object-cover"
-      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-    />
+    <picture>
+      {avif && <source type="image/avif" srcset={avif} />}
+      {webp && <source type="image/webp" srcset={webp} />}
+      <img
+        src={src}
+        alt={alt}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        decoding="async"
+        class="absolute inset-0 w-full h-full object-cover"
+        onerror="this.style.display='none'; this.parentElement.nextElementSibling.style.display='block';"
+      />
+    </picture>
     <div class="absolute inset-0" style={`display:none; background:${bg};`} aria-hidden="true">
       <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" class="w-full h-full opacity-70">
         <defs>

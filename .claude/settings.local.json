@@ -38,7 +38,13 @@
       "Bash(sips -s format jpeg -s formatOptions 82 /tmp/gt-resize/legs.png --out legs-opt.jpg)",
       "Bash(sips -s format jpeg -s formatOptions 78 /tmp/gt-resize/cert-1.jpg --out cert-1-opt.jpg)",
       "Bash(sips -s format jpeg -s formatOptions 78 /tmp/gt-resize/cert-2.jpg --out cert-2-opt.jpg)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Read(//System/Library/**)",
+      "Bash(sips --formats)",
+      "Bash(sips -s format webp \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/hero-opt.jpg\" --out /tmp/testhero.webp)",
+      "Bash(sips -s format avif \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/hero-opt.jpg\" --out /tmp/testhero.avif)",
+      "Bash(npx --version)",
+      "Bash(node sharp-convert.mjs)"
     ]
   }
 }
