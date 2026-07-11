@@ -1,41 +1,25 @@
 ---
-const faqs = [
-  {
-    q: 'How does it feel?',
-    a: 'Slow, warm, and quiet. Pressure adjusts to what you actually feel, not to a fixed routine. If something feels off, you can say so at any point.',
-  },
-  {
-    q: 'Where does it happen?',
-    a: 'At my place:\nA private space in Munich-Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is provided after your booking is confirmed.\n\nAt your place:\nAvailable within Munich. Please provide your address when booking.',
-  },
-  {
-    q: 'What should I wear?',
-    a: 'Please wear loose, comfortable clothes that you can keep on during the session. If needed, clean session clothes can also be provided.',
-  },
-  {
-    q: 'Payment',
-    a: 'Cash, bank transfer, or PayPal after the session. A simple receipt is available on request.',
-  },
-  {
-    q: 'Cancellation',
-    a: 'If you need to cancel or reschedule, please let me know as early as possible. Your time slot is reserved specifically for you, and giving notice helps make it available to someone else.',
-  },
-  {
-    q: 'Boundaries',
-    a: 'This is non-sexual bodywork. Every person is welcome regardless of gender, body, or background. Consent is checked before and during the session — you can pause or stop at any point.',
-  },
-];
+import type { Lang } from '../../i18n/strings';
+import { t } from '../../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang).faq;
+const faqs = tr.items;
 ---
 
 <section id="faq" class="bg-ivory py-8 md:py-10">
   <div class="container-editorial">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-8 md:mb-12">
       <div class="md:col-span-4 reveal">
-        <div class="index-label">Questions</div>
+        <div class="index-label">{tr.label}</div>
       </div>
       <div class="md:col-span-8 reveal">
         <h2 class="h-section max-w-2xl">
-          Before your first visit.
+          {tr.title}
         </h2>
       </div>
     </div>

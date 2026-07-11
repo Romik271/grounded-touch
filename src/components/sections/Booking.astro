@@ -1,18 +1,27 @@
 ---
+import type { Lang } from '../../i18n/strings';
+import { t } from '../../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang).sessions;
 ---
 
 <section id="booking" class="bg-ivory pt-8 pb-2 md:pt-10 md:pb-4">
   <div class="container-editorial">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-4 md:mb-6">
       <div class="md:col-span-4 reveal">
-        <div class="index-label">Booking</div>
+        <div class="index-label">{tr.bookingLabel}</div>
       </div>
       <div class="md:col-span-8 reveal">
         <h2 class="h-section max-w-2xl">
-          Find a time that works for you.
+          {tr.bookingTitle}
         </h2>
         <p class="mt-5 lede">
-          You will receive a short confirmation with the details for your visit.
+          {tr.bookingLede}
         </p>
       </div>
     </div>

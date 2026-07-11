@@ -1,21 +1,30 @@
 ---
 import EditorialImage from '../EditorialImage.astro';
+import type { Lang } from '../../i18n/strings';
+import { t } from '../../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang).hero;
 ---
 
 <section class="bg-ivory">
   <div class="container-editorial pt-4 md:pt-8 pb-8 md:pb-10">
     <div class="flex items-center justify-between text-[11px] uppercase tracking-widelabel text-stone mb-10 md:mb-14">
-      <span>Thai Bodywork & Massage — Munich Schwabing</span>
+      <span>{tr.eyebrow}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
       <div class="lg:col-span-7 reveal">
         <h1 class="h-display">
-          Your body deserves time <span class="text-stone">to recover.</span>
+          {tr.titleA}<span class="text-stone">{tr.titleB}</span>
         </h1>
 
         <p class="mt-6 lede">
-          Thai bodywork and massage in Munich Schwabing. Attentive sessions for tired legs, feet, and the whole body.
+          {tr.lede}
         </p>
 
         <div class="mt-8 flex flex-wrap items-center gap-3">
@@ -26,11 +35,11 @@ import EditorialImage from '../EditorialImage.astro';
             data-cal-config='{"layout":"month_view"}'
             class="btn-primary"
           >
-            Book a session
+            {tr.cta}
             <span aria-hidden="true">→</span>
           </button>
           <a href="#approach" class="btn-outline">
-            The approach
+            {tr.secondary}
           </a>
         </div>
       </div>
@@ -39,7 +48,7 @@ import EditorialImage from '../EditorialImage.astro';
         <EditorialImage
           src="/images/hero-opt.jpg"
           webp="/images/hero-opt.webp"
-          alt="Bodywork on the leg in a warm daylit studio — Grounded Touch, Munich"
+          alt={tr.alt}
           ratio="3/4"
           variant="stone"
           priority

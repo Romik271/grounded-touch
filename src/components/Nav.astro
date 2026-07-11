@@ -1,15 +1,29 @@
 ---
+import type { Lang } from '../i18n/strings';
+import { t } from '../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang);
+
 const links = [
-  { href: '#approach', label: 'Approach' },
-  { href: '#about', label: 'About' },
-  { href: '#sessions', label: 'Sessions' },
-  { href: '#faq', label: 'FAQ' },
+  { href: '#approach', label: tr.nav.approach },
+  { href: '#about', label: tr.nav.about },
+  { href: '#sessions', label: tr.nav.sessions },
+  { href: '#faq', label: tr.nav.faq },
 ];
+
+const homeHref = lang === 'de' ? '/de/' : '/';
+const enHref = '/';
+const deHref = '/de/';
 ---
 
 <header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-ivory/90 backdrop-blur-md transition-colors duration-500">
   <div class="container-editorial flex items-center justify-between h-16 md:h-20">
-    <a href="/" class="font-serif text-[22px] md:text-[26px] tracking-[-0.02em] text-ink">
+    <a href={homeHref} class="font-serif text-[22px] md:text-[26px] tracking-[-0.02em] text-ink">
       Grounded Touch<span class="text-terra">.</span>
     </a>
 
@@ -24,19 +38,26 @@ const links = [
       ))}
     </nav>
 
-    <button
-      type="button"
-      data-cal-link="grounded-touch/60-min-thai-bodywork"
-      data-cal-namespace="sixty"
-      data-cal-config='{"layout":"month_view"}'
-      class="hidden md:inline-flex btn-primary !py-2 !px-5 !text-[13px]"
-    >
-      Book a session
-    </button>
+    <div class="hidden md:flex items-center gap-5">
+      <div class="flex items-center gap-2 text-[12px] tracking-widelabel">
+        <a href={enHref} class={`transition-colors duration-500 ${lang === 'en' ? 'text-ink' : 'text-ink/40 hover:text-ink'}`}>EN</a>
+        <span class="text-ink/25">/</span>
+        <a href={deHref} class={`transition-colors duration-500 ${lang === 'de' ? 'text-ink' : 'text-ink/40 hover:text-ink'}`}>DE</a>
+      </div>
+      <button
+        type="button"
+        data-cal-link="grounded-touch/60-min-thai-bodywork"
+        data-cal-namespace="sixty"
+        data-cal-config='{"layout":"month_view"}'
+        class="btn-primary !py-2 !px-5 !text-[13px]"
+      >
+        {tr.nav.book}
+      </button>
+    </div>
 
     <button
       id="mobile-menu-toggle"
-      aria-label="Open menu"
+      aria-label={tr.nav.menuOpen}
       class="md:hidden flex flex-col gap-1.5 p-2"
     >
       <span class="block w-6 h-px bg-ink"></span>
@@ -53,6 +74,11 @@ const links = [
           {l.label}
         </a>
       ))}
+      <div class="flex items-center gap-3 text-[12px] tracking-widelabel pt-2">
+        <a href={enHref} class={lang === 'en' ? 'text-ink' : 'text-ink/50 hover:text-ink'}>EN</a>
+        <span class="text-ink/25">/</span>
+        <a href={deHref} class={lang === 'de' ? 'text-ink' : 'text-ink/50 hover:text-ink'}>DE</a>
+      </div>
       <button
         type="button"
         data-cal-link="grounded-touch/60-min-thai-bodywork"
@@ -60,7 +86,7 @@ const links = [
         data-cal-config='{"layout":"month_view"}'
         class="btn-primary self-start mt-2"
       >
-        Book a session
+        {tr.nav.book}
       </button>
     </nav>
   </div>

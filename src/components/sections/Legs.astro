@@ -1,26 +1,27 @@
 ---
 import EditorialImage from '../EditorialImage.astro';
+import type { Lang } from '../../i18n/strings';
+import { t } from '../../i18n/strings';
 
-const forWhom = [
-  'People who walk their city',
-  'Cyclists and commuters',
-  'Climbers and boulderers',
-  'Dancers and movers',
-  'Standing professionals',
-  'Long-day desk workers',
-];
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang).legs;
+const forWhom = tr.forWhom;
 ---
 
 <section class="bg-ivory py-8 md:py-10">
   <div class="container-editorial">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-10 md:mb-14">
       <div class="md:col-span-4 reveal">
-        <div class="index-label">The focus</div>
+        <div class="index-label">{tr.label}</div>
       </div>
       <div class="md:col-span-8 reveal">
         <h2 class="h-section max-w-2xl">
-          Legs and feet.<br />
-          The parts that carry you.
+          {tr.titleA}<br />
+          {tr.titleB}
         </h2>
       </div>
     </div>
@@ -31,27 +32,23 @@ const forWhom = [
           src="/images/legs-opt.jpg"
           webp="/images/legs-opt.webp"
           avif="/images/legs-opt.avif"
-          alt="Studio detail — legs at rest under linen"
+          alt={tr.alt}
           ratio="4/5"
           variant="wood"
-          caption="Thai bodywork training — Chiang Mai, Thailand"
+          caption={tr.caption}
         />
       </div>
 
       <div class="md:col-span-5 md:pt-2 reveal space-y-6">
         <p class="text-lg text-ink/85 leading-relaxed">
-          Your feet meet the ground thousands of times a day.
-          Your calves and hips hold you upright through meetings,
-          climbs, commutes, and the walk home in the evening.
+          {tr.p1}
         </p>
         <p class="text-lg text-ink/85 leading-relaxed">
-          Grounded Touch begins there — with the parts that carry you,
-          and works upward as the body allows. Time returned to legs,
-          feet, hips, and the whole quiet system that keeps you moving.
+          {tr.p2}
         </p>
 
         <div class="pt-5 border-t border-line">
-          <div class="index-label mb-3">Who it is for</div>
+          <div class="index-label mb-3">{tr.forWhomLabel}</div>
           <ul class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 text-ink/80">
             {forWhom.map((w) => (
               <li class="flex items-start gap-3">

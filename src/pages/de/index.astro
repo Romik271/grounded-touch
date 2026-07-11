@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/sections/Hero.astro';
+import Approach from '../../components/sections/Approach.astro';
+import Legs from '../../components/sections/Legs.astro';
+import Sessions from '../../components/sections/Sessions.astro';
+import Booking from '../../components/sections/Booking.astro';
+import FAQ from '../../components/sections/FAQ.astro';
+import About from '../../components/sections/About.astro';
+import { strings } from '../../i18n/strings';
+
+const seo = strings.de.seo;
+---
+
+<BaseLayout lang="de" title={seo.title} description={seo.description}>
+  <Hero lang="de" />
+  <Approach lang="de" />
+  <About lang="de" />
+  <Legs lang="de" />
+  <Sessions lang="de" />
+  <Booking lang="de" />
+  <FAQ lang="de" />
+</BaseLayout>
