@@ -28,12 +28,19 @@ const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://app.cal.com" />
-    {isHome && <link rel="preload" as="image" href="/images/hero-opt.avif" type="image/avif" fetchpriority="high" />}
     {isHome && <link rel="preload" as="image" href="/images/hero-opt.webp" type="image/webp" fetchpriority="high" />}
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@300;400;500&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@300;400;500&display=swap"
+      />
+    </noscript>
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
