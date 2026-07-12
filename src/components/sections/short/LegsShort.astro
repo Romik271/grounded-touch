@@ -1,0 +1,50 @@
+---
+import EditorialImage from '../../EditorialImage.astro';
+
+const forWhom = [
+  'Desk workers seeking recovery and movement',
+  'Climbers, cyclists and active lifestyles',
+  'People dealing with everyday stress and tension',
+];
+---
+
+<section class="bg-ivory pt-6 pb-8 md:pt-8 md:pb-10">
+  <div class="container-editorial">
+    <div class="reveal mb-6 md:mb-8">
+      <h2 class="h-section max-w-4xl">
+        Legs and feet — the parts that carry you.
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
+      <div class="md:col-span-7 reveal">
+        <EditorialImage
+          src="/images/legs-opt.jpg"
+          webp="/images/legs-opt.webp"
+          avif="/images/legs-opt.avif"
+          alt="Studio detail — legs at rest under linen"
+          ratio="4/5"
+          variant="wood"
+        />
+      </div>
+
+      <div class="md:col-span-5 md:pt-2 reveal space-y-5">
+        <p class="text-lg text-ink/85 leading-relaxed">
+          Grounded Touch starts with the parts that carry you — feet, calves, hips — and works upward as the body allows.
+        </p>
+
+        <div class="pt-5 border-t border-line">
+          <div class="index-label mb-3">Who it is for</div>
+          <ul class="space-y-2 text-ink/80">
+            {forWhom.map((w) => (
+              <li class="flex items-start gap-3">
+                <span class="mt-2 block w-1 h-1 rounded-full bg-terra flex-shrink-0"></span>
+                <span>{w}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

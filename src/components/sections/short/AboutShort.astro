@@ -1,0 +1,113 @@
+---
+import EditorialImage from '../../EditorialImage.astro';
+
+const bullets = [
+  'Certified Thai massage training in Chiang Mai, Thailand',
+  'Calm, attentive, individual sessions',
+  'Focus on recovery instead of routines',
+  'Working with breath, movement and tissue response',
+];
+---
+
+<section id="about" class="bg-ivory py-8 md:py-10">
+  <div class="container-editorial">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-8 md:mb-12">
+      <div class="md:col-span-4 reveal">
+        <div class="index-label">About</div>
+      </div>
+      <div class="md:col-span-8 reveal">
+        <h2 class="h-section max-w-2xl">
+          About.
+        </h2>
+      </div>
+    </div>
+
+    <div class="border-t border-ink/20">
+      <details class="reveal group border-b border-ink/20 py-5 md:py-6">
+        <summary class="flex items-center justify-between gap-6 cursor-pointer list-none">
+          <span class="font-serif text-xl md:text-2xl text-ink pr-4">
+            The person behind Grounded Touch.
+          </span>
+          <span
+            class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-ink/60 group-hover:text-ink transition-transform duration-500 ease-gentle group-open:rotate-45"
+            aria-hidden="true"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+              <path d="M7 1v12M1 7h12" />
+            </svg>
+          </span>
+        </summary>
+        <div class="pt-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+          <div class="md:col-span-5">
+            <EditorialImage
+              src="/images/about-opt.jpg"
+              alt="Portrait — Grounded Touch"
+              ratio="4/5"
+              variant="stone"
+            />
+          </div>
+          <div class="md:col-span-7 md:pt-2 text-ink/75 leading-relaxed max-w-prose2">
+            <ul class="space-y-3">
+              {bullets.map((b) => (
+                <li class="flex items-start gap-3">
+                  <span class="mt-2 block w-1 h-1 rounded-full bg-terra flex-shrink-0"></span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+            <div class="mt-8">
+              <div class="index-label mb-3">Training</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button type="button" class="js-lightbox-short block w-full text-left" data-src="/images/cert-1-opt.jpg" aria-label="Open certificate">
+                  <img src="/images/cert-1-opt.jpg" alt="Thai bodywork training certificate" loading="lazy" decoding="async" class="w-full h-auto border border-ink/10" />
+                </button>
+                <button type="button" class="js-lightbox-short block w-full text-left" data-src="/images/cert-2-opt.jpg" aria-label="Open certificate">
+                  <img src="/images/cert-2-opt.jpg" alt="Thai bodywork training certificate" loading="lazy" decoding="async" class="w-full h-auto border border-ink/10" />
+                </button>
+              </div>
+              <p class="mt-2 text-xs text-stone">Thai bodywork training — Chiang Mai, Thailand</p>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div id="cert-lightbox-short" class="fixed inset-0 z-[100] hidden items-center justify-center bg-ink/85 p-6" role="dialog" aria-modal="true" aria-hidden="true">
+    <button type="button" id="cert-lightbox-short-close" aria-label="Close" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-ivory/80 hover:text-ivory transition-colors duration-300">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 2l14 14M16 2L2 16" /></svg>
+    </button>
+    <img id="cert-lightbox-short-img" src="" alt="" class="max-w-full max-h-full object-contain" />
+  </div>
+
+  <script>
+    const lb = document.getElementById('cert-lightbox-short');
+    const lbImg = document.getElementById('cert-lightbox-short-img');
+    const lbClose = document.getElementById('cert-lightbox-short-close');
+    const open = (src) => {
+      if (!lb || !lbImg) return;
+      lbImg.setAttribute('src', src);
+      lb.classList.remove('hidden');
+      lb.classList.add('flex');
+      lb.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => {
+      if (!lb || !lbImg) return;
+      lb.classList.add('hidden');
+      lb.classList.remove('flex');
+      lb.setAttribute('aria-hidden', 'true');
+      lbImg.setAttribute('src', '');
+      document.body.style.overflow = '';
+    };
+    document.querySelectorAll('.js-lightbox-short').forEach((el) => {
+      el.addEventListener('click', () => {
+        const src = el.getAttribute('data-src');
+        if (src) open(src);
+      });
+    });
+    lb?.addEventListener('click', (e) => { if (e.target === lb) close(); });
+    lbClose?.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  </script>
+</section>

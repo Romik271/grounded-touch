@@ -10,12 +10,14 @@ interface Props {
   title?: string;
   description?: string;
   lang?: Lang;
+  noindex?: boolean;
 }
 
 const {
   title = 'Thai Bodywork & Massage in Munich Schwabing | Grounded Touch',
   description = 'Thai bodywork and massage in Munich Schwabing. Attentive sessions for legs, feet, the whole body, and deep relaxation. Book 60 or 90 minute appointments online.',
   lang = 'en',
+  noindex = false,
 } = Astro.props;
 
 const path = Astro.url.pathname;
@@ -29,6 +31,7 @@ const showHreflang = path === '/' || path === '' || path === '/de/' || path === 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta name="theme-color" content="#F4EFE6" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -1,0 +1,58 @@
+---
+const principles = [
+  { word: 'Slow', text: "Follow the body's pace." },
+  { word: 'Attentive', text: 'Listen before applying pressure.' },
+  { word: 'Responsive', text: 'Every session adapts to your needs.' },
+];
+---
+
+<section class="bg-ivory pt-6 pb-6 md:pt-8 md:pb-8">
+  <div class="container-editorial">
+    <div class="reveal mb-8 md:mb-10 max-w-3xl">
+      <h2 class="h-section">
+        Three principles guide every session.
+      </h2>
+    </div>
+
+    <div class="reveal principles-row">
+      <div class="principles-grid">
+        {principles.map((p) => (
+          <div class="principles-cell">
+            <h3 class="font-serif text-2xl md:text-3xl text-ink">{p.word}</h3>
+            <p class="mt-2 text-ink/80 leading-relaxed">{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .principles-row {
+      border-top: 1px solid #D8CDB8; /* line */
+    }
+    .principles-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+    .principles-cell {
+      padding: 1.5rem 0;
+    }
+    @media (min-width: 768px) {
+      .principles-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .principles-cell {
+        padding: 2rem;
+        border-left: 1px solid #D8CDB8;
+      }
+      .principles-cell:first-child {
+        padding-left: 0;
+        border-left: none;
+      }
+      .principles-cell:last-child {
+        padding-right: 0;
+      }
+    }
+  </style>
+</section>

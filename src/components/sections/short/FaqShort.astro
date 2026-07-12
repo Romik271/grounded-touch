@@ -1,0 +1,49 @@
+---
+const faqs = [
+  {
+    q: 'How does it feel?',
+    a: 'Slow, warm, and quiet. Pressure adjusts to what you actually feel, not to a fixed routine. If something feels off, you can say so at any point.',
+  },
+  {
+    q: 'Where does it happen?',
+    a: 'At my place:\nA private space in Munich-Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is provided after your booking is confirmed.\n\nAt your place:\nAvailable within Munich. Please provide your address when booking.',
+  },
+  {
+    q: 'What should I wear?',
+    a: 'Please wear loose, comfortable clothes that you can keep on during the session. If needed, clean session clothes can also be provided.',
+  },
+  {
+    q: 'Payment',
+    a: 'Cash, bank transfer, or PayPal after the session. A simple receipt is available on request.',
+  },
+];
+---
+
+<section id="faq" class="bg-ivory pt-6 pb-10 md:pt-8 md:pb-12">
+  <div class="container-editorial">
+    <div class="reveal mb-4 md:mb-6">
+      <div class="index-label">Questions</div>
+    </div>
+
+    <div class="max-w-4xl border-t border-ink/20">
+      {faqs.map((f) => (
+        <details class="reveal group border-b border-ink/20 py-5 md:py-6">
+          <summary class="flex items-center justify-between gap-6 cursor-pointer list-none">
+            <span class="font-serif text-xl md:text-2xl text-ink pr-4">{f.q}</span>
+            <span
+              class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-ink/60 group-hover:text-ink transition-transform duration-500 ease-gentle group-open:rotate-45"
+              aria-hidden="true"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                <path d="M7 1v12M1 7h12" />
+              </svg>
+            </span>
+          </summary>
+          <div class="pt-4 pr-10 text-ink/75 leading-relaxed max-w-prose2 whitespace-pre-line">
+            {f.a}
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
