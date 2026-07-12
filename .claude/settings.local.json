@@ -48,7 +48,8 @@
       "Bash(grep -oE '<picture>[^<]*\\(<source[^>]*>[^<]*\\){1,2}' /Users/roman.bashmakov/Desktop/grounded-touch/dist/index.html)",
       "Bash(grep -oE '<picture>[^<]*\\(<source[^>]*>[^<]*\\){1,2}<img[^>]*>' /Users/roman.bashmakov/Desktop/grounded-touch/dist/index.html)",
       "Bash(python3 -c ' *)",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Bash(npx astro *)"
     ]
   }
 }

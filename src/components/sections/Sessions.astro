@@ -9,7 +9,7 @@ interface Props {
 const { lang = 'en' } = Astro.props;
 const tr = t(lang).sessions;
 
-const calLinks = ['grounded-touch/60-min-thai-bodywork', 'grounded-touch/90-min-thai-massage'];
+const calLinks = ['grounded-touch/60-min-thai-massage', 'grounded-touch/90-min-thai-massage'];
 const calNs = ['sixty', 'ninety'];
 const rows = tr.rows.map((r, i) => ({ ...r, calLink: calLinks[i], calNs: calNs[i] }));
 ---

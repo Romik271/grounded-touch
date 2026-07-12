@@ -69,7 +69,7 @@ export const strings = {
     sessions: {
       label: 'Rates',
       title: 'Choose your time.',
-      lede: 'Each session is slow, attentive, and adapted to what your body needs.',
+      lede: 'Each session is slow, attentive, and adapted to what your body needs. Mobile massage in Munich — I come to your home or preferred location.',
       minLabel: 'min',
       bookLabel: 'Book',
       rows: [
@@ -96,8 +96,6 @@ export const strings = {
     footer: {
       tagline: 'Slow, attentive bodywork.',
       taglineCity: 'Munich.',
-      hoursLine1: 'By appointment · Mon — Sat',
-      hoursLine2: 'Munich, Germany',
       site: 'Site',
       legal: 'Legal',
       disclaimer: 'This is not medical treatment',
@@ -175,7 +173,7 @@ export const strings = {
     sessions: {
       label: 'Preise',
       title: 'Wähle deine Zeit.',
-      lede: 'Jede Session ist ruhig, aufmerksam und auf das abgestimmt, was dein Körper braucht.',
+      lede: 'Jede Session ist ruhig, aufmerksam und auf das abgestimmt, was dein Körper braucht. Mobile Massage in München — ich komme zu dir nach Hause oder an deinen Wunschort.',
       minLabel: 'Min',
       bookLabel: 'Buchen',
       rows: [
@@ -202,8 +200,6 @@ export const strings = {
     footer: {
       tagline: 'Ruhige, achtsame Körperarbeit.',
       taglineCity: 'München.',
-      hoursLine1: 'Nach Vereinbarung · Mo — Sa',
-      hoursLine2: 'München, Deutschland',
       site: 'Seite',
       legal: 'Rechtliches',
       disclaimer: 'Dies ist keine medizinische Behandlung',
