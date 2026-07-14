@@ -23,6 +23,7 @@ const {
 const path = Astro.url.pathname;
 const isHome = path === '/' || path === '' || path === '/de/' || path === '/de';
 const showHreflang = path === '/' || path === '' || path === '/de/' || path === '/de';
+const canonicalUrl = new URL(path, Astro.site).href;
 ---
 
 <!doctype html>
@@ -33,6 +34,7 @@ const showHreflang = path === '/' || path === '' || path === '/de/' || path === 
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta name="theme-color" content="#F4EFE6" />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

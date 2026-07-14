@@ -1,0 +1,106 @@
+---
+const reviews = [
+  {
+    name: 'Elke Geibig',
+    initials: 'EG',
+    text: 'Ich hatte heute eine Massage bei Roman und mich direkt wohlgefühlt. Roman arbeitet sehr aufmerksam und ist auf meine…',
+    truncated: true,
+    href: 'https://maps.app.goo.gl/63GcQEmTkTyY44f8A',
+  },
+  {
+    name: 'Matze Dawedla',
+    initials: 'MD',
+    text: "Roman is an excellent masseur! You'll just need a place where you can lie down, he takes care of the rest. His thai…",
+    truncated: true,
+    href: 'https://maps.app.goo.gl/BrMcQr8XPPUmFB2u8',
+  },
+  {
+    name: 'Peter Lutzenberger',
+    initials: 'PL',
+    text: 'Sehr gute Tai Massage.\nFreu mich schon aufs nächste Mal.\nAbsolut empfehlenswert 👍\nSehr achtsame und gute Massage.',
+    truncated: false,
+    href: 'https://maps.app.goo.gl/9DrsKd8J3qsfyXWH9',
+  },
+  {
+    name: 'Natalia Hanhart-Alabyan',
+    initials: 'NH',
+    text: 'Fantastic Thai massage! Roman is very professional and skilled, and the atmosphere was clean and relaxing. I left feeling refreshed and much better. Highly recommended—I’ll definitely be back!',
+    truncated: false,
+    href: 'https://maps.app.goo.gl/pcu3DjTKZ4iNbGQA6',
+  },
+];
+---
+
+<section id="reviews" class="bg-ivory py-8 md:py-10">
+  <div class="container-editorial">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-8 md:mb-12">
+      <div class="md:col-span-4 reveal"></div>
+      <div class="md:col-span-8 reveal">
+        <h2 class="h-section max-w-2xl">
+          What clients say.
+        </h2>
+        <p class="mt-5 lede">
+          Every review links directly to its original Google Maps page.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+      {reviews.map((r) => (
+        <a
+          href={r.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Read ${r.name}'s original review on Google Maps`}
+          class="reveal group bg-paper hover:bg-line/50 rounded-[6px] px-5 md:px-7 py-6 md:py-8 transition-colors duration-500 ease-gentle flex flex-col"
+        >
+          <div class="flex items-center gap-4">
+            <span
+              aria-hidden="true"
+              class="flex-shrink-0 w-11 h-11 rounded-full border border-ink/15 bg-ivory flex items-center justify-center font-serif text-sm text-ink/75 tracking-widelabel"
+            >
+              {r.initials}
+            </span>
+            <div class="min-w-0 flex-1">
+              <div class="font-serif text-lg md:text-xl text-ink leading-tight truncate">{r.name}</div>
+              <div class="mt-1 flex items-center gap-2">
+                <span class="flex items-center gap-0.5 text-terra" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map(() => (
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                      <path d="M6 .75l1.545 3.13 3.455.502-2.5 2.437.59 3.44L6 8.633 2.91 10.259l.59-3.44L1 4.382l3.455-.502L6 .75z" />
+                    </svg>
+                  ))}
+                </span>
+                <span class="index-label !text-[10px] !tracking-widelabel text-stone">Google review</span>
+              </div>
+            </div>
+            <svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              class="flex-shrink-0 opacity-90"
+            >
+              <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.44c-.28 1.42-1.1 2.63-2.33 3.45v2.85h3.77c2.2-2.03 3.61-5.02 3.61-8.54z"/>
+              <path fill="#34A853" d="M12 24c3.15 0 5.79-1.05 7.72-2.83l-3.77-2.85c-1.05.7-2.39 1.12-3.95 1.12-3.04 0-5.62-2.05-6.54-4.81H1.55v2.94C3.48 21.31 7.42 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.46 14.63c-.23-.7-.37-1.44-.37-2.23s.14-1.53.37-2.23V7.23H1.55A11.98 11.98 0 000 12.4c0 1.9.45 3.7 1.25 5.29l4.21-3.06z"/>
+              <path fill="#EA4335" d="M12 4.75c1.71 0 3.25.59 4.47 1.75l3.35-3.35C17.79 1.26 15.15 0 12 0 7.42 0 3.48 2.69 1.55 6.6l3.91 3.06C6.38 6.9 8.96 4.75 12 4.75z"/>
+            </svg>
+          </div>
+
+          <p class="mt-5 text-ink/80 leading-relaxed whitespace-pre-line">
+            <span class="text-ink/40">“</span>{r.text}<span class="text-ink/40">”</span>
+          </p>
+
+          <div class="mt-5 pt-5 border-t border-line flex items-center justify-between gap-4">
+            <span class="text-[11px] uppercase tracking-widelabel text-stone">Verified on Google</span>
+            <span class="btn-link !text-terra !text-[13px] group-hover:!border-terra">
+              Read original on Google Maps
+              <span aria-hidden="true">↗</span>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
