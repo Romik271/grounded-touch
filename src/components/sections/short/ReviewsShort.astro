@@ -43,20 +43,46 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * reviews.length);
         <h2 class="h-section max-w-2xl">
           What clients say.
         </h2>
-        <p class="mt-5 lede">
-          Every review links directly to its original Google Maps page.
-        </p>
+        <a
+          href="https://www.google.com/search?sca_esv=b3fbd9fc0a9dd966&sxsrf=APpeQnsdLfdCC_h5WbRth9Ukr0LsCwhL0A:1784098081478&q=Grounded+Touch+Massage&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_70cRwsjW6vBLkx1fxeHA3w_FOSvGEhuq-7vHfY1tKUM6rw3_gB9m6BqEq_lTAW3L7gvhOc%3D&uds=AJ5uw1_sainNaeRyvmf1hc0XfC1vqRyroaRGOOnZM-QF5utzCHQLOGAsIbDBe75C1u0cg_sFmsjmIIHNQ36RSNGPoCa15F5b4wFzNcNYR8eYYQ5y7o8axqu8hd_N88x3OAGOvnRMj_Me&sa=X&ved=2ahUKEwiM94-ji9SVAxVXA9sEHX6OHhoQ3PALegQIGBAE&biw=1460&bih=825&dpr=2"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="See all Grounded Touch reviews on Google"
+          class="mt-5 inline-flex items-center gap-3 text-sm text-ink/80 hover:text-ink transition-colors duration-500 ease-gentle"
+        >
+          <span class="flex items-center gap-0.5 text-terra" aria-label="5 out of 5 stars">
+            {Array.from({ length: 5 }).map(() => (
+              <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                <path d="M6 .75l1.545 3.13 3.455.502-2.5 2.437.59 3.44L6 8.633 2.91 10.259l.59-3.44L1 4.382l3.455-.502L6 .75z" />
+              </svg>
+            ))}
+          </span>
+          <span class="tabular-nums">5.0</span>
+          <span class="text-stone/60" aria-hidden="true">·</span>
+          <span class="inline-flex items-center gap-1.5">
+            on
+            <svg
+              aria-hidden="true"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              class="opacity-90"
+            >
+              <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.44c-.28 1.42-1.1 2.63-2.33 3.45v2.85h3.77c2.2-2.03 3.61-5.02 3.61-8.54z"/>
+              <path fill="#34A853" d="M12 24c3.15 0 5.79-1.05 7.72-2.83l-3.77-2.85c-1.05.7-2.39 1.12-3.95 1.12-3.04 0-5.62-2.05-6.54-4.81H1.55v2.94C3.48 21.31 7.42 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.46 14.63c-.23-.7-.37-1.44-.37-2.23s.14-1.53.37-2.23V7.23H1.55A11.98 11.98 0 000 12.4c0 1.9.45 3.7 1.25 5.29l4.21-3.06z"/>
+              <path fill="#EA4335" d="M12 4.75c1.71 0 3.25.59 4.47 1.75l3.35-3.35C17.79 1.26 15.15 0 12 0 7.42 0 3.48 2.69 1.55 6.6l3.91 3.06C6.38 6.9 8.96 4.75 12 4.75z"/>
+            </svg>
+            <span>Google</span>
+          </span>
+        </a>
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
       {reviews.map((r, i) => (
-        <a
-          href={r.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Read ${r.name}'s review on Google Maps`}
-          class={`reveal group bg-paper hover:bg-line/50 rounded-[6px] px-5 md:px-7 py-6 md:py-8 transition-colors duration-500 ease-gentle ${i === hiddenOnMobileIndex ? 'hidden md:flex md:flex-col' : 'flex flex-col'}`}
+        <div
+          class={`reveal bg-paper rounded-[6px] px-5 md:px-7 py-6 md:py-8 ${i === hiddenOnMobileIndex ? 'hidden md:flex md:flex-col' : 'flex flex-col'}`}
         >
           <div class="flex items-center gap-3">
             <span
@@ -92,18 +118,51 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * reviews.length);
             </svg>
           </div>
 
-          <p class="mt-4 text-ink/80 leading-relaxed whitespace-pre-line">
-            {r.text}
-          </p>
-
-          <div class="mt-5 flex items-center justify-end">
-            <span class="inline-flex items-center gap-1 text-[13px] text-terra transition-colors duration-500 ease-gentle group-hover:text-ink">
-              Read on Google Maps
-              <span aria-hidden="true">↗</span>
-            </span>
+          <div class="review-body mt-4">
+            <p class="review-text text-ink/80 leading-relaxed whitespace-pre-line">
+              {r.text}
+            </p>
+            <a
+              href={r.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Read ${r.name}'s review on Google Maps`}
+              class="review-link text-[13px] text-terra transition-colors duration-500 ease-gentle hover:text-ink"
+            >
+              Read full review →
+            </a>
           </div>
-        </a>
+        </div>
       ))}
     </div>
   </div>
+
+  <style>
+    .review-body {
+      position: relative;
+    }
+    .review-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .review-link {
+      display: block;
+      text-align: right;
+      margin-top: 0.75rem;
+    }
+    @media (min-width: 768px) {
+      .review-text {
+        -webkit-line-clamp: 3;
+        padding-right: 8rem;
+      }
+      .review-link {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        margin-top: 0;
+      }
+    }
+  </style>
 </section>
