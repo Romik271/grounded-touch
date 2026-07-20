@@ -4,7 +4,15 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://www.groundedtouch.de',
-  integrations: [tailwind(), sitemap({ filter: (page) => !page.includes('/short') })],
+  integrations: [
+    tailwind(),
+    sitemap({
+      filter: (page) =>
+        !page.includes('/short') &&
+        !page.includes('/impressum') &&
+        !page.includes('/datenschutz'),
+    }),
+  ],
   vite: {
     build: {
       rollupOptions: {
