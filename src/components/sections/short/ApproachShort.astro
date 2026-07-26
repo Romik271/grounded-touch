@@ -1,9 +1,13 @@
 ---
-const principles = [
-  { word: 'Slow', text: 'The pace follows your body. Nothing is rushed. Time is given where it is needed.' },
-  { word: 'Attentive', text: 'Listen before applying pressure. I react to what your body communicates.' },
-  { word: 'Responsive', text: 'No two sessions are exactly the same. The work adapts to where you hold tension and what you need.' },
-];
+import type { Lang } from '../../../i18n/strings';
+import { t } from '../../../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang).short.approach;
 ---
 
 <section class="bg-ivory pt-6 pb-6 md:pt-8 md:pb-8">
@@ -12,14 +16,14 @@ const principles = [
       <div class="md:col-span-4 reveal"></div>
       <div class="md:col-span-8 reveal">
         <h2 class="h-section max-w-2xl">
-          Three principles guide every session.
+          {tr.title}
         </h2>
       </div>
     </div>
 
     <div class="reveal principles-row">
       <div class="principles-grid">
-        {principles.map((p) => (
+        {tr.principles.map((p) => (
           <div class="principles-cell">
             <h3 class="font-serif text-2xl md:text-3xl text-ink">{p.word}</h3>
             <p class="mt-2 text-ink/80 leading-relaxed">{p.text}</p>

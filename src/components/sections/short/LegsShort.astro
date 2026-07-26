@@ -1,11 +1,14 @@
 ---
 import EditorialImage from '../../EditorialImage.astro';
+import type { Lang } from '../../../i18n/strings';
+import { t } from '../../../i18n/strings';
 
-const forWhom = [
-  'Desk workers seeking recovery and movement',
-  'Climbers, cyclists and active lifestyles',
-  'People dealing with everyday stress and tension',
-];
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang).short.legs;
 ---
 
 <section class="bg-ivory pt-6 pb-8 md:pt-8 md:pb-10">
@@ -14,7 +17,7 @@ const forWhom = [
       <div class="md:col-span-4 reveal"></div>
       <div class="md:col-span-8 reveal">
         <h2 class="h-section max-w-2xl">
-          Legs and feet - the parts that carry you.
+          {tr.title}
         </h2>
       </div>
     </div>
@@ -25,7 +28,7 @@ const forWhom = [
           src="/images/legs-opt.jpg"
           webp="/images/legs-opt.webp"
           avif="/images/legs-opt.avif"
-          alt="Studio detail - legs at rest under linen"
+          alt={tr.alt}
           ratio="4/5"
           variant="wood"
         />
@@ -33,13 +36,13 @@ const forWhom = [
 
       <div class="md:col-span-5 md:pt-2 reveal space-y-5">
         <p class="text-lg text-ink/85 leading-relaxed">
-          Grounded Touch starts with the parts that carry you - feet, calves, hips - and works upward as the body allows.
+          {tr.paragraph}
         </p>
 
         <div class="pt-5 border-t border-line">
-          <div class="index-label mb-3">Who it is for</div>
+          <div class="index-label mb-3">{tr.forWhomLabel}</div>
           <ul class="space-y-2 text-ink/80">
-            {forWhom.map((w) => (
+            {tr.forWhom.map((w) => (
               <li class="flex items-start gap-3">
                 <span class="mt-2 block w-1 h-1 rounded-full bg-terra flex-shrink-0"></span>
                 <span>{w}</span>

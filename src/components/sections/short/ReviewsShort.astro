@@ -1,4 +1,14 @@
 ---
+import type { Lang } from '../../../i18n/strings';
+import { t } from '../../../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const tr = t(lang).short.reviews;
+
 const reviews = [
   {
     name: 'Elke Geibig',
@@ -39,6 +49,7 @@ const reviews = [
 
 // Every review card links to the same public Google Maps reviews page.
 const googleReviewsUrl = 'https://www.google.com/maps/place/Grounded+Touch+Massage/@48.163404,11.4184631,11z/data=!4m8!3m7!1s0x6ce2ecc61bd60bc5:0xa21970b570f4f98a!8m2!3d48.1635223!4d11.5836108!9m1!1b1!16s%2Fg%2F11zctqjhqs!5m1!1e2';
+const seeAllUrl = 'https://www.google.com/search?sca_esv=b3fbd9fc0a9dd966&sxsrf=APpeQnsdLfdCC_h5WbRth9Ukr0LsCwhL0A:1784098081478&q=Grounded+Touch+Massage&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_70cRwsjW6vBLkx1fxeHA3w_FOSvGEhuq-7vHfY1tKUM6rw3_gB9m6BqEq_lTAW3L7gvhOc%3D&uds=AJ5uw1_sainNaeRyvmf1hc0XfC1vqRyroaRGOOnZM-QF5utzCHQLOGAsIbDBe75C1u0cg_sFmsjmIIHNQ36RSNGPoCa15F5b4wFzNcNYR8eYYQ5y7o8axqu8hd_N88x3OAGOvnRMj_Me&sa=X&ved=2ahUKEwiM94-ji9SVAxVXA9sEHX6OHhoQ3PALegQIGBAE&biw=1460&bih=825&dpr=2';
 
 // Pick 4 of the 5 reviews at build time for desktop; then pick one of those
 // 4 to hide on mobile so mobile shows 3. Selection is stable per build.
@@ -53,16 +64,16 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
       <div class="md:col-span-4 reveal"></div>
       <div class="md:col-span-8 reveal">
         <h2 class="h-section max-w-2xl">
-          What clients say.
+          {tr.title}
         </h2>
         <a
-          href="https://www.google.com/search?sca_esv=b3fbd9fc0a9dd966&sxsrf=APpeQnsdLfdCC_h5WbRth9Ukr0LsCwhL0A:1784098081478&q=Grounded+Touch+Massage&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_70cRwsjW6vBLkx1fxeHA3w_FOSvGEhuq-7vHfY1tKUM6rw3_gB9m6BqEq_lTAW3L7gvhOc%3D&uds=AJ5uw1_sainNaeRyvmf1hc0XfC1vqRyroaRGOOnZM-QF5utzCHQLOGAsIbDBe75C1u0cg_sFmsjmIIHNQ36RSNGPoCa15F5b4wFzNcNYR8eYYQ5y7o8axqu8hd_N88x3OAGOvnRMj_Me&sa=X&ved=2ahUKEwiM94-ji9SVAxVXA9sEHX6OHhoQ3PALegQIGBAE&biw=1460&bih=825&dpr=2"
+          href={seeAllUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="See all Grounded Touch reviews on Google"
+          aria-label={tr.seeAllAriaLabel}
           class="mt-5 inline-flex items-center gap-3 text-sm text-ink/80 hover:text-ink transition-colors duration-500 ease-gentle"
         >
-          <span class="flex items-center gap-0.5 text-terra" aria-label="5 out of 5 stars">
+          <span class="flex items-center gap-0.5 text-terra" aria-label={tr.starsLabel}>
             {Array.from({ length: 5 }).map(() => (
               <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
                 <path d="M6 .75l1.545 3.13 3.455.502-2.5 2.437.59 3.44L6 8.633 2.91 10.259l.59-3.44L1 4.382l3.455-.502L6 .75z" />
@@ -72,7 +83,7 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
           <span class="tabular-nums">5.0</span>
           <span class="text-stone/60" aria-hidden="true">·</span>
           <span class="inline-flex items-center gap-1.5">
-            on
+            {tr.ratingSuffix}
             <svg
               aria-hidden="true"
               width="13"
@@ -107,14 +118,14 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
             <div class="min-w-0 flex-1">
               <div class="font-serif text-base md:text-lg text-ink leading-tight truncate">{r.name}</div>
               <div class="mt-0.5 flex items-center gap-2">
-                <span class="flex items-center gap-0.5 text-terra" aria-label="5 out of 5 stars">
+                <span class="flex items-center gap-0.5 text-terra" aria-label={tr.starsLabel}>
                   {Array.from({ length: 5 }).map(() => (
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
                       <path d="M6 .75l1.545 3.13 3.455.502-2.5 2.437.59 3.44L6 8.633 2.91 10.259l.59-3.44L1 4.382l3.455-.502L6 .75z" />
                     </svg>
                   ))}
                 </span>
-                <span class="index-label !text-[10px] !tracking-widelabel text-stone">Google review</span>
+                <span class="index-label !text-[10px] !tracking-widelabel text-stone">{tr.googleReviewLabel}</span>
               </div>
             </div>
             <svg
@@ -141,11 +152,11 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
               rel="noopener noreferrer"
               data-review-toggle
               aria-expanded="false"
-              aria-label={`Read ${r.name}'s review`}
+              aria-label={`${tr.readAriaPrefix}${r.name}${tr.readAriaSuffix}`}
               class="review-link text-[13px] text-terra transition-colors duration-500 ease-gentle hover:text-ink"
             >
-              <span class="review-link-label" data-collapsed-label>Read full review →</span>
-              <span class="review-link-label hidden" data-expanded-label>See on Google Maps →</span>
+              <span class="review-link-label" data-collapsed-label>{tr.collapsed}</span>
+              <span class="review-link-label hidden" data-expanded-label>{tr.expanded}</span>
             </a>
           </div>
         </div>

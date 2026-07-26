@@ -104,6 +104,101 @@ export const strings = {
       title: 'Thai Bodywork & Massage in Munich Schwabing | Grounded Touch',
       description: 'Thai bodywork and massage in Munich Schwabing. Attentive sessions for legs, feet, the whole body, and deep relaxation. Book 60 or 90 minute appointments online.',
     },
+    short: {
+      approach: {
+        title: 'Three principles guide every session.',
+        principles: [
+          { word: 'Slow', text: 'The pace follows your body. Nothing is rushed. Time is given where it is needed.' },
+          { word: 'Attentive', text: 'Listen before applying pressure. I react to what your body communicates.' },
+          { word: 'Responsive', text: 'No two sessions are exactly the same. The work adapts to where you hold tension and what you need.' },
+        ],
+      },
+      about: {
+        title: 'About.',
+        summary: 'The person behind Grounded Touch.',
+        paragraphs: [
+          'My name is Roman.',
+          'I came to bodywork through movement - dance, climbing, and a curiosity about how the body adapts, holds tension, and finds balance again.',
+          'My approach is calm and attentive: every session is shaped by the person in front of me, not by a fixed routine.',
+        ],
+        bullets: [
+          'Certified Thai massage training in Chiang Mai, Thailand',
+          'Calm, attentive, individual sessions',
+          'Focus on recovery instead of routines',
+          'Working with breath, movement and tissue response',
+        ],
+        training: 'Training',
+        caption: 'Thai bodywork training - Chiang Mai, Thailand',
+        certAlt: 'Thai bodywork training certificate',
+        portraitAlt: 'Portrait - Grounded Touch',
+        openCert: 'Open certificate',
+        close: 'Close',
+      },
+      legs: {
+        title: 'Legs and feet - the parts that carry you.',
+        paragraph: 'Grounded Touch starts with the parts that carry you - feet, calves, hips - and works upward as the body allows.',
+        forWhomLabel: 'Who it is for',
+        forWhom: [
+          'Desk workers seeking recovery and movement',
+          'Climbers, cyclists and active lifestyles',
+          'People dealing with everyday stress and tension',
+        ],
+        alt: 'Studio detail - legs at rest under linen',
+      },
+      sessions: {
+        title: 'Choose your time.',
+        lede: 'Each session is slow, attentive, and adapted to what your body needs. Mobile massage in Munich - I come to your home or preferred location.',
+        minLabel: 'min',
+        bookLabel: 'Book',
+        rows: [
+          {
+            duration: '60',
+            price: '65',
+            title: 'A short pause',
+            text: 'Time enough to settle from head to feet. Ideal for a first visit.',
+          },
+          {
+            duration: '90',
+            price: '85',
+            title: 'A longer stay',
+            text: 'More room for the body to unwind. The work reaches deeper without pushing.',
+          },
+        ],
+        whatsappLabel: 'Book via WhatsApp',
+      },
+      reviews: {
+        title: 'What clients say.',
+        starsLabel: '5 out of 5 stars',
+        ratingSuffix: 'on',
+        googleReviewLabel: 'Google review',
+        collapsed: 'Read full review →',
+        expanded: 'See on Google Maps →',
+        readAriaPrefix: "Read ",
+        readAriaSuffix: "'s review",
+        seeAllAriaLabel: 'See all Grounded Touch reviews on Google',
+      },
+      faq: {
+        label: 'Questions',
+        items: [
+          {
+            q: 'How does it feel?',
+            a: 'Slow, warm, and quiet. Pressure adjusts to what you actually feel, not to a fixed routine. If something feels off, you can say so at any point.',
+          },
+          {
+            q: 'Where does it happen?',
+            a: 'At my place:\nA private space in Munich-Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is provided after your booking is confirmed.\n\nAt your place:\nAvailable within Munich. Please provide your address when booking.',
+          },
+          {
+            q: 'What should I wear?',
+            a: 'Please wear loose, comfortable clothes that you can keep on during the session. If needed, clean session clothes can also be provided.',
+          },
+          {
+            q: 'Payment',
+            a: 'Cash, bank transfer, or PayPal after the session. A simple receipt is available on request.',
+          },
+        ],
+      },
+    },
   },
   de: {
     nav: {
@@ -205,8 +300,103 @@ export const strings = {
       disclaimer: 'Dies ist keine medizinische Behandlung',
     },
     seo: {
-      title: 'Thai Massage & achtsame Körperarbeit in München Schwabing | Grounded Touch',
-      description: 'Thai Massage und achtsame Körperarbeit in München Schwabing. Ruhige, aufmerksame Sessions für Beine, Füße, den ganzen Körper und tiefe Entspannung. Termine für 60 oder 90 Minuten online buchbar.',
+      title: 'Thai Massage in München Schwabing | Grounded Touch',
+      description: 'Thai Massage und achtsame Körperarbeit in München Schwabing. Ruhige, persönliche Sessions für Entspannung, Beweglichkeit und Wohlbefinden. Termine für 60 oder 90 Minuten online buchbar.',
+    },
+    short: {
+      approach: {
+        title: 'Drei Prinzipien tragen jede Session.',
+        principles: [
+          { word: 'Ruhig', text: 'Das Tempo folgt deinem Körper. Nichts wird beschleunigt. Zeit wird dort gegeben, wo sie gebraucht wird.' },
+          { word: 'Achtsam', text: 'Ich höre zuerst zu, bevor ich Druck aufbaue. Meine Arbeit reagiert auf das, was dein Körper mitteilt.' },
+          { word: 'Wandelbar', text: 'Keine zwei Sessions sind gleich. Die Arbeit passt sich an, wo du Spannung hältst und was du gerade brauchst.' },
+        ],
+      },
+      about: {
+        title: 'Über mich.',
+        summary: 'Die Person hinter Grounded Touch.',
+        paragraphs: [
+          'Mein Name ist Roman.',
+          'Zur Körperarbeit bin ich über Bewegung gekommen - über Tanzen, Klettern und die Neugier, wie sich der Körper anpasst, Spannung hält und wieder ins Gleichgewicht findet.',
+          'Mein Ansatz ist ruhig und achtsam: Jede Session wird von dem Menschen geprägt, der vor mir liegt - nicht von einem festen Ablauf.',
+        ],
+        bullets: [
+          'Zertifizierte Thai-Massage-Ausbildung in Chiang Mai, Thailand',
+          'Ruhige, achtsame, individuelle Sessions',
+          'Fokus auf Erholung statt festen Abläufen',
+          'Arbeit mit Atem, Bewegung und Gewebeantwort',
+        ],
+        training: 'Ausbildung',
+        caption: 'Thai-Massage-Ausbildung - Chiang Mai, Thailand',
+        certAlt: 'Zertifikat Thai-Massage-Ausbildung',
+        portraitAlt: 'Portrait - Grounded Touch',
+        openCert: 'Zertifikat öffnen',
+        close: 'Schließen',
+      },
+      legs: {
+        title: 'Beine und Füße - die Teile, die dich tragen.',
+        paragraph: 'Grounded Touch beginnt bei den Teilen, die dich tragen - Füße, Waden, Hüften - und arbeitet sich behutsam nach oben, so wie es dein Körper zulässt.',
+        forWhomLabel: 'Für wen',
+        forWhom: [
+          'Menschen, die viel am Schreibtisch sitzen',
+          'Kletterer, Radfahrer und aktive Lebensstile',
+          'Menschen mit alltäglichem Stress und Anspannung',
+        ],
+        alt: 'Studiodetail - Beine ruhen unter Leinen',
+      },
+      sessions: {
+        title: 'Wähle deine Zeit.',
+        lede: 'Jede Session ist ruhig, aufmerksam und auf das abgestimmt, was dein Körper braucht. Mobile Massage in München - ich komme zu dir nach Hause oder an deinen Wunschort.',
+        minLabel: 'Min',
+        bookLabel: 'Buchen',
+        rows: [
+          {
+            duration: '60',
+            price: '65',
+            title: 'Eine kurze Pause',
+            text: 'Genug Zeit, um von Kopf bis Fuß anzukommen. Ideal für den ersten Besuch.',
+          },
+          {
+            duration: '90',
+            price: '85',
+            title: 'Ein längeres Bleiben',
+            text: 'Mehr Raum, damit dein Körper loslassen kann. Die Arbeit geht tiefer, ohne zu drängen.',
+          },
+        ],
+        whatsappLabel: 'Über WhatsApp buchen',
+      },
+      reviews: {
+        title: 'Was Kund:innen sagen.',
+        starsLabel: '5 von 5 Sternen',
+        ratingSuffix: 'auf',
+        googleReviewLabel: 'Google-Rezension',
+        collapsed: 'Ganze Rezension lesen →',
+        expanded: 'Bei Google Maps ansehen →',
+        readAriaPrefix: 'Rezension von ',
+        readAriaSuffix: ' lesen',
+        seeAllAriaLabel: 'Alle Grounded-Touch-Rezensionen bei Google ansehen',
+      },
+      faq: {
+        label: 'Fragen',
+        items: [
+          {
+            q: 'Wie fühlt es sich an?',
+            a: 'Ruhig, warm und still. Der Druck passt sich an das an, was du wirklich spürst - nicht an ein festes Programm. Wenn sich etwas nicht stimmig anfühlt, darfst du das jederzeit sagen.',
+          },
+          {
+            q: 'Wo findet die Session statt?',
+            a: 'Bei mir:\nEin privater Raum in München-Schwabing, etwa 8 Minuten zu Fuß vom U-Bahnhof Münchner Freiheit. Die genaue Adresse bekommst du, sobald deine Buchung bestätigt ist.\n\nBei dir:\nInnerhalb Münchens möglich. Bitte gib deine Adresse bei der Buchung an.',
+          },
+          {
+            q: 'Was soll ich anziehen?',
+            a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst. Bei Bedarf stelle ich saubere Session-Kleidung zur Verfügung.',
+          },
+          {
+            q: 'Bezahlung',
+            a: 'Bar, per Überweisung oder PayPal nach der Session. Eine einfache Quittung stelle ich dir auf Wunsch aus.',
+          },
+        ],
+      },
     },
   },
 } as const;

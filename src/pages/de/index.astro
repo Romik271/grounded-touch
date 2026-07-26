@@ -1,23 +1,136 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/sections/Hero.astro';
-import Approach from '../../components/sections/Approach.astro';
-import Legs from '../../components/sections/Legs.astro';
-import Sessions from '../../components/sections/Sessions.astro';
-import Booking from '../../components/sections/Booking.astro';
-import FAQ from '../../components/sections/FAQ.astro';
-import About from '../../components/sections/About.astro';
+import ApproachShort from '../../components/sections/short/ApproachShort.astro';
+import AboutShort from '../../components/sections/short/AboutShort.astro';
+import LegsShort from '../../components/sections/short/LegsShort.astro';
+import SessionsShort from '../../components/sections/short/SessionsShort.astro';
+import ReviewsShort from '../../components/sections/short/ReviewsShort.astro';
+import FaqShort from '../../components/sections/short/FaqShort.astro';
 import { strings } from '../../i18n/strings';
 
 const seo = strings.de.seo;
 ---
 
 <BaseLayout lang="de" title={seo.title} description={seo.description}>
-  <Hero lang="de" />
-  <Approach lang="de" />
-  <About lang="de" />
-  <Legs lang="de" />
-  <Sessions lang="de" />
-  <Booking lang="de" />
-  <FAQ lang="de" />
+  <div id="short-hero-wrap">
+    <Hero lang="de" />
+  </div>
+  <ApproachShort lang="de" />
+  <AboutShort lang="de" />
+  <LegsShort lang="de" />
+  <SessionsShort lang="de" />
+  <ReviewsShort lang="de" />
+  <FaqShort lang="de" />
+
+  <!-- Mobile-only sticky landing spot for the Hero "Book a session" button. -->
+  <div id="short-hero-book-dock" aria-hidden="true"></div>
+
+  <style>
+    /* Hide the "Der Ansatz" secondary link inside the Hero on /de/. */
+    :global(#short-hero-wrap a.btn-outline[href="#approach"]) {
+      display: none;
+    }
+    /* Hide the trailing "→" arrow inside the Hero "Termin buchen" button. */
+    :global(.short-hero-book-btn > span[aria-hidden="true"]) {
+      display: none;
+    }
+
+    /* Mobile-only sticky landing spot — bottom-right of the viewport. */
+    #short-hero-book-dock {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 40;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
+                  transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    #short-hero-book-dock.is-active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    @media (min-width: 768px) {
+      #short-hero-book-dock {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      const heroWrap = document.getElementById('short-hero-wrap');
+      const dock = document.getElementById('short-hero-book-dock');
+      if (!heroWrap || !dock) return;
+
+      const bookBtn = heroWrap.querySelector('.btn-primary[data-cal-link]');
+      if (!bookBtn) return;
+      bookBtn.classList.add('short-hero-book-btn');
+      // Tracking: hero state vs docked (floating) state need separate button_ids.
+      bookBtn.setAttribute('data-track', 'book_session_hero');
+
+      const originalParent = bookBtn.parentNode;
+      const originalNext = bookBtn.nextSibling;
+      let isDocked = false;
+
+      const mediaQuery = window.matchMedia('(max-width: 767px)');
+
+      const restoreBtn = () => {
+        if (bookBtn.parentNode === dock) {
+          originalParent.insertBefore(bookBtn, originalNext);
+        }
+        bookBtn.setAttribute('data-track', 'book_session_hero');
+      };
+
+      const dockBtn = () => {
+        if (isDocked) return;
+        isDocked = true;
+        dock.appendChild(bookBtn);
+        bookBtn.setAttribute('data-track', 'book_session_floating');
+        void dock.offsetWidth;
+        dock.classList.add('is-active');
+      };
+
+      const undockBtn = () => {
+        if (!isDocked) return;
+        isDocked = false;
+        dock.classList.remove('is-active');
+        setTimeout(() => {
+          if (isDocked) return;
+          restoreBtn();
+        }, 300);
+      };
+
+      const reset = () => {
+        isDocked = false;
+        dock.classList.remove('is-active');
+        restoreBtn();
+      };
+
+      const evaluate = () => {
+        if (!mediaQuery.matches) {
+          reset();
+          return;
+        }
+        const rect = heroWrap.getBoundingClientRect();
+        if (rect.bottom <= 0) {
+          dockBtn();
+        } else {
+          undockBtn();
+        }
+      };
+
+      evaluate();
+      window.addEventListener('scroll', evaluate, { passive: true });
+      window.addEventListener('resize', evaluate);
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', evaluate);
+      } else if (mediaQuery.addListener) {
+        mediaQuery.addListener(evaluate);
+      }
+    })();
+  </script>
 </BaseLayout>
