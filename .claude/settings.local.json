@@ -50,7 +50,13 @@
       "Bash(python3 -c ' *)",
       "Bash(python3 *)",
       "Bash(npx astro *)",
-      "Bash(echo \"exit=$?\")"
+      "Bash(echo \"exit=$?\")",
+      "Bash(curl -sSL -o /Users/roman.bashmakov/Desktop/grounded-touch/public/fonts/fraunces-vietnamese.woff2 https://fonts.gstatic.com/s/fraunces/v38/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxCBTeP2Xz5fU8w.woff2)",
+      "Bash(curl -sSL -o /Users/roman.bashmakov/Desktop/grounded-touch/public/fonts/fraunces-latin-ext.woff2 https://fonts.gstatic.com/s/fraunces/v38/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxCFTeP2Xz5fU8w.woff2)",
+      "Bash(curl -sSL -o /Users/roman.bashmakov/Desktop/grounded-touch/public/fonts/fraunces-latin.woff2 https://fonts.gstatic.com/s/fraunces/v38/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxC9TeP2Xz5c.woff2)",
+      "Bash(curl -sSL -o /Users/roman.bashmakov/Desktop/grounded-touch/public/fonts/inter-cyrillic-ext.woff2 https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7W0Q5n-wU.woff2)",
+      "Bash(curl -sSL -o /Users/roman.bashmakov/Desktop/grounded-touch/public/fonts/inter-cyrillic.woff2 https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7W0Q5n-wU.woff2)",
+      "Bash(awk '/^\\\\/\\\\*/{sub=\"'\"'\"'\"$0}; /font-family: '\"'\"'Fraunces'\"'\"'/{print sub}' /tmp/gt-fonts.css)"
     ]
   }
 }
