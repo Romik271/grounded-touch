@@ -3,36 +3,48 @@ const reviews = [
   {
     name: 'Elke Geibig',
     initials: 'EG',
-    text: 'Ich hatte heute eine Massage bei Roman und mich direkt wohlgefühlt. Roman arbeitet sehr aufmerksam und ist auf meine…',
-    truncated: true,
+    text: 'Ich hatte heute eine Massage bei Roman und mich direkt wohlgefühlt. Roman arbeitet sehr aufmerksam und ist auf meine Bedürfnisse eingegangen. Besonders für eine verspannte Stelle an meiner Hüfte hat er sich viel Zeit genommen. Nach der Massage fühlte ich mich deutlich entspannter. Klare Empfehlung!',
+    truncated: false,
     href: 'https://maps.app.goo.gl/63GcQEmTkTyY44f8A',
   },
   {
     name: 'Matze Dawedla',
     initials: 'MD',
-    text: "Roman is an excellent masseur! You'll just need a place where you can lie down, he takes care of the rest. His thai…",
-    truncated: true,
+    text: "Roman is an excellent masseur! You'll just need a place where you can lie down, he takes care of the rest. His thai massages are highly individual to your needs, whether your legs hurt from the last hike, or your shoulders and neck are tense from your exhausting day at the office. If you're around Munich and would like to try out a Thai massage at the comfort of your own home, definitely give it a go!",
+    truncated: false,
     href: 'https://maps.app.goo.gl/BrMcQr8XPPUmFB2u8',
   },
   {
-    name: 'Peter Lutzenberger',
-    initials: 'PL',
-    text: 'Sehr gute Tai Massage.\nFreu mich schon aufs nächste Mal.\nAbsolut empfehlenswert 👍\nSehr achtsame und gute Massage.',
+    name: 'Kelvin Strausman',
+    initials: 'KS',
+    text: 'Roman has a very soft, but firm touch. His massage was very thorough, deep, penetrating, at the same smooth and controlled. It felt as if he was touching, stretching and manipulating every muscle, kneading it softly like a dough and stretching it out.',
     truncated: false,
-    href: 'https://maps.app.goo.gl/9DrsKd8J3qsfyXWH9',
+    href: 'https://maps.app.goo.gl/63GcQEmTkTyY44f8A',
   },
   {
     name: 'Natalia Hanhart-Alabyan',
     initials: 'NH',
-    text: 'Fantastic Thai massage! Roman is very professional and skilled, and the atmosphere was clean and relaxing. I left feeling refreshed and much better. Highly recommended—I’ll definitely be back!',
+    text: 'Fantastic Thai massage! Roman is very professional and skilled, and the atmosphere was clean and relaxing. I left feeling refreshed and much better. Highly recommended-I’ll definitely be back!',
     truncated: false,
     href: 'https://maps.app.goo.gl/pcu3DjTKZ4iNbGQA6',
   },
+  {
+    name: 'Peter Lutzenberger',
+    initials: 'PL',
+    text: 'Sehr gute Tai Massage.\nFreu mich schon aufs nächste Mal. Absolut empfehlenswert 👍\nSehr achtsame und gute Massage.',
+    truncated: false,
+    href: 'https://maps.app.goo.gl/9DrsKd8J3qsfyXWH9',
+  },
 ];
 
-// Pick one review at build time to hide on mobile so only 3 of 4 show there;
-// desktop always shows all 4.
-const hiddenOnMobileIndex = Math.floor(Math.random() * reviews.length);
+// Every review card links to the same public Google Maps reviews page.
+const googleReviewsUrl = 'https://www.google.com/maps/place/Grounded+Touch+Massage/@48.163404,11.4184631,11z/data=!4m8!3m7!1s0x6ce2ecc61bd60bc5:0xa21970b570f4f98a!8m2!3d48.1635223!4d11.5836108!9m1!1b1!16s%2Fg%2F11zctqjhqs!5m1!1e2';
+
+// Pick 4 of the 5 reviews at build time for desktop; then pick one of those
+// 4 to hide on mobile so mobile shows 3. Selection is stable per build.
+const shuffled = reviews.map((r) => ({ r, s: Math.random() })).sort((a, b) => a.s - b.s).map((x) => x.r);
+const displayedReviews = shuffled.slice(0, 4);
+const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
 ---
 
 <section id="reviews" class="bg-ivory py-8 md:py-10">
@@ -80,9 +92,10 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * reviews.length);
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-      {reviews.map((r, i) => (
+      {displayedReviews.map((r, i) => (
         <div
-          class={`reveal bg-paper rounded-[6px] px-5 md:px-7 py-6 md:py-8 ${i === hiddenOnMobileIndex ? 'hidden md:flex md:flex-col' : 'flex flex-col'}`}
+          data-review-card
+          class={`review-card reveal bg-paper rounded-[6px] px-5 md:px-7 py-6 md:py-8 ${i === hiddenOnMobileIndex ? 'hidden md:flex md:flex-col' : 'flex flex-col'}`}
         >
           <div class="flex items-center gap-3">
             <span
@@ -123,13 +136,16 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * reviews.length);
               {r.text}
             </p>
             <a
-              href={r.href}
+              href={googleReviewsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Read ${r.name}'s review on Google Maps`}
+              data-review-toggle
+              aria-expanded="false"
+              aria-label={`Read ${r.name}'s review`}
               class="review-link text-[13px] text-terra transition-colors duration-500 ease-gentle hover:text-ink"
             >
-              Read full review →
+              <span class="review-link-label" data-collapsed-label>Read full review →</span>
+              <span class="review-link-label hidden" data-expanded-label>See on Google Maps →</span>
             </a>
           </div>
         </div>
@@ -140,6 +156,8 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * reviews.length);
   <style>
     .review-body {
       position: relative;
+      overflow: hidden;
+      transition: max-height 400ms cubic-bezier(0.22, 0.61, 0.36, 1);
     }
     .review-text {
       display: -webkit-box;
@@ -164,5 +182,72 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * reviews.length);
         margin-top: 0;
       }
     }
+    .review-card.is-expanded .review-body {
+      overflow: visible !important;
+      max-height: none !important;
+    }
+    .review-card.is-expanded .review-text {
+      display: block !important;
+      -webkit-line-clamp: none !important;
+      -webkit-box-orient: horizontal !important;
+      overflow: visible !important;
+      max-height: none !important;
+      padding-right: 0 !important;
+      -webkit-mask-image: none !important;
+              mask-image: none !important;
+    }
+    @media (min-width: 768px) {
+      .review-card.is-expanded .review-link {
+        position: static;
+        text-align: right;
+        margin-top: 0.75rem;
+      }
+    }
   </style>
+
+  <script>
+    (function () {
+      const cards = document.querySelectorAll('#reviews [data-review-card]');
+
+      const setLabels = (toggle, expanded) => {
+        const collapsedLabel = toggle.querySelector('[data-collapsed-label]');
+        const expandedLabel = toggle.querySelector('[data-expanded-label]');
+        if (!collapsedLabel || !expandedLabel) return;
+        collapsedLabel.classList.toggle('hidden', expanded);
+        expandedLabel.classList.toggle('hidden', !expanded);
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      };
+
+      const expand = (card) => {
+        const body = card.querySelector('.review-body');
+        const toggle = card.querySelector('[data-review-toggle]');
+        if (!body || !toggle) return;
+        const startHeight = body.scrollHeight;
+        body.style.maxHeight = startHeight + 'px';
+        void body.offsetHeight;
+        card.classList.add('is-expanded');
+        setLabels(toggle, true);
+        const target = body.scrollHeight;
+        body.style.maxHeight = target + 'px';
+        const done = () => {
+          body.style.maxHeight = '';
+          body.removeEventListener('transitionend', done);
+        };
+        body.addEventListener('transitionend', done);
+      };
+
+      cards.forEach((card) => {
+        const toggle = card.querySelector('[data-review-toggle]');
+        if (!toggle) return;
+        toggle.addEventListener('click', (e) => {
+          if (card.classList.contains('is-expanded')) {
+            // Second click: let the anchor navigate to Google Maps.
+            return;
+          }
+          e.preventDefault();
+          expand(card);
+        });
+      });
+    })();
+  </script>
 </section>

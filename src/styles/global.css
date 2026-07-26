@@ -43,7 +43,7 @@
     @apply text-[11px] tracking-widelabel text-stone font-sans tabular-nums;
   }
 
-  /* Buttons — pill, outlined, ink-based */
+  /* Buttons - pill, outlined, ink-based */
   .btn-primary {
     @apply inline-flex items-center gap-2 rounded-full bg-ink text-ivory px-6 py-3 text-sm transition-colors duration-500 ease-gentle hover:bg-terra;
   }
@@ -61,7 +61,7 @@
     @apply block h-px w-full bg-ink/20;
   }
 
-  /* Section title — large, calm, no italics */
+  /* Section title - large, calm, no italics */
   .h-display {
     @apply font-serif text-[40px] sm:text-5xl md:text-6xl lg:text-[68px] text-ink;
     font-weight: 500;

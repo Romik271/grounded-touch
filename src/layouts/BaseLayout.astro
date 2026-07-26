@@ -22,7 +22,10 @@ const {
 
 const path = Astro.url.pathname;
 const isHome = path === '/' || path === '' || path === '/de/' || path === '/de';
-const showHreflang = path === '/' || path === '' || path === '/de/' || path === '/de';
+const showHreflang =
+  path === '/' || path === '' ||
+  path === '/de/' || path === '/de' ||
+  path === '/short/' || path === '/short';
 const canonicalUrl = new URL(path, Astro.site).href;
 const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
 ---
@@ -59,6 +62,8 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
     {showHreflang && (
       <>

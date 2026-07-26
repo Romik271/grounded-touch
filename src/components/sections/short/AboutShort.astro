@@ -1,6 +1,12 @@
 ---
 import EditorialImage from '../../EditorialImage.astro';
 
+const paragraphs = [
+  'My name is Roman.',
+  'I came to bodywork through movement - dance, climbing, and a curiosity about how the body adapts, holds tension, and finds balance again.',
+  'My approach is calm and attentive: every session is shaped by the person in front of me, not by a fixed routine.',
+];
+
 const bullets = [
   'Certified Thai massage training in Chiang Mai, Thailand',
   'Calm, attentive, individual sessions',
@@ -39,13 +45,16 @@ const bullets = [
           <div class="md:col-span-5">
             <EditorialImage
               src="/images/about-opt.jpg"
-              alt="Portrait — Grounded Touch"
+              alt="Portrait - Grounded Touch"
               ratio="4/5"
               variant="stone"
             />
           </div>
           <div class="md:col-span-7 md:pt-2 text-ink/75 leading-relaxed max-w-prose2">
-            <ul class="space-y-3">
+            {paragraphs.map((p, i) => (
+              <p class={i === 0 ? '' : 'mt-3'}>{p}</p>
+            ))}
+            <ul class="mt-6 space-y-3">
               {bullets.map((b) => (
                 <li class="flex items-start gap-3">
                   <span class="mt-2 block w-1 h-1 rounded-full bg-terra flex-shrink-0"></span>
@@ -63,7 +72,7 @@ const bullets = [
                   <img src="/images/cert-2-opt.jpg" alt="Thai bodywork training certificate" loading="lazy" decoding="async" class="w-full h-auto border border-ink/10" />
                 </button>
               </div>
-              <p class="mt-2 text-xs text-stone">Thai bodywork training — Chiang Mai, Thailand</p>
+              <p class="mt-2 text-xs text-stone">Thai bodywork training - Chiang Mai, Thailand</p>
             </div>
           </div>
         </div>
