@@ -21,11 +21,14 @@ const {
 } = Astro.props;
 
 const path = Astro.url.pathname;
-const isHome = path === '/' || path === '' || path === '/de/' || path === '/de';
+const isHome =
+  path === '/' || path === '' ||
+  path === '/de/' || path === '/de' ||
+  path === '/long/' || path === '/long';
 const showHreflang =
   path === '/' || path === '' ||
   path === '/de/' || path === '/de' ||
-  path === '/short/' || path === '/short';
+  path === '/long/' || path === '/long';
 const canonicalUrl = new URL(path, Astro.site).href;
 const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
 ---

@@ -1,20 +1,146 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/sections/Hero.astro';
-import Approach from '../components/sections/Approach.astro';
-import Legs from '../components/sections/Legs.astro';
-import Sessions from '../components/sections/Sessions.astro';
-import Booking from '../components/sections/Booking.astro';
-import FAQ from '../components/sections/FAQ.astro';
-import About from '../components/sections/About.astro';
+import ApproachShort from '../components/sections/short/ApproachShort.astro';
+import AboutShort from '../components/sections/short/AboutShort.astro';
+import LegsShort from '../components/sections/short/LegsShort.astro';
+import SessionsShort from '../components/sections/short/SessionsShort.astro';
+import ReviewsShort from '../components/sections/short/ReviewsShort.astro';
+import FaqShort from '../components/sections/short/FaqShort.astro';
 ---
 
 <BaseLayout>
-  <Hero />
-  <Approach />
-  <About />
-  <Legs />
-  <Sessions />
-  <Booking />
-  <FAQ />
+  <div id="short-hero-wrap">
+    <Hero />
+  </div>
+  <ApproachShort />
+  <AboutShort />
+  <LegsShort />
+  <SessionsShort />
+  <ReviewsShort />
+  <FaqShort />
+
+  <!-- Mobile-only sticky landing spot for the Hero "Book a session" button. -->
+  <div id="short-hero-book-dock" aria-hidden="true"></div>
+
+  <style>
+    /* 1. Hide the "The approach" secondary link inside the Hero.
+       :global() bypasses Astro's per-component scoping so the rule can reach
+       elements rendered by the shared Hero.astro. */
+    :global(#short-hero-wrap a.btn-outline[href="#approach"]) {
+      display: none;
+    }
+    /* 3. Hide the trailing "→" arrow inside the Hero "Book a session" button.
+       The marker class is added by the script below, so it follows the button
+       even after it is reparented into the fixed dock. */
+    :global(.short-hero-book-btn > span[aria-hidden="true"]) {
+      display: none;
+    }
+
+    /* 2. Mobile-only sticky landing spot — bottom-right of the viewport. */
+    #short-hero-book-dock {
+      position: fixed;
+      bottom: 1.5rem;         /* safe spacing from the bottom edge */
+      right: 1.5rem;          /* safe spacing from the right edge */
+      z-index: 40;            /* below the header (z-50), above content */
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
+                  transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    #short-hero-book-dock.is-active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    /* Disable the docking behavior on desktop entirely. */
+    @media (min-width: 768px) {
+      #short-hero-book-dock {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      const heroWrap = document.getElementById('short-hero-wrap');
+      const dock = document.getElementById('short-hero-book-dock');
+      if (!heroWrap || !dock) return;
+
+      const bookBtn = heroWrap.querySelector('.btn-primary[data-cal-link]');
+      if (!bookBtn) return;
+      // Tag the button so the arrow-hiding CSS also applies when it lives inside the fixed dock.
+      bookBtn.classList.add('short-hero-book-btn');
+
+      // Remember the original parent + next sibling so we can restore the button
+      // to its exact position inside the Hero when leaving the sticky state.
+      const originalParent = bookBtn.parentNode;
+      const originalNext = bookBtn.nextSibling;
+      let isDocked = false;
+
+      const mediaQuery = window.matchMedia('(max-width: 767px)');
+
+      const restoreBtn = () => {
+        if (bookBtn.parentNode === dock) {
+          originalParent.insertBefore(bookBtn, originalNext);
+        }
+      };
+
+      const dockBtn = () => {
+        if (isDocked) return;
+        isDocked = true;
+        dock.appendChild(bookBtn);
+        // Force reflow so the transition runs from the initial state.
+        void dock.offsetWidth;
+        dock.classList.add('is-active');
+      };
+
+      const undockBtn = () => {
+        if (!isDocked) return;
+        isDocked = false;
+        dock.classList.remove('is-active');
+        // Wait for the fade-out to finish before moving the button back,
+        // so it doesn't visibly jump.
+        setTimeout(() => {
+          // If we docked again in the meantime, don't move it.
+          if (isDocked) return;
+          restoreBtn();
+        }, 300);
+      };
+
+      const reset = () => {
+        // Desktop / above-the-fold: cancel sticky mode immediately.
+        isDocked = false;
+        dock.classList.remove('is-active');
+        restoreBtn();
+      };
+
+      const evaluate = () => {
+        // Desktop: no sticky behavior.
+        if (!mediaQuery.matches) {
+          reset();
+          return;
+        }
+        const rect = heroWrap.getBoundingClientRect();
+        // Once the hero bottom scrolls above the top of the viewport, dock.
+        if (rect.bottom <= 0) {
+          dockBtn();
+        } else {
+          undockBtn();
+        }
+      };
+
+      // Run once on load, then on scroll + resize.
+      evaluate();
+      window.addEventListener('scroll', evaluate, { passive: true });
+      window.addEventListener('resize', evaluate);
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', evaluate);
+      } else if (mediaQuery.addListener) {
+        // Safari <14 fallback.
+        mediaQuery.addListener(evaluate);
+      }
+    })();
+  </script>
 </BaseLayout>

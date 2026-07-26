@@ -8,7 +8,7 @@ export default defineConfig({
     tailwind(),
     sitemap({
       filter: (page) =>
-        !page.includes('/short') &&
+        !page.includes('/long') &&
         !page.includes('/impressum') &&
         !page.includes('/datenschutz'),
     }),
