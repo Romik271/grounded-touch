@@ -10,7 +10,7 @@ interface Props {
   title?: string;
   description?: string;
   lang?: Lang;
-  noindex?: boolean;
+  noindex?: boolean | string;
 }
 
 const {
@@ -20,6 +20,9 @@ const {
   noindex = false,
 } = Astro.props;
 
+const robotsContent =
+  typeof noindex === 'string' ? noindex : (noindex ? 'noindex,nofollow' : null);
+
 const path = Astro.url.pathname;
 const isHome =
   path === '/' || path === '' ||
@@ -27,8 +30,7 @@ const isHome =
   path === '/long/' || path === '/long';
 const showHreflang =
   path === '/' || path === '' ||
-  path === '/de/' || path === '/de' ||
-  path === '/long/' || path === '/long';
+  path === '/de/' || path === '/de';
 const canonicalUrl = new URL(path, Astro.site).href;
 const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
 ---
@@ -39,7 +41,7 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    {robotsContent && <meta name="robots" content={robotsContent} />}
     <meta name="theme-color" content="#F4EFE6" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
