@@ -3,37 +3,52 @@
 // Every tracked click sends one row to the Apps Script endpoint.
 
 const ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbwyuXck-XRXeBCwC4tVT1WBGwTMvwIogVO_j2hQhI2KgSnK0ThRckYCpE3AZeB8BPVH/exec';
+  'https://script.google.com/macros/s/AKfycbyw-Cpzl1jIEDggnF4aPRuxXet9S1x4fsmxNkjkxOhWgV8QaLTsmZ06FSAZotf5UxV1/exec';
 
 type DeviceKind = 'mobile' | 'tablet' | 'desktop';
 
-function detectDevice(): DeviceKind {
+interface TrackDetails {
+  event: string;
+  page: string;
+  button_id: string;
+  language: string;
+  device: DeviceKind;
+  referrer: string;
+  user_agent: string;
+  screen_width: number;
+}
+
+function getDeviceType(): DeviceKind {
   const ua = navigator.userAgent || '';
-  // Tablet first (some tablets also match /Mobi/).
+  // Tablet detection first (some tablets also match /Mobi/).
   if (/iPad|Tablet|PlayBook|Silk/i.test(ua)) return 'tablet';
   if (/Android/i.test(ua) && !/Mobile/i.test(ua)) return 'tablet';
   if (/Mobi|iPhone|iPod|Android|BlackBerry|IEMobile|Opera Mini/i.test(ua)) return 'mobile';
   return 'desktop';
 }
 
-export function trackEvent(eventName: string, buttonId: string): void {
+// The tracker accepts ONE object argument matching the sheet columns 1:1.
+// `timestamp` is added here so the caller doesn't have to worry about it.
+export function trackEvent(details: TrackDetails): void {
   const payload = {
     timestamp: new Date().toISOString(),
-    event: eventName,
-    page: window.location.pathname,
-    button_id: buttonId,
-    language: document.documentElement.lang || '',
-    device: detectDevice(),
-    referrer: document.referrer || '',
-    user_agent: navigator.userAgent || '',
-    screen_width: window.innerWidth,
+    event: details.event,
+    page: details.page,
+    button_id: details.button_id,
+    language: details.language,
+    device: details.device,
+    referrer: details.referrer,
+    user_agent: details.user_agent,
+    screen_width: details.screen_width,
   };
+
+  console.log('TRACKING PAYLOAD', payload);
 
   const body = JSON.stringify(payload);
 
-  // sendBeacon is the recommended API for firing an event that must not
-  // block navigation. Apps Script accepts text/plain; using that content-type
-  // avoids the extra CORS preflight that application/json triggers.
+  // sendBeacon is the recommended API: fires reliably even during navigation,
+  // never blocks. Apps Script accepts text/plain; using that content-type
+  // avoids the CORS preflight that application/json would trigger.
   try {
     if (typeof navigator.sendBeacon === 'function') {
       const blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
@@ -61,6 +76,22 @@ export function trackEvent(eventName: string, buttonId: string): void {
   }
 }
 
+// Build the payload object from a triggering element and fire trackEvent.
+function trackFromElement(el: HTMLElement): void {
+  const buttonId = el.dataset.track;
+  if (!buttonId) return;
+  trackEvent({
+    event: el.dataset.trackEvent || 'click',
+    page: window.location.pathname,
+    button_id: buttonId,
+    language: document.documentElement.lang || 'unknown',
+    device: getDeviceType(),
+    referrer: document.referrer || '',
+    user_agent: navigator.userAgent,
+    screen_width: window.innerWidth,
+  });
+}
+
 // Auto-init: attach a single delegated click listener that fires trackEvent
 // for any element carrying data-track (or a descendant of one).
 // Runs on every page because this module is imported from BaseLayout.
@@ -76,13 +107,10 @@ function init(): void {
       if (!target || !target.closest) return;
       const el = target.closest('[data-track]') as HTMLElement | null;
       if (!el) return;
-      const buttonId = el.dataset.track;
-      if (!buttonId) return;
-      const eventName = el.dataset.trackEvent || 'click';
-      trackEvent(eventName, buttonId);
+      trackFromElement(el);
     },
-    // Capture=true so we fire before any click handler that might
-    // stopPropagation (e.g. Cal.com's popup opener).
+    // Capture=true so we fire before any handler that might stopPropagation
+    // (e.g. Cal.com's popup opener).
     true,
   );
 }
@@ -93,9 +121,6 @@ if (typeof window !== 'undefined') {
   } else {
     init();
   }
-}
-
-// Expose on window for ad-hoc console debugging: `window.trackEvent('test','x')`.
-if (typeof window !== 'undefined') {
+  // Expose on window for ad-hoc console debugging.
   (window as any).trackEvent = trackEvent;
 }
