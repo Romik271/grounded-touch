@@ -72,6 +72,9 @@ import FaqShort from '../components/sections/short/FaqShort.astro';
       if (!bookBtn) return;
       // Tag the button so the arrow-hiding CSS also applies when it lives inside the fixed dock.
       bookBtn.classList.add('short-hero-book-btn');
+      // Tracking: distinguish the hero CTA from the floating variant. Starts as
+      // "floating" because it is the visual home of the floating dock on mobile.
+      bookBtn.setAttribute('data-track', 'book_session_floating');
 
       // Remember the original parent + next sibling so we can restore the button
       // to its exact position inside the Hero when leaving the sticky state.

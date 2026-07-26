@@ -7,6 +7,7 @@ const rows = [
     text: 'Time enough to settle from head to feet. Ideal for a first visit.',
     calLink: 'grounded-touch/60-min-thai-massage',
     calNs: 'sixty',
+    trackId: 'book_60_min',
   },
   {
     duration: '90',
@@ -15,6 +16,7 @@ const rows = [
     text: 'More room for the body to unwind. The work reaches deeper without pushing.',
     calLink: 'grounded-touch/90-min-thai-massage',
     calNs: 'ninety',
+    trackId: 'book_90_min',
   },
 ];
 ---
@@ -40,6 +42,7 @@ const rows = [
           data-cal-link={r.calLink}
           data-cal-namespace={r.calNs}
           data-cal-config='{"layout":"month_view"}'
+          data-track={r.trackId}
           class="reveal grid grid-cols-12 gap-4 md:gap-10 items-start bg-paper hover:bg-line/50 rounded-[6px] px-5 md:px-8 py-7 md:py-10 transition-colors duration-500 ease-gentle text-left w-full"
         >
           <div class="col-span-3 md:col-span-2">
@@ -69,6 +72,7 @@ const rows = [
         href="https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage."
         target="_blank"
         rel="noopener"
+        data-track="whatsapp_click"
         class="inline-flex items-center gap-3 rounded-full border border-ink/25 text-ink px-7 py-4 text-base md:text-lg transition-colors duration-500 ease-gentle hover:border-ink hover:bg-ink hover:text-ivory"
         aria-label="Book via WhatsApp"
       >

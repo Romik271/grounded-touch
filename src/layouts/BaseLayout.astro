@@ -122,6 +122,8 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
     <Footer lang={lang} />
 
     <script>
+      import '../scripts/analytics.ts';
+
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
