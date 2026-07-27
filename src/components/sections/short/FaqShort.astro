@@ -8,6 +8,15 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const tr = t(lang).short.faq;
+
+// Analytics button_ids, one per FAQ item, in the same order the items are
+// defined for both languages. Identical values on EN and DE.
+const faqTrackIds = [
+  'faq_how_does_it_feel',
+  'faq_where_does_it_happen',
+  'faq_what_should_i_wear',
+  'faq_payment',
+];
 ---
 
 <section id="faq" class="bg-ivory pt-6 pb-10 md:pt-8 md:pb-12">
@@ -17,9 +26,9 @@ const tr = t(lang).short.faq;
     </div>
 
     <div class="max-w-4xl border-t border-ink/20">
-      {tr.items.map((f) => (
+      {tr.items.map((f, i) => (
         <details class="reveal group border-b border-ink/20 py-5 md:py-6">
-          <summary class="flex items-center justify-between gap-6 cursor-pointer list-none">
+          <summary data-track={faqTrackIds[i]} class="flex items-center justify-between gap-6 cursor-pointer list-none">
             <span class="font-serif text-xl md:text-2xl text-ink pr-4">{f.q}</span>
             <span
               class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-ink/60 group-hover:text-ink transition-transform duration-500 ease-gentle group-open:rotate-45"
@@ -37,4 +46,25 @@ const tr = t(lang).short.faq;
       ))}
     </div>
   </div>
+
+  <script>
+    // Track only the click that EXPANDS a FAQ item, exactly once per click.
+    // The global analytics listener fires on any [data-track] click in the
+    // capture phase (before <details> toggles). So we keep data-track present
+    // only while the item is closed, and strip it once open — the closing
+    // click then has no attribute and fires nothing. Re-armed on close.
+    document.querySelectorAll('#faq details').forEach((details) => {
+      const summary = details.querySelector('summary');
+      if (!summary) return;
+      const trackId = summary.getAttribute('data-track');
+      if (!trackId) return;
+      details.addEventListener('toggle', () => {
+        if (details.open) {
+          summary.removeAttribute('data-track');
+        } else {
+          summary.setAttribute('data-track', trackId);
+        }
+      });
+    });
+  </script>
 </section>

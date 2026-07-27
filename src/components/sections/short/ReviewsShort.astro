@@ -71,6 +71,7 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
           target="_blank"
           rel="noopener noreferrer"
           aria-label={tr.seeAllAriaLabel}
+          data-track="see_google_review"
           class="mt-5 inline-flex items-center gap-3 text-sm text-ink/80 hover:text-ink transition-colors duration-500 ease-gentle"
         >
           <span class="flex items-center gap-0.5 text-terra" aria-label={tr.starsLabel}>
@@ -151,6 +152,7 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
               target="_blank"
               rel="noopener noreferrer"
               data-review-toggle
+              data-track="read_full_comment"
               aria-expanded="false"
               aria-label={`${tr.readAriaPrefix}${r.name}${tr.readAriaSuffix}`}
               class="review-link text-[13px] text-terra transition-colors duration-500 ease-gentle hover:text-ink"
@@ -227,6 +229,9 @@ const hiddenOnMobileIndex = Math.floor(Math.random() * displayedReviews.length);
         collapsedLabel.classList.toggle('hidden', expanded);
         expandedLabel.classList.toggle('hidden', !expanded);
         toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        // Once expanded, the same link navigates to Google Maps — report it as
+        // the Google review click so tracking matches the visible action.
+        toggle.setAttribute('data-track', expanded ? 'see_google_review' : 'read_full_comment');
       };
 
       const expand = (card) => {
