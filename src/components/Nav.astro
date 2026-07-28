@@ -66,7 +66,7 @@ const deHref = '/de/';
     </button>
   </div>
 
-  <div id="header-rule" class="h-px w-full bg-transparent transition-colors duration-500"></div>
+  <div id="header-rule" class="h-px w-full bg-line transition-colors duration-500"></div>
 
   <div id="mobile-menu" class="md:hidden hidden border-t border-line bg-ivory">
     <nav class="container-editorial flex flex-col py-6 gap-5">
@@ -102,14 +102,4 @@ const deHref = '/de/';
   menu?.querySelectorAll('a').forEach((a) =>
     a.addEventListener('click', () => menu.classList.add('hidden'))
   );
-
-  // Show a hairline under the header only after scrolling
-  const rule = document.getElementById('header-rule');
-  const update = () => {
-    if (!rule) return;
-    if (window.scrollY > 8) rule.classList.replace('bg-transparent', 'bg-line');
-    else rule.classList.replace('bg-line', 'bg-transparent');
-  };
-  update();
-  window.addEventListener('scroll', update, { passive: true });
 </script>

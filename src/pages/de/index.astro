@@ -76,6 +76,21 @@ const seo = strings.de.seo;
       const originalNext = bookBtn.nextSibling;
       let isDocked = false;
 
+      // Hero-state behavior: instead of opening Cal.com, smoothly scroll to the
+      // "Choose your time" (#sessions) section so the user picks 60 / 90 min there.
+      // In the docked (floating) state we do nothing here, so the button keeps its
+      // native Cal.com booking flow untouched.
+      // Analytics fires on a document-level *capture* listener (before this one),
+      // so the hero tracking event still fires; stopPropagation only blocks
+      // Cal.com's document-level *bubble* handler.
+      bookBtn.addEventListener('click', (e) => {
+        if (isDocked) return; // floating button — let Cal.com open as before
+        e.preventDefault();
+        e.stopPropagation();
+        const target = document.getElementById('sessions');
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+
       const mediaQuery = window.matchMedia('(max-width: 767px)');
 
       const restoreBtn = () => {
