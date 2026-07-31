@@ -99,6 +99,8 @@ export const strings = {
       site: 'Site',
       legal: 'Legal',
       disclaimer: 'This is not medical treatment',
+      instagramLabel: 'Follow Grounded Touch on Instagram',
+      whatsappLabel: 'Contact Grounded Touch on WhatsApp',
     },
     seo: {
       title: 'Thai Bodywork & Massage in Munich Schwabing | Grounded Touch',
@@ -133,6 +135,7 @@ export const strings = {
         portraitAlt: 'Portrait - Grounded Touch',
         openCert: 'Open certificate',
         close: 'Close',
+        instagram: 'Follow Grounded Touch on Instagram →',
       },
       legs: {
         title: 'Legs and feet - the parts that carry you.',
@@ -195,6 +198,14 @@ export const strings = {
             },
           },
           {
+            q: 'What should I wear?',
+            a: 'Please wear loose, comfortable clothes that you can keep on during the session. If needed, clean session clothes can also be provided.',
+          },
+          {
+            q: 'Payment',
+            a: 'Cash, bank transfer, or PayPal after the session. A simple receipt is available on request.',
+          },
+          {
             q: 'Can I book a massage at my place?',
             a: 'Yes. Mobile sessions within Munich are available on request. Please contact me via WhatsApp before booking so we can discuss your location, travel time and availability.',
             link: {
@@ -202,14 +213,6 @@ export const strings = {
               href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
               track: 'whatsapp_contact',
             },
-          },
-          {
-            q: 'What should I wear?',
-            a: 'Please wear loose, comfortable clothes that you can keep on during the session. If needed, clean session clothes can also be provided.',
-          },
-          {
-            q: 'Payment',
-            a: 'Cash, bank transfer, or PayPal after the session. A simple receipt is available on request.',
           },
         ],
       },
@@ -313,6 +316,8 @@ export const strings = {
       site: 'Seite',
       legal: 'Rechtliches',
       disclaimer: 'Dies ist keine medizinische Behandlung',
+      instagramLabel: 'Grounded Touch auf Instagram ansehen',
+      whatsappLabel: 'Grounded Touch über WhatsApp kontaktieren',
     },
     seo: {
       title: 'Thai Massage in München Schwabing | Grounded Touch',
@@ -347,6 +352,7 @@ export const strings = {
         portraitAlt: 'Portrait - Grounded Touch',
         openCert: 'Zertifikat öffnen',
         close: 'Schließen',
+        instagram: 'Grounded Touch auf Instagram ansehen →',
       },
       legs: {
         title: 'Beine und Füße - die Teile, die dich tragen.',
@@ -409,6 +415,14 @@ export const strings = {
             },
           },
           {
+            q: 'Was soll ich anziehen?',
+            a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst. Bei Bedarf stelle ich saubere Session-Kleidung zur Verfügung.',
+          },
+          {
+            q: 'Bezahlung',
+            a: 'Bar, per Überweisung oder PayPal nach der Session. Eine einfache Quittung stelle ich dir auf Wunsch aus.',
+          },
+          {
             q: 'Kann ich eine Massage bei mir zu Hause buchen?',
             a: 'Ja. Mobile Massagen innerhalb Münchens sind auf Anfrage möglich. Bitte kontaktiere mich vor der Buchung über WhatsApp, damit wir deinen Standort, die Anfahrtszeit und die Verfügbarkeit besprechen können.',
             link: {
@@ -416,14 +430,6 @@ export const strings = {
               href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
               track: 'whatsapp_contact',
             },
-          },
-          {
-            q: 'Was soll ich anziehen?',
-            a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst. Bei Bedarf stelle ich saubere Session-Kleidung zur Verfügung.',
-          },
-          {
-            q: 'Bezahlung',
-            a: 'Bar, per Überweisung oder PayPal nach der Session. Eine einfache Quittung stelle ich dir auf Wunsch aus.',
           },
         ],
       },
