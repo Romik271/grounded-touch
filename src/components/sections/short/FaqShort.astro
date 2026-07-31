@@ -14,9 +14,27 @@ const tr = t(lang).short.faq;
 const faqTrackIds = [
   'faq_how_does_it_feel',
   'faq_where_does_it_happen',
+  'faq_mobile_massage',
   'faq_what_should_i_wear',
   'faq_payment',
 ];
+
+// Some answers embed a single inline link (e.g. the WhatsApp destination).
+// Split the answer around the link phrase so the middle becomes an <a> while
+// the surrounding text keeps its whitespace-pre-line formatting.
+type FaqItem = (typeof tr.items)[number] & {
+  link?: { text: string; href: string; track: string; rel?: string };
+};
+const items = tr.items as readonly FaqItem[];
+function splitAnswer(f: FaqItem) {
+  if (!f.link) return null;
+  const idx = f.a.indexOf(f.link.text);
+  if (idx === -1) return null;
+  return {
+    before: f.a.slice(0, idx),
+    after: f.a.slice(idx + f.link.text.length),
+  };
+}
 ---
 
 <section id="faq" class="bg-ivory pt-6 pb-10 md:pt-8 md:pb-12">
@@ -26,7 +44,9 @@ const faqTrackIds = [
     </div>
 
     <div class="max-w-4xl border-t border-ink/20">
-      {tr.items.map((f, i) => (
+      {items.map((f, i) => {
+        const parts = splitAnswer(f);
+        return (
         <details class="reveal group border-b border-ink/20 py-5 md:py-6">
           <summary data-track={faqTrackIds[i]} class="flex items-center justify-between gap-6 cursor-pointer list-none">
             <span class="font-serif text-xl md:text-2xl text-ink pr-4">{f.q}</span>
@@ -40,10 +60,27 @@ const faqTrackIds = [
             </span>
           </summary>
           <div class="pt-4 pr-10 text-ink/75 leading-relaxed max-w-prose2 whitespace-pre-line">
-            {f.a}
+            {parts && f.link ? (
+              <Fragment>
+                {parts.before}
+                <a
+                  href={f.link.href}
+                  target="_blank"
+                  rel={f.link.rel ?? 'noopener'}
+                  data-track={f.link.track}
+                  class="text-ink border-b border-ink/40 pb-0.5 transition-colors duration-500 ease-gentle hover:border-terra hover:text-terra"
+                >
+                  {f.link.text}
+                </a>
+                {parts.after}
+              </Fragment>
+            ) : (
+              f.a
+            )}
           </div>
         </details>
-      ))}
+        );
+      })}
     </div>
   </div>
 

@@ -14,7 +14,7 @@ export const strings = {
       eyebrow: 'Thai Bodywork & Massage - Munich Schwabing',
       titleA: 'Your body deserves time ',
       titleB: 'to recover.',
-      lede: 'Thai bodywork and massage in Munich Schwabing, in a calm private space. Attentive sessions for tired legs, feet, and the whole body.\n\nPrefer a massage at home? Mobile sessions available within Munich.',
+      lede: 'Thai bodywork and massage in Munich Schwabing, in a calm private space. Attentive sessions for tired legs, feet, and the whole body.',
       cta: 'Book a session',
       secondary: 'The approach',
       alt: 'Bodywork on the leg in a warm daylit studio - Grounded Touch, Munich',
@@ -147,7 +147,7 @@ export const strings = {
       },
       sessions: {
         title: 'Choose your time.',
-        lede: 'Each session is slow, attentive, and adapted to what your body needs. Mobile massage in Munich - I come to your home or preferred location.',
+        lede: 'Each session is slow, attentive, and adapted to what your body needs.',
         minLabel: 'min',
         bookLabel: 'Book',
         rows: [
@@ -186,7 +186,22 @@ export const strings = {
           },
           {
             q: 'Where does it happen?',
-            a: 'At my place:\nA private space in Munich-Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is provided after your booking is confirmed.\n\nAt your place:\nAvailable within Munich. Please provide your address when booking.',
+            a: 'A private space in Munich Schwabing, about 8 minutes on foot from U Münchner Freiheit.\n\nView the approximate location on Google Maps.\n\nThe exact address will be shared in your booking confirmation.',
+            link: {
+              text: 'View the approximate location on Google Maps.',
+              href: 'https://www.google.com/maps/place/48%C2%B009\'59.5%22N+11%C2%B035\'07.3%22E/@48.1666021,11.585234,19z/data=!4m4!3m3!8m2!3d48.1665278!4d11.5853611?entry=ttu&g_ep=EgoyMDI2MDcyOS4wIKXMDSoASAFQAw%3D%3D',
+              track: 'faq_location_map',
+              rel: 'noopener noreferrer',
+            },
+          },
+          {
+            q: 'Can I book a massage at my place?',
+            a: 'Yes. Mobile sessions within Munich are available on request. Please contact me via WhatsApp before booking so we can discuss your location, travel time and availability.',
+            link: {
+              text: 'contact me via WhatsApp',
+              href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
+              track: 'whatsapp_contact',
+            },
           },
           {
             q: 'What should I wear?',
@@ -213,7 +228,7 @@ export const strings = {
       eyebrow: 'Thai Massage & achtsame Körperarbeit - München Schwabing',
       titleA: 'Dein Körper verdient Zeit ',
       titleB: 'zur Erholung.',
-      lede: 'Thai Massage und achtsame Körperarbeit in München Schwabing, in einem ruhigen, privaten Raum. Achtsame Sessions für müde Beine, Füße und den ganzen Körper.\n\nLieber eine Massage bei dir zu Hause? Mobile Sessions innerhalb Münchens möglich.',
+      lede: 'Thai Massage und achtsame Körperarbeit in München Schwabing, in einem ruhigen, privaten Raum. Achtsame Sessions für müde Beine, Füße und den ganzen Körper.',
       cta: 'Termin buchen',
       secondary: 'Der Ansatz',
       alt: 'Sanfte Arbeit am Bein in einem warmen, tageslichthellen Studio - Grounded Touch, München',
@@ -346,7 +361,7 @@ export const strings = {
       },
       sessions: {
         title: 'Wähle deine Zeit.',
-        lede: 'Jede Session ist ruhig, aufmerksam und auf das abgestimmt, was dein Körper braucht. Mobile Massage in München - ich komme zu dir nach Hause oder an deinen Wunschort.',
+        lede: 'Jede Session ist ruhig, aufmerksam und auf das abgestimmt, was dein Körper braucht.',
         minLabel: 'Min',
         bookLabel: 'Buchen',
         rows: [
@@ -385,7 +400,22 @@ export const strings = {
           },
           {
             q: 'Wo findet die Session statt?',
-            a: 'Bei mir:\nEin privater Raum in München-Schwabing, etwa 8 Minuten zu Fuß vom U-Bahnhof Münchner Freiheit. Die genaue Adresse bekommst du, sobald deine Buchung bestätigt ist.\n\nBei dir:\nInnerhalb Münchens möglich. Bitte gib deine Adresse bei der Buchung an.',
+            a: 'Ein privater Raum in München-Schwabing, etwa 8 Gehminuten von der U-Bahn-Station Münchner Freiheit entfernt.\n\nUngefähren Standort in Google Maps ansehen.\n\nDie genaue Adresse erhältst du mit deiner Buchungsbestätigung.',
+            link: {
+              text: 'Ungefähren Standort in Google Maps ansehen.',
+              href: 'https://www.google.com/maps/place/48%C2%B009\'59.5%22N+11%C2%B035\'07.3%22E/@48.1666021,11.585234,19z/data=!4m4!3m3!8m2!3d48.1665278!4d11.5853611?entry=ttu&g_ep=EgoyMDI2MDcyOS4wIKXMDSoASAFQAw%3D%3D',
+              track: 'faq_location_map',
+              rel: 'noopener noreferrer',
+            },
+          },
+          {
+            q: 'Kann ich eine Massage bei mir zu Hause buchen?',
+            a: 'Ja. Mobile Massagen innerhalb Münchens sind auf Anfrage möglich. Bitte kontaktiere mich vor der Buchung über WhatsApp, damit wir deinen Standort, die Anfahrtszeit und die Verfügbarkeit besprechen können.',
+            link: {
+              text: 'über WhatsApp',
+              href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
+              track: 'whatsapp_contact',
+            },
           },
           {
             q: 'Was soll ich anziehen?',
