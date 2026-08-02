@@ -101,6 +101,30 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
 
       Cal("init", "ninety", { origin: "https://cal.com" });
       Cal.ns.ninety("ui", { hideEventTypeDetails: false, layout: "month_view" });
+
+      // Cal.com Embed Events API — map official embed events to our existing
+      // analytics via window.trackById (defined in scripts/analytics.ts, loaded
+      // at end of body; these callbacks only fire after user interaction, so it
+      // is always available by then). The embed is namespaced, so listeners are
+      // registered per namespace (sixty, ninety). No iframe access, no polling.
+      (function () {
+        var track = function (buttonId) {
+          if (typeof window.trackById === "function") window.trackById(buttonId);
+        };
+        var calEvents = {
+          bookerViewed: "cal_opened",
+          bookerReady: "cal_loaded",
+          bookingSuccessfulV2: "booking_completed",
+        };
+        ["sixty", "ninety"].forEach(function (ns) {
+          Object.keys(calEvents).forEach(function (action) {
+            Cal.ns[ns]("on", {
+              action: action,
+              callback: function () { track(calEvents[action]); },
+            });
+          });
+        });
+      })();
     </script>
   </head>
   <body>

@@ -58,7 +58,15 @@
       "Bash(curl -sSL -o /Users/roman.bashmakov/Desktop/grounded-touch/public/fonts/inter-cyrillic.woff2 https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7W0Q5n-wU.woff2)",
       "Bash(awk '/^\\\\/\\\\*/{sub=\"'\"'\"'\"$0}; /font-family: '\"'\"'Fraunces'\"'\"'/{print sub}' /tmp/gt-fonts.css)",
       "Bash(grep -oiE \"Thai bodywork and massage in Munich Schwabing.{0,120}\" dist/index.html)",
-      "Bash(grep -oiE \"Thai Massage und achtsame Körperarbeit in München Schwabing.{0,120}\" dist/de/index.html)"
+      "Bash(grep -oiE \"Thai Massage und achtsame Körperarbeit in München Schwabing.{0,120}\" dist/de/index.html)",
+      "Bash(curl -s http://localhost:4322/)",
+      "Bash(pkill -f \"Google Chrome\")",
+      "Bash(curl -s http://localhost:4325/)",
+      "Bash(curl -s http://localhost:4325/de/)",
+      "Bash(read u *)",
+      "Bash(curl -s http://localhost:4325__TRACKED_VAR__)",
+      "Bash(curl -s -o /dev/null -w \"EN status: %{http_code}\\\\n\" http://localhost:4325/)",
+      "Bash(curl -s -o /dev/null -w \"DE status: %{http_code}\\\\n\" http://localhost:4325/de/)"
     ]
   }
 }

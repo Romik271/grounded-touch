@@ -76,12 +76,14 @@ export function trackEvent(details: TrackDetails): void {
   }
 }
 
-// Build the payload object from a triggering element and fire trackEvent.
-function trackFromElement(el: HTMLElement): void {
-  const buttonId = el.dataset.track;
+// Fire a tracking event for a given button_id, building the exact same payload
+// structure every tracked click uses. Shared by the DOM click delegation and by
+// non-DOM sources (e.g. the Cal.com Embed Events API) so the payload is identical
+// across all events.
+function trackById(buttonId: string, event = 'click'): void {
   if (!buttonId) return;
   trackEvent({
-    event: el.dataset.trackEvent || 'click',
+    event,
     page: window.location.pathname,
     button_id: buttonId,
     language: document.documentElement.lang || 'unknown',
@@ -90,6 +92,13 @@ function trackFromElement(el: HTMLElement): void {
     user_agent: navigator.userAgent,
     screen_width: window.innerWidth,
   });
+}
+
+// Build the payload object from a triggering element and fire trackEvent.
+function trackFromElement(el: HTMLElement): void {
+  const buttonId = el.dataset.track;
+  if (!buttonId) return;
+  trackById(buttonId, el.dataset.trackEvent || 'click');
 }
 
 // Auto-init: attach a single delegated click listener that fires trackEvent
@@ -121,6 +130,8 @@ if (typeof window !== 'undefined') {
   } else {
     init();
   }
-  // Expose on window for ad-hoc console debugging.
+  // Expose on window for ad-hoc console debugging and for non-DOM event sources
+  // (e.g. the Cal.com Embed Events API wired up in BaseLayout).
   (window as any).trackEvent = trackEvent;
+  (window as any).trackById = trackById;
 }
