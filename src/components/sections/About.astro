@@ -26,7 +26,7 @@ const tr = t(lang).about;
 
     <div class="border-t border-ink/20">
       <details class="reveal group border-b border-ink/20 py-5 md:py-6">
-        <summary class="flex items-center justify-between gap-6 cursor-pointer list-none">
+        <summary data-track="about_person" class="flex items-center justify-between gap-6 cursor-pointer list-none">
           <span class="font-serif text-xl md:text-2xl text-ink pr-4">
             {tr.summary}
           </span>
@@ -107,5 +107,22 @@ const tr = t(lang).about;
     lb?.addEventListener('click', (e) => { if (e.target === lb) close(); });
     lbClose?.addEventListener('click', close);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+    // Track only the click that EXPANDS the About accordion, once per click.
+    // Matches the homepage AboutShort behavior: keep data-track while closed,
+    // strip it once open so the closing click fires nothing. Re-armed on close.
+    document.querySelectorAll('#about details').forEach((details) => {
+      const summary = details.querySelector('summary');
+      if (!summary) return;
+      const trackId = summary.getAttribute('data-track');
+      if (!trackId) return;
+      details.addEventListener('toggle', () => {
+        if (details.open) {
+          summary.removeAttribute('data-track');
+        } else {
+          summary.setAttribute('data-track', trackId);
+        }
+      });
+    });
   </script>
 </section>

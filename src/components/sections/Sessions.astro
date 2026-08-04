@@ -11,7 +11,9 @@ const tr = t(lang).sessions;
 
 const calLinks = ['grounded-touch/60-min-thai-massage', 'grounded-touch/90-min-thai-massage'];
 const calNs = ['sixty', 'ninety'];
-const rows = tr.rows.map((r, i) => ({ ...r, calLink: calLinks[i], calNs: calNs[i] }));
+// Same analytics IDs the homepage SessionsShort uses for the equivalent cards.
+const trackIds = ['book_60min', 'book_90min'];
+const rows = tr.rows.map((r, i) => ({ ...r, calLink: calLinks[i], calNs: calNs[i], trackId: trackIds[i] }));
 ---
 
 <section id="sessions" class="bg-ivory py-8 md:py-10">
@@ -37,6 +39,7 @@ const rows = tr.rows.map((r, i) => ({ ...r, calLink: calLinks[i], calNs: calNs[i
           data-cal-link={r.calLink}
           data-cal-namespace={r.calNs}
           data-cal-config='{"layout":"month_view"}'
+          data-track={r.trackId}
           class="reveal grid grid-cols-12 gap-4 md:gap-10 items-start bg-paper hover:bg-line/50 rounded-[6px] px-5 md:px-8 py-7 md:py-10 transition-colors duration-500 ease-gentle text-left w-full"
         >
           <div class="col-span-3 md:col-span-2">

@@ -28,6 +28,7 @@ const tr = t(lang).sessions;
             href="https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage."
             target="_blank"
             rel="noopener"
+            data-track="whatsapp_contact"
             class="btn-link"
             aria-label="WhatsApp"
           >
@@ -67,6 +68,12 @@ const tr = t(lang).sessions;
   </style>
 
   <script is:inline>
+    // /long only: this inline calendar legitimately needs embed.js at load.
+    // Initialize the shared sixty/ninety namespaces + analytics events too, so
+    // the popup booking buttons and booking-recovery still work here (embed.js's
+    // native click handler needs those namespaces defined).
+    if (typeof window.calEmbedInit === "function") window.calEmbedInit();
+
     Cal("init", "booking", { origin: "https://cal.com" });
     Cal.ns.booking("inline", {
       elementOrSelector: "#cal-booking-inline",

@@ -66,7 +66,23 @@
       "Bash(read u *)",
       "Bash(curl -s http://localhost:4325__TRACKED_VAR__)",
       "Bash(curl -s -o /dev/null -w \"EN status: %{http_code}\\\\n\" http://localhost:4325/)",
-      "Bash(curl -s -o /dev/null -w \"DE status: %{http_code}\\\\n\" http://localhost:4325/de/)"
+      "Bash(curl -s -o /dev/null -w \"DE status: %{http_code}\\\\n\" http://localhost:4325/de/)",
+      "WebFetch(domain:cal.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(grep -nA3 \"seo:\" src/i18n/strings.ts)",
+      "Bash(sort -t: -k1)",
+      "Bash(curl -s \"https://app.cal.com/embed/embed.js\" -o /tmp/gt-embed.js)",
+      "Bash(grep -oE '.{40}setAttribute\\\\\\(\"state\",[^\\)]*\\\\\\).{10}' /tmp/gt-embed.js)",
+      "Bash(grep -oE 'observedAttributes[^]]*]|state.{0,3}\\(loading|loaded|closed|started|prerendering\\)' /tmp/gt-embed.js)",
+      "Bash(grep -oE '.{30}addEventListener\\\\\\(\"click\"[^;]{0,120}' /tmp/gt-embed.js)",
+      "Bash(grep -oE '.{20}data-cal-\\(link|namespace|config\\).{0,60}' /tmp/gt-embed.js)",
+      "Bash(grep -oE 'document.addEventListener\\\\\\(\"click\",r=>\\\\{.{0,600}' /tmp/gt-embed.js)",
+      "Bash(grep -oE 'modal\\\\\\(\\\\{[^}]*\\\\}|\"modal\",\\\\{?[^\\)]{0,120}|calLink:[^,}]*' /tmp/gt-embed.js)",
+      "Bash(grep -oE 'addEventListener\\\\\\(\"click\",[a-z]=>\\\\{[^,]*,?\\(true|false|\\\\{\\)' /tmp/gt-embed.js)",
+      "Bash(grep -oE 'window.__calReady = true;.{0,80}' dist/index.html)",
+      "Bash(curl -s http://localhost:4327/ -o /tmp/home.html)",
+      "Bash(curl -s http://localhost:4327/ -o /tmp/home2.html)"
     ]
   }
 }

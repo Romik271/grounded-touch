@@ -14,8 +14,8 @@ interface Props {
 }
 
 const {
-  title = 'Thai Bodywork & Massage in Munich Schwabing | Grounded Touch',
-  description = 'Thai bodywork and massage in Munich Schwabing. Attentive sessions for legs, feet, the whole body, and deep relaxation. Book 60 or 90 minute appointments online.',
+  title = 'Thai Massage & Bodywork in Munich Schwabing | Grounded Touch',
+  description = 'Thai massage and bodywork in Munich Schwabing, in a calm private space. Attentive sessions for tired legs, tense muscles, and the whole body. Book 60 or 90 minute appointments online.',
   lang = 'en',
   noindex = false,
 } = Astro.props;
@@ -45,7 +45,9 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
     <meta name="theme-color" content="#F4EFE6" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://app.cal.com" />
+    {/* No preconnect to app.cal.com: embed.js is loaded lazily on first booking
+        click, so opening a connection on load would defeat the zero-request goal
+        (and can set the Cloudflare __cf_bm cookie before any interaction). */}
     {isHome && <link rel="preload" as="image" href="/images/hero-opt.webp" type="image/webp" fetchpriority="high" />}
     <link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
@@ -96,18 +98,30 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
         };
       })(window, "https://app.cal.com/embed/embed.js", "init");
 
-      Cal("init", "sixty", { origin: "https://cal.com" });
-      Cal.ns.sixty("ui", { hideEventTypeDetails: false, layout: "month_view" });
+      // NOTE: defining the Cal stub above makes NO network request — embed.js is
+      // only downloaded the first time Cal() is actually invoked. We deliberately
+      // do NOT call Cal("init", ...) on load, so a fresh homepage visit makes zero
+      // requests to app.cal.com and sets no .cal.com cookies until the visitor
+      // clicks a booking button.
 
-      Cal("init", "ninety", { origin: "https://cal.com" });
-      Cal.ns.ninety("ui", { hideEventTypeDetails: false, layout: "month_view" });
+      // Idempotent lazy initializer: on first invocation it triggers the embed.js
+      // download (via the first Cal() call), initializes both namespaces, and
+      // registers the official embed events mapped to our existing analytics
+      // (window.trackById). Safe to call again — it no-ops after the first run.
+      window.__calReady = false;
+      window.__calOnReady = window.__calOnReady || [];
+      window.calEmbedInit = function () {
+        if (window.__calReady) return;
+        window.__calReady = true;
 
-      // Cal.com Embed Events API — map official embed events to our existing
-      // analytics via window.trackById (defined in scripts/analytics.ts, loaded
-      // at end of body; these callbacks only fire after user interaction, so it
-      // is always available by then). The embed is namespaced, so listeners are
-      // registered per namespace (sixty, ninety). No iframe access, no polling.
-      (function () {
+        Cal("init", "sixty", { origin: "https://cal.com" });
+        Cal.ns.sixty("ui", { hideEventTypeDetails: false, layout: "month_view" });
+
+        Cal("init", "ninety", { origin: "https://cal.com" });
+        Cal.ns.ninety("ui", { hideEventTypeDetails: false, layout: "month_view" });
+
+        // Cal.com Embed Events API → existing analytics. Registered per namespace
+        // (sixty, ninety) before any popup opens, so bookerViewed/Ready fire after.
         var track = function (buttonId) {
           if (typeof window.trackById === "function") window.trackById(buttonId);
         };
@@ -124,7 +138,32 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
             });
           });
         });
-      })();
+
+        // Flush any callbacks waiting for Cal to be initialized (e.g. /long
+        // booking-recovery listeners).
+        var q = window.__calOnReady || [];
+        window.__calOnReady = [];
+        q.forEach(function (cb) { try { cb(); } catch (e) {} });
+      };
+
+      // Lazy open: load embed.js + init only on the FIRST click of a booking
+      // button, then open that button's popup. Bubble phase, exactly like
+      // embed.js's own handler — so the homepage hero button (which calls
+      // stopPropagation to scroll instead of book when not docked) never
+      // triggers a load. Once embed.js is present (Cal.loaded), its own handler
+      // opens popups, so we step aside to avoid opening twice.
+      document.addEventListener("click", function (e) {
+        var target = e.target && e.target.closest ? e.target.closest("[data-cal-link]") : null;
+        if (!target) return;
+        if (window.Cal && window.Cal.loaded) return; // embed.js already loaded → native handler opens it
+        var calLink = target.getAttribute("data-cal-link");
+        var ns = target.getAttribute("data-cal-namespace");
+        var config = {};
+        try { config = JSON.parse(target.getAttribute("data-cal-config") || ""); } catch (_) { config = {}; }
+        window.calEmbedInit(); // appends embed.js + inits namespaces (sets Cal.loaded=true)
+        var api = ns ? window.Cal.ns[ns] : window.Cal;
+        if (api) api("modal", { calLink: calLink, config: config });
+      });
     </script>
   </head>
   <body>

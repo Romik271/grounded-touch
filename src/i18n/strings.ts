@@ -103,8 +103,8 @@ export const strings = {
       whatsappLabel: 'Contact Grounded Touch on WhatsApp',
     },
     seo: {
-      title: 'Thai Bodywork & Massage in Munich Schwabing | Grounded Touch',
-      description: 'Thai bodywork and massage in Munich Schwabing. Attentive sessions for legs, feet, the whole body, and deep relaxation. Book 60 or 90 minute appointments online.',
+      title: 'Thai Massage & Bodywork in Munich Schwabing | Grounded Touch',
+      description: 'Thai massage and bodywork in Munich Schwabing, in a calm private space. Attentive sessions for tired legs, tense muscles, and the whole body. Book 60 or 90 minute appointments online.',
     },
     short: {
       approach: {
@@ -320,8 +320,8 @@ export const strings = {
       whatsappLabel: 'Grounded Touch über WhatsApp kontaktieren',
     },
     seo: {
-      title: 'Thai Massage in München Schwabing | Grounded Touch',
-      description: 'Thai Massage und achtsame Körperarbeit in München Schwabing. Ruhige, persönliche Sessions für Entspannung, Beweglichkeit und Wohlbefinden. Termine für 60 oder 90 Minuten online buchbar.',
+      title: 'Thai Massage & Bodywork in München Schwabing | Grounded Touch',
+      description: 'Thai Massage und Bodywork in München Schwabing, in einem ruhigen privaten Raum. Aufmerksame Sessions für müde Beine, verspannte Muskeln und den ganzen Körper. Termine für 60 oder 90 Minuten online buchbar.',
     },
     short: {
       approach: {
