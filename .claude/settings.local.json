@@ -84,7 +84,8 @@
       "Bash(curl -s http://localhost:4327/ -o /tmp/home.html)",
       "Bash(curl -s http://localhost:4327/ -o /tmp/home2.html)",
       "Bash(grep -nA8 \"const faqTrackIds\" src/components/sections/short/FaqShort.astro)",
-      "Bash(grep -nA10 \"const faqTrackIds\" src/components/sections/FAQ.astro)"
+      "Bash(grep -nA10 \"const faqTrackIds\" src/components/sections/FAQ.astro)",
+      "Bash(grep -oE '.{25}Thai massage training in Chiang Mai, Thailand.{25}' dist/index.html)"
     ]
   }
 }

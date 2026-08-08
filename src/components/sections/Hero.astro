@@ -5,9 +5,13 @@ import { t } from '../../i18n/strings';
 
 interface Props {
   lang?: Lang;
+  // Optional secondary trust marker rendered between the hero description and
+  // the CTA. Only passed on /long (experimental) — omitted elsewhere so / and
+  // /de/ are unchanged.
+  trustMarker?: string;
 }
 
-const { lang = 'en' } = Astro.props;
+const { lang = 'en', trustMarker } = Astro.props;
 const tr = t(lang).hero;
 ---
 
@@ -23,7 +27,27 @@ const tr = t(lang).hero;
           {tr.lede}
         </p>
 
-        <div class="mt-8 flex flex-wrap items-center gap-3">
+        {trustMarker && (
+          <p class="hero-trust mt-6 mb-2 flex items-center gap-1.5 text-[14px] md:text-[15px] font-normal leading-tight text-stone">
+            <svg
+              class="flex-shrink-0"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            <span>{trustMarker}</span>
+          </p>
+        )}
+
+        <div class={`${trustMarker ? 'mt-0' : 'mt-8'} flex flex-wrap items-center gap-3`}>
           <button
             type="button"
             data-cal-link="grounded-touch/60-min-thai-massage"
