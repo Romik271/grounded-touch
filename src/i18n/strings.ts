@@ -74,7 +74,7 @@ export const strings = {
       bookLabel: 'Book',
       rows: [
         { duration: '60', price: '65', title: 'A short pause', text: 'Time enough to settle from head to feet. Ideal for a first visit.' },
-        { duration: '90', price: '85', title: 'A longer stay', text: 'More room for the body to unwind. The work reaches deeper without pushing.' },
+        { duration: '90', price: '95', title: 'A longer stay', text: 'More room for the body to unwind. The work reaches deeper without pushing.' },
       ],
       bookingLabel: 'Booking',
       bookingTitle: 'Find a time that works for you.',
@@ -87,10 +87,11 @@ export const strings = {
       items: [
         { q: 'How does it feel?', a: 'Slow, warm, and quiet. Pressure adjusts to what you actually feel, not to a fixed routine. If something feels off, you can say so at any point.' },
         { q: 'Where does it happen?', a: 'At my place:\nA private space in Munich-Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is provided after your booking is confirmed.\n\nAt your place:\nAvailable within Munich. Please provide your address when booking.' },
-        { q: 'What should I wear?', a: 'Please wear loose, comfortable clothes that you can keep on during the session. If needed, clean session clothes can also be provided.' },
+        { q: 'What should I wear?', a: 'Please wear loose, comfortable clothes that you can keep on during the session.' },
         { q: 'Payment', a: 'Cash, bank transfer, or PayPal after the session. A simple receipt is available on request.' },
         { q: 'Cancellation', a: 'If you need to cancel or reschedule, please let me know as early as possible. Your time slot is reserved specifically for you, and giving notice helps make it available to someone else.' },
         { q: 'Boundaries', a: 'This is non-sexual bodywork. Every person is welcome regardless of gender, body, or background. Consent is checked before and during the session - you can pause or stop at any point.' },
+        { q: 'Professional boundaries?', a: 'Sessions are strictly professional and focused on relaxation, recovery and wellbeing - nothing more.' },
       ],
     },
     footer: {
@@ -162,7 +163,7 @@ export const strings = {
           },
           {
             duration: '90',
-            price: '85',
+            price: '95',
             title: 'A longer stay',
             text: 'More room for the body to unwind. The work reaches deeper without pushing.',
           },
@@ -199,7 +200,7 @@ export const strings = {
           },
           {
             q: 'What should I wear?',
-            a: 'Please wear loose, comfortable clothes that you can keep on during the session. If needed, clean session clothes can also be provided.',
+            a: 'Please wear loose, comfortable clothes that you can keep on during the session.',
           },
           {
             q: 'Payment',
@@ -213,6 +214,10 @@ export const strings = {
               href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
               track: 'whatsapp_contact',
             },
+          },
+          {
+            q: 'Professional boundaries?',
+            a: 'Sessions are strictly professional and focused on relaxation, recovery and wellbeing - nothing more.',
           },
         ],
       },
@@ -291,7 +296,7 @@ export const strings = {
       bookLabel: 'Buchen',
       rows: [
         { duration: '60', price: '65', title: 'Eine kurze Pause', text: 'Genug Zeit, um von Kopf bis Fuß anzukommen. Ideal für den ersten Besuch.' },
-        { duration: '90', price: '85', title: 'Ein längeres Bleiben', text: 'Mehr Raum, damit dein Körper loslassen kann. Die Arbeit geht tiefer, ohne zu drängen.' },
+        { duration: '90', price: '95', title: 'Ein längeres Bleiben', text: 'Mehr Raum, damit dein Körper loslassen kann. Die Arbeit geht tiefer, ohne zu drängen.' },
       ],
       bookingLabel: 'Buchung',
       bookingTitle: 'Finde eine passende Zeit.',
@@ -304,10 +309,11 @@ export const strings = {
       items: [
         { q: 'Wie fühlt es sich an?', a: 'Ruhig, warm und still. Der Druck passt sich an das an, was du wirklich spürst - nicht an ein festes Programm. Wenn sich etwas nicht stimmig anfühlt, darfst du das jederzeit sagen.' },
         { q: 'Wo findet die Session statt?', a: 'Bei mir:\nEin privater Raum in München-Schwabing, etwa 8 Minuten zu Fuß vom U-Bahnhof Münchner Freiheit. Die genaue Adresse bekommst du, sobald deine Buchung bestätigt ist.\n\nBei dir:\nInnerhalb Münchens möglich. Bitte gib deine Adresse bei der Buchung an.' },
-        { q: 'Was soll ich anziehen?', a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst. Bei Bedarf stelle ich saubere Session-Kleidung zur Verfügung.' },
+        { q: 'Was soll ich anziehen?', a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst.' },
         { q: 'Bezahlung', a: 'Bar, per Überweisung oder PayPal nach der Session. Eine einfache Quittung stelle ich dir auf Wunsch aus.' },
         { q: 'Absage', a: 'Wenn du absagen oder verschieben möchtest, gib mir bitte so früh wie möglich Bescheid. Deine Zeit ist ausschließlich für dich reserviert - eine frühzeitige Nachricht hilft, sie jemand anderem anzubieten.' },
         { q: 'Rahmen', a: 'Dies ist nicht-sexuelle Körperarbeit. Jeder Mensch ist willkommen - unabhängig von Geschlecht, Körper oder Hintergrund. Einverständnis wird vor und während der Session immer wieder abgefragt, und du kannst jederzeit pausieren oder aufhören.' },
+        { q: 'Professionelle Grenzen?', a: 'Die Sessions sind rein professionell und auf Entspannung, Regeneration und Wohlbefinden ausgerichtet - nicht mehr.' },
       ],
     },
     footer: {
@@ -379,7 +385,7 @@ export const strings = {
           },
           {
             duration: '90',
-            price: '85',
+            price: '95',
             title: 'Ein längeres Bleiben',
             text: 'Mehr Raum, damit dein Körper loslassen kann. Die Arbeit geht tiefer, ohne zu drängen.',
           },
@@ -416,7 +422,7 @@ export const strings = {
           },
           {
             q: 'Was soll ich anziehen?',
-            a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst. Bei Bedarf stelle ich saubere Session-Kleidung zur Verfügung.',
+            a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst.',
           },
           {
             q: 'Bezahlung',
@@ -430,6 +436,10 @@ export const strings = {
               href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
               track: 'whatsapp_contact',
             },
+          },
+          {
+            q: 'Professionelle Grenzen?',
+            a: 'Die Sessions sind rein professionell und auf Entspannung, Regeneration und Wohlbefinden ausgerichtet - nicht mehr.',
           },
         ],
       },

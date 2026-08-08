@@ -82,7 +82,9 @@
       "Bash(grep -oE 'addEventListener\\\\\\(\"click\",[a-z]=>\\\\{[^,]*,?\\(true|false|\\\\{\\)' /tmp/gt-embed.js)",
       "Bash(grep -oE 'window.__calReady = true;.{0,80}' dist/index.html)",
       "Bash(curl -s http://localhost:4327/ -o /tmp/home.html)",
-      "Bash(curl -s http://localhost:4327/ -o /tmp/home2.html)"
+      "Bash(curl -s http://localhost:4327/ -o /tmp/home2.html)",
+      "Bash(grep -nA8 \"const faqTrackIds\" src/components/sections/short/FaqShort.astro)",
+      "Bash(grep -nA10 \"const faqTrackIds\" src/components/sections/FAQ.astro)"
     ]
   }
 }

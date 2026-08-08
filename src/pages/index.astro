@@ -82,15 +82,15 @@ import FaqShort from '../components/sections/short/FaqShort.astro';
       const originalNext = bookBtn.nextSibling;
       let isDocked = false;
 
-      // Hero-state behavior: instead of opening Cal.com, smoothly scroll to the
-      // "Choose your time" (#sessions) section so the user picks 60 / 90 min there.
-      // In the docked (floating) state we do nothing here, so the button keeps its
-      // native Cal.com booking flow untouched.
+      // Both hero AND docked (floating) state behave identically: instead of
+      // opening Cal.com, smoothly scroll to the "Choose your time" (#sessions)
+      // section so the visitor picks 60 / 90 min there. The floating button is
+      // the SAME element reparented into the dock, so this one handler unifies
+      // both — no second implementation, and no automatic Cal.com booking.
       // Analytics fires on a document-level *capture* listener (before this one),
-      // so the hero tracking event still fires; stopPropagation only blocks
-      // Cal.com's document-level *bubble* handler.
+      // so the tracking event (book_session_hero / book_session_floating) still
+      // fires; stopPropagation only blocks Cal.com's document-level *bubble* handler.
       bookBtn.addEventListener('click', (e) => {
-        if (isDocked) return; // floating button — let Cal.com open as before
         e.preventDefault();
         e.stopPropagation();
         const target = document.getElementById('sessions');
