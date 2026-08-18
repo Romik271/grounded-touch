@@ -86,7 +86,7 @@ export const strings = {
       title: 'Before your first visit.',
       items: [
         { q: 'Where does it happen?', a: 'At my place:\nA private space in Munich-Schwabing, about 8 minutes on foot from U Münchner Freiheit. The exact address is provided after your booking is confirmed.\n\nAt your place:\nAvailable within Munich. Please provide your address when booking.' },
-        { q: 'What should I wear?', a: 'Please wear loose, comfortable clothes that you can keep on during the session.' },
+        { q: 'What should I wear?', a: 'You can wear loose, comfortable clothes or just underwear - whichever feels more comfortable for you.' },
         { q: 'How does it feel?', a: 'Slow, warm, and quiet. Pressure adjusts to what you actually feel, not to a fixed routine. If something feels off, you can say so at any point.' },
         { q: 'Payment', a: 'Cash, bank transfer, or PayPal after the session. A simple receipt is available on request.' },
         { q: 'Cancellation', a: 'If you need to cancel or reschedule, please let me know as early as possible. Your time slot is reserved specifically for you, and giving notice helps make it available to someone else.' },
@@ -196,7 +196,7 @@ export const strings = {
           },
           {
             q: 'What should I wear?',
-            a: 'Please wear loose, comfortable clothes that you can keep on during the session.',
+            a: 'You can wear loose, comfortable clothes or just underwear - whichever feels more comfortable for you.',
           },
           {
             q: 'How does it feel?',
@@ -308,7 +308,7 @@ export const strings = {
       title: 'Vor deinem ersten Besuch.',
       items: [
         { q: 'Wo findet die Session statt?', a: 'Bei mir:\nEin privater Raum in München-Schwabing, etwa 8 Minuten zu Fuß vom U-Bahnhof Münchner Freiheit. Die genaue Adresse bekommst du, sobald deine Buchung bestätigt ist.\n\nBei dir:\nInnerhalb Münchens möglich. Bitte gib deine Adresse bei der Buchung an.' },
-        { q: 'Was soll ich anziehen?', a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst.' },
+        { q: 'Was soll ich anziehen?', a: 'Du kannst lockere, bequeme Kleidung oder einfach Unterwäsche tragen - je nachdem, womit du dich wohler fühlst.' },
         { q: 'Wie fühlt es sich an?', a: 'Ruhig, warm und still. Der Druck passt sich an das an, was du wirklich spürst - nicht an ein festes Programm. Wenn sich etwas nicht stimmig anfühlt, darfst du das jederzeit sagen.' },
         { q: 'Bezahlung', a: 'Bar, per Überweisung oder PayPal nach der Session. Eine einfache Quittung stelle ich dir auf Wunsch aus.' },
         { q: 'Absage', a: 'Wenn du absagen oder verschieben möchtest, gib mir bitte so früh wie möglich Bescheid. Deine Zeit ist ausschließlich für dich reserviert - eine frühzeitige Nachricht hilft, sie jemand anderem anzubieten.' },
@@ -418,7 +418,7 @@ export const strings = {
           },
           {
             q: 'Was soll ich anziehen?',
-            a: 'Bitte lockere, bequeme Kleidung, in der du während der Session bleiben kannst.',
+            a: 'Du kannst lockere, bequeme Kleidung oder einfach Unterwäsche tragen - je nachdem, womit du dich wohler fühlst.',
           },
           {
             q: 'Wie fühlt es sich an?',
