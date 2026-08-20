@@ -85,7 +85,14 @@
       "Bash(curl -s http://localhost:4327/ -o /tmp/home2.html)",
       "Bash(grep -nA8 \"const faqTrackIds\" src/components/sections/short/FaqShort.astro)",
       "Bash(grep -nA10 \"const faqTrackIds\" src/components/sections/FAQ.astro)",
-      "Bash(grep -oE '.{25}Thai massage training in Chiang Mai, Thailand.{25}' dist/index.html)"
+      "Bash(grep -oE '.{25}Thai massage training in Chiang Mai, Thailand.{25}' dist/index.html)",
+      "Bash(curl -s -i -L -X POST -H 'Content-Type: text/plain;charset=UTF-8' --data '{\"question\":\"Automated test submission from build verification — please ignore.\",\"reply_method\":\"email\",\"email\":\"test@example.com\",\"whatsapp\":\"\",\"page\":\"/long\",\"website\":\"\"}' https://script.google.com/macros/s/AKfycbzktmmtEzFAtsfQR7IfjHr0zoKKjmTwxeT7BIp6hHhcQQqwADoduRKz-OVoL7tB3Ttc/exec)",
+      "Bash(curl -s -L -X POST -H 'Content-Type: text/plain;charset=UTF-8' --data '{\"question\":\"Automated verification test 3 — please ignore.\",\"reply_method\":\"email\",\"email\":\"verify@example.com\",\"whatsapp\":\"\",\"page\":\"/long\",\"website\":\"\"}' https://script.google.com/macros/s/AKfycbzktmmtEzFAtsfQR7IfjHr0zoKKjmTwxeT7BIp6hHhcQQqwADoduRKz-OVoL7tB3Ttc/exec)",
+      "Bash(curl -s -L -o /dev/null -w 'final HTTP: %{http_code}\\\\n' -X POST -H 'Content-Type: text/plain;charset=UTF-8' --data '{\"question\":\"bot test\",\"reply_method\":\"email\",\"email\":\"bot@example.com\",\"whatsapp\":\"\",\"page\":\"/long\",\"website\":\"http://spam.example\"}' https://script.google.com/macros/s/AKfycbzktmmtEzFAtsfQR7IfjHr0zoKKjmTwxeT7BIp6hHhcQQqwADoduRKz-OVoL7tB3Ttc/exec)",
+      "Bash(grep -o 'data-track=\"faq_ask_question\"[^>]*>.\\\\{0,120\\\\}' long/index.html)",
+      "Bash(grep -o '<details[^>]\\\\{0,90\\\\}' long/index.html)",
+      "Bash(curl -s \"http://localhost:4322/_astro/hoisted.lL14rW6m.js\")",
+      "Bash(pkill -f \"node.*preview\")"
     ]
   }
 }

@@ -1,0 +1,334 @@
+---
+// Shared "Ask a question" accordion row + form.
+//
+// This is the SINGLE source of truth for the question form, reused by both
+// FAQ.astro (/long) and FaqShort.astro (/ and /de/) so there is only one
+// implementation. Rendered as the final FAQ <details> row; its markup matches
+// the surrounding FAQ rows exactly (typography, row height, padding, borders,
+// "+" icon, open/close animation, responsive behavior).
+//
+// Privacy: the form POSTs message/contact data ONLY to its own dedicated Apps
+// Script endpoint (separate from the analytics endpoint). Analytics receives
+// EVENT NAMES ONLY — never question/contact content.
+import type { Lang } from '../../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+
+// Dedicated contact-form endpoint (NOT the analytics endpoint). Unchanged.
+const ENDPOINT =
+  'https://script.google.com/macros/s/AKfycbzktmmtEzFAtsfQR7IfjHr0zoKKjmTwxeT7BIp6hHhcQQqwADoduRKz-OVoL7tB3Ttc/exec';
+
+// UI copy. The accordion title doubles as the form heading (no repeated
+// heading inside). Analytics ids are identical across languages.
+const copy = {
+  en: {
+    title: 'Ask a question',
+    questionLabel: 'Your question',
+    questionPlaceholder: 'Your question',
+    replyPrompt: 'How would you like to receive my reply?',
+    email: 'Email',
+    whatsapp: 'WhatsApp',
+    helper: 'I usually reply within a few hours.',
+    emailLabel: 'Your email',
+    whatsappLabel: 'Your WhatsApp number',
+    send: 'Send',
+    sending: 'Sending...',
+    successTitle: 'Thanks — your message has been sent.',
+    successBody: "I'll get back to you as soon as I can.",
+    error: 'Something went wrong. Please try again.',
+  },
+  de: {
+    title: 'Frage stellen',
+    questionLabel: 'Deine Frage',
+    questionPlaceholder: 'Deine Frage',
+    replyPrompt: 'Wie möchtest du meine Antwort erhalten?',
+    email: 'Email',
+    whatsapp: 'WhatsApp',
+    helper: 'Ich antworte normalerweise innerhalb weniger Stunden.',
+    emailLabel: 'Deine E-Mail-Adresse',
+    whatsappLabel: 'Deine WhatsApp-Nummer',
+    send: 'Senden',
+    sending: 'Wird gesendet...',
+    successTitle: 'Danke — deine Nachricht wurde gesendet.',
+    successBody: 'Ich melde mich so bald wie möglich bei dir.',
+    error: 'Etwas ist schiefgelaufen. Bitte versuche es noch einmal.',
+  },
+} as const;
+
+const c = copy[lang] ?? copy.en;
+---
+
+<details class="reveal group border-b border-ink/20 py-5 md:py-6">
+  <summary data-track="faq_ask_question" class="flex items-center justify-between gap-6 cursor-pointer list-none">
+    <span class="font-serif text-xl md:text-2xl text-ink pr-4">{c.title}</span>
+    <span
+      class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-ink/60 group-hover:text-ink transition-transform duration-500 ease-gentle group-open:rotate-45"
+      aria-hidden="true"
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+        <path d="M7 1v12M1 7h12" />
+      </svg>
+    </span>
+  </summary>
+  <div class="pt-4 pr-10">
+    <div
+      id="ask-question"
+      class="max-w-xl"
+      data-endpoint={ENDPOINT}
+      data-label-send={c.send}
+      data-label-sending={c.sending}
+    >
+      <form id="ask-form" novalidate class="w-full">
+        <div>
+          <label for="aq-question" class="block text-sm text-stone mb-2">{c.questionLabel}</label>
+          <textarea
+            id="aq-question"
+            name="question"
+            rows="2"
+            class="w-full rounded-lg border border-ink/25 bg-ivory px-4 py-3 text-ink placeholder-stone/60 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink/40 transition-colors duration-300"
+            placeholder={c.questionPlaceholder}
+          ></textarea>
+        </div>
+
+        {/* Honeypot — visually hidden, off-screen, never focusable. Real
+            visitors never see or fill this; bots that do are rejected. */}
+        <div class="aq-hp" aria-hidden="true">
+          <label for="aq-website">Website</label>
+          <input id="aq-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        {/* Reply-method + helper — revealed only after a real question is typed. */}
+        <div id="aq-reply" hidden class="mt-6">
+          <p class="text-sm text-ink">{c.replyPrompt}</p>
+          <div class="mt-3 flex flex-wrap gap-3">
+            <label class="aq-radio inline-flex items-center gap-2 rounded-full border border-ink/25 px-4 py-2 text-sm text-ink cursor-pointer transition-colors duration-300 hover:border-ink">
+              <input type="radio" name="reply_method" value="email" class="accent-ink" />
+              <span>{c.email}</span>
+            </label>
+            <label class="aq-radio inline-flex items-center gap-2 rounded-full border border-ink/25 px-4 py-2 text-sm text-ink cursor-pointer transition-colors duration-300 hover:border-ink">
+              <input type="radio" name="reply_method" value="whatsapp" class="accent-ink" />
+              <span>{c.whatsapp}</span>
+            </label>
+          </div>
+          <p class="mt-3 text-xs text-stone">{c.helper}</p>
+        </div>
+
+        {/* Email field — revealed only when Email is selected. */}
+        <div id="aq-email-field" hidden class="mt-5">
+          <label for="aq-email" class="block text-sm text-stone mb-2">{c.emailLabel}</label>
+          <input
+            id="aq-email"
+            name="email"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            class="w-full rounded-lg border border-ink/25 bg-ivory px-4 py-3 text-ink placeholder-stone/60 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink/40 transition-colors duration-300"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        {/* WhatsApp field — revealed only when WhatsApp is selected. */}
+        <div id="aq-whatsapp-field" hidden class="mt-5">
+          <label for="aq-whatsapp" class="block text-sm text-stone mb-2">{c.whatsappLabel}</label>
+          <input
+            id="aq-whatsapp"
+            name="whatsapp"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            class="w-full rounded-lg border border-ink/25 bg-ivory px-4 py-3 text-ink placeholder-stone/60 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink/40 transition-colors duration-300"
+            placeholder="+49 …"
+          />
+        </div>
+
+        <div class="mt-6">
+          <button id="aq-send" type="submit" class="btn-primary disabled:opacity-40 disabled:pointer-events-none" disabled>
+            {c.send}
+          </button>
+        </div>
+
+        <p id="aq-error" hidden role="alert" class="mt-4 text-sm text-terra">
+          {c.error}
+        </p>
+      </form>
+
+      {/* Success state — replaces the form on a successful submission. */}
+      <div id="aq-success" hidden>
+        <p class="font-serif text-xl md:text-2xl text-ink">{c.successTitle}</p>
+        <p class="mt-2 text-ink/75 leading-relaxed">{c.successBody}</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<style>
+  /* Honeypot: removed from visual + assistive flow, but present in the DOM
+     and submittable. Not display:none (some bots skip hidden inputs). */
+  .aq-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  // -----------------------------------------------------------------------
+  // "Ask a question" form (shared across / , /de/ and /long).
+  //
+  // Privacy design:
+  //  * The form POSTs message/contact data ONLY to its own dedicated Apps
+  //    Script endpoint (data-endpoint on #ask-question). This is completely
+  //    separate from the analytics endpoint.
+  //  * Analytics (window.trackById) receives EVENT NAMES ONLY — never the
+  //    question text, email, or WhatsApp number.
+  //  * No cookies, localStorage, third-party widgets, CAPTCHA, or fonts.
+  //  * Nothing is placed in URL parameters.
+  // -----------------------------------------------------------------------
+  (function () {
+    var root = document.getElementById('ask-question');
+    if (!root) return;
+    var endpoint = root.getAttribute('data-endpoint');
+    if (!endpoint) return;
+
+    // Localized button labels (default to English if absent).
+    var labelSend = root.getAttribute('data-label-send') || 'Send';
+    var labelSending = root.getAttribute('data-label-sending') || 'Sending...';
+
+    var form = document.getElementById('ask-form');
+    var successBox = document.getElementById('aq-success');
+    var questionEl = document.getElementById('aq-question');
+    var replyBlock = document.getElementById('aq-reply');
+    var emailField = document.getElementById('aq-email-field');
+    var whatsappField = document.getElementById('aq-whatsapp-field');
+    var emailEl = document.getElementById('aq-email');
+    var whatsappEl = document.getElementById('aq-whatsapp');
+    var sendBtn = document.getElementById('aq-send');
+    var errorEl = document.getElementById('aq-error');
+    var honeypotEl = document.getElementById('aq-website');
+    if (!form || !questionEl || !sendBtn) return;
+
+    var questionStartedFired = false; // analytics: once per page load
+    var submitting = false;
+
+    // Analytics — event names ONLY. Never pass form content here.
+    function track(id) {
+      try {
+        if (typeof window.trackById === 'function') window.trackById(id);
+      } catch (e) { /* analytics must never break the page */ }
+    }
+
+    function selectedMethod() {
+      var checked = form.querySelector('input[name="reply_method"]:checked');
+      return checked ? checked.value : '';
+    }
+
+    // Deliberately lenient — a plausible shape, not RFC-perfect validation.
+    function emailLooksValid(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+    }
+
+    function hasQuestion() {
+      return questionEl.value.trim().length > 0;
+    }
+
+    function updateValidity() {
+      var method = selectedMethod();
+      var ok = false;
+      if (hasQuestion() && method === 'email') {
+        ok = emailLooksValid(emailEl.value);
+      } else if (hasQuestion() && method === 'whatsapp') {
+        ok = whatsappEl.value.trim().length > 0;
+      }
+      sendBtn.disabled = !ok || submitting;
+    }
+
+    // Progressive disclosure driven by whether a real question exists.
+    questionEl.addEventListener('input', function () {
+      var typed = hasQuestion();
+      if (typed && !questionStartedFired) {
+        questionStartedFired = true;
+        track('question_started');
+      }
+      replyBlock.hidden = !typed;
+      if (!typed) {
+        // Collapse everything back down if the question is cleared.
+        emailField.hidden = true;
+        whatsappField.hidden = true;
+      }
+      updateValidity();
+    });
+
+    // Reply-method switching — show only the relevant contact field.
+    form.querySelectorAll('input[name="reply_method"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        var method = selectedMethod();
+        if (method === 'email') {
+          emailField.hidden = false;
+          whatsappField.hidden = true;
+          track('question_reply_email');
+        } else if (method === 'whatsapp') {
+          whatsappField.hidden = false;
+          emailField.hidden = true;
+          track('question_reply_whatsapp');
+        }
+        updateValidity();
+      });
+    });
+
+    emailEl.addEventListener('input', updateValidity);
+    whatsappEl.addEventListener('input', updateValidity);
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (submitting || sendBtn.disabled) return;
+
+      var method = selectedMethod();
+      var payload = {
+        question: questionEl.value.trim(),
+        reply_method: method,
+        email: method === 'email' ? emailEl.value.trim() : '',
+        whatsapp: method === 'whatsapp' ? whatsappEl.value.trim() : '',
+        page: window.location.pathname,
+        website: honeypotEl ? honeypotEl.value : '',
+      };
+
+      submitting = true;
+      errorEl.hidden = true;
+      sendBtn.disabled = true;
+      sendBtn.textContent = labelSending;
+
+      // text/plain avoids a CORS preflight against Apps Script (same approach
+      // the analytics client uses). We DO need to read the response here to
+      // decide success/failure, so this is a normal (non-beacon) fetch.
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify(payload),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          // Only NOW, after a confirmed successful response, fire analytics.
+          track('question_sent');
+          form.hidden = true;
+          successBox.hidden = false;
+          successBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        })
+        .catch(function () {
+          // Keep all entered values; surface a retry message.
+          submitting = false;
+          sendBtn.textContent = labelSend;
+          errorEl.hidden = false;
+          updateValidity();
+        });
+    });
+
+    // Establish the correct initial state (Send disabled, nothing revealed).
+    updateValidity();
+  })();
+</script>

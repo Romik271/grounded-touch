@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n/strings';
 import { t } from '../../i18n/strings';
+import AskQuestion from './AskQuestion.astro';
 
 interface Props {
   lang?: Lang;
@@ -58,6 +59,9 @@ const faqTrackIds = [
           </div>
         </details>
       ))}
+
+      {/* Shared "Ask a question" form — final FAQ accordion row. */}
+      <AskQuestion lang={lang} />
     </div>
   </div>
 
