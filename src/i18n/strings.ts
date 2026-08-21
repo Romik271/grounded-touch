@@ -211,7 +211,7 @@ export const strings = {
             a: 'Yes. Mobile sessions within Munich are available on request. Please contact me via WhatsApp before booking so we can discuss your location, travel time and availability.',
             link: {
               text: 'contact me via WhatsApp',
-              href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
+              href: 'https://wa.me/4915233935530?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
               track: 'whatsapp_contact',
             },
           },
@@ -433,7 +433,7 @@ export const strings = {
             a: 'Ja. Mobile Massagen innerhalb Münchens sind auf Anfrage möglich. Bitte kontaktiere mich vor der Buchung über WhatsApp, damit wir deinen Standort, die Anfahrtszeit und die Verfügbarkeit besprechen können.',
             link: {
               text: 'über WhatsApp',
-              href: 'https://wa.me/4917645718382?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
+              href: 'https://wa.me/4915233935530?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage.',
               track: 'whatsapp_contact',
             },
           },
