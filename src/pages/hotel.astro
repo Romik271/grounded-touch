@@ -677,6 +677,67 @@ const reviews = [
       window.addEventListener('scroll', evaluate, { passive: true });
       window.addEventListener('resize', evaluate);
     })();
+
+    // ---------------------------------------------------------------------
+    // Scroll-depth tracking — fire scroll_25 / scroll_50 / scroll_75 / scroll_90
+    // once each when the visitor first reaches that share of the page. Uses the
+    // existing analytics tracker (window.trackById), so the payload schema,
+    // referrer and endpoint are identical to every other event — no new fields.
+    // In-memory flags only (no cookies/storage); each milestone fires only once
+    // per load, even when scrolling back up and down.
+    // ---------------------------------------------------------------------
+    (function () {
+      var milestones = [
+        { pct: 25, id: 'scroll_25' },
+        { pct: 50, id: 'scroll_50' },
+        { pct: 75, id: 'scroll_75' },
+        { pct: 90, id: 'scroll_90' },
+      ];
+      var fired = {};
+
+      function send(id) {
+        // Only mark as fired once the event is actually dispatched, so a
+        // not-yet-ready tracker (module load order) doesn't swallow a milestone.
+        if (typeof (window as any).trackById !== 'function') return false;
+        try {
+          (window as any).trackById(id, id);
+        } catch (e) { /* analytics must never break the page */ }
+        return true;
+      }
+
+      function allFired() {
+        return milestones.every(function (m) { return fired[m.pct]; });
+      }
+
+      function evaluate() {
+        var doc = document.documentElement;
+        var docH = Math.max(doc.scrollHeight, document.body.scrollHeight);
+        var viewport = window.innerHeight || doc.clientHeight;
+        // % of the page the bottom of the viewport has reached. A page shorter
+        // than the viewport counts as fully seen.
+        var pct = docH <= viewport
+          ? 100
+          : ((window.scrollY || doc.scrollTop) + viewport) / docH * 100;
+        for (var i = 0; i < milestones.length; i++) {
+          var m = milestones[i];
+          if (!fired[m.pct] && pct >= m.pct && send(m.id)) {
+            fired[m.pct] = true;
+          }
+        }
+      }
+
+      evaluate();
+      window.addEventListener('scroll', evaluate, { passive: true });
+      window.addEventListener('resize', evaluate);
+      // Cover short/already-scrolled pages where trackById wasn't attached yet
+      // on the first pass; stops as soon as everything has fired.
+      var tries = 0;
+      var iv = setInterval(function () {
+        tries += 1;
+        evaluate();
+        if (allFired() || tries > 30) clearInterval(iv);
+      }, 150);
+    })();
   </script>
 
   <script>
