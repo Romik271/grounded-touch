@@ -1,0 +1,144 @@
+---
+// Standalone layout for the /hotel landing page.
+//
+// Deliberately NOT BaseLayout: /hotel must not carry the main site navigation
+// (Approach / About / Sessions / FAQ) nor the standard footer that links back
+// to the €65/€85 Schwabing sessions. It reuses the same head (fonts, meta,
+// analytics, reveal-on-scroll) and the same visual language, but ships a
+// minimal, non-linking header and a minimal footer with legal links only.
+//
+// No Cal.com embed stub is loaded here: the hotel booking CTA is a plain,
+// configurable link (see hotel.astro), so none of the standard booking
+// namespaces are ever initialized on this page.
+import '../styles/global.css';
+import Analytics from '@vercel/analytics/astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Hotel Thai Massage Munich | Grounded Touch',
+  description =
+    'Private Thai massage in your Munich hotel room. A professional massage mat, clean setup and attentive 90-minute session brought directly to your hotel.',
+} = Astro.props;
+
+const canonicalUrl = new URL('/hotel', Astro.site).href;
+const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
+const year = new Date().getFullYear();
+
+const INSTAGRAM_URL = 'https://www.instagram.com/grounded.touch.munich/';
+const WHATSAPP_URL =
+  'https://wa.me/4915233935530?text=Hi%20Roman%2C%20I%20have%20a%20question%20about%20a%20hotel%20massage.';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#F4EFE6" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="image" href="/images/hero-opt.webp" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <title>{title}</title>
+  </head>
+  <body>
+    {/* Minimal header — brand only, intentionally NOT a link back to the
+        homepage, and no main navigation. */}
+    <header class="sticky top-0 left-0 right-0 z-50 bg-ivory/90 backdrop-blur-md">
+      <div class="container-editorial flex items-center h-16 md:h-20">
+        <span class="font-serif text-[22px] md:text-[26px] tracking-[-0.02em] text-ink select-none">
+          Grounded Touch<span class="text-terra">.</span>
+        </span>
+      </div>
+      <div class="h-px w-full bg-line"></div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    {/* Minimal footer — no navigation back to standard sessions / prices. */}
+    <footer class="bg-ivory pt-10 pb-14 border-t border-line">
+      <div class="container-editorial flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+        <div>
+          <div class="font-serif text-2xl text-ink">
+            Grounded Touch<span class="text-terra">.</span>
+          </div>
+          <p class="mt-2 text-sm text-stone">Munich.</p>
+          <div class="mt-4 flex items-center gap-4">
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track="hotel_instagram_footer"
+              aria-label="Grounded Touch on Instagram"
+              class="text-ink/70 hover:text-terra transition-colors duration-500 ease-gentle"
+            >
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track="hotel_whatsapp_footer"
+              aria-label="Message Grounded Touch on WhatsApp"
+              class="text-ink/70 hover:text-terra transition-colors duration-500 ease-gentle"
+            >
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.892c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411m-8.475 18.297h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.975 1.001-3.635-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.459-9.887 9.942-9.887 2.654 0 5.148 1.032 7.021 2.905a9.82 9.82 0 0 1 2.909 6.99c-.002 5.45-4.458 9.878-9.935 9.878"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6 text-sm text-ink/85">
+          <a href="/impressum" class="hover:text-terra transition-colors duration-500 ease-gentle">Impressum</a>
+          <a href="/datenschutz" class="hover:text-terra transition-colors duration-500 ease-gentle">Datenschutz / Privacy</a>
+        </div>
+      </div>
+
+      <div class="container-editorial mt-10 pt-6 border-t border-line text-[12px] text-stone">
+        © {year} Grounded Touch
+      </div>
+    </footer>
+
+    <script>
+      import '../scripts/analytics.ts';
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    </script>
+    <Analytics />
+  </body>
+</html>

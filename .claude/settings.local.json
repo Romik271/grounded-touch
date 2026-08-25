@@ -92,7 +92,27 @@
       "Bash(grep -o 'data-track=\"faq_ask_question\"[^>]*>.\\\\{0,120\\\\}' long/index.html)",
       "Bash(grep -o '<details[^>]\\\\{0,90\\\\}' long/index.html)",
       "Bash(curl -s \"http://localhost:4322/_astro/hoisted.lL14rW6m.js\")",
-      "Bash(pkill -f \"node.*preview\")"
+      "Bash(pkill -f \"node.*preview\")",
+      "Bash(grep -E \"^\\(65|85\\)$\")",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --hide-scrollbars --window-size=1440,2200 --screenshot=/tmp/hotel_desktop.png http://localhost:4322/hotel)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --hide-scrollbars --window-size=390,3400 --screenshot=/tmp/hotel_mobile.png http://localhost:4322/hotel)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --hide-scrollbars --window-size=1440,5200 --screenshot=/tmp/hotel_desktop_full.png http://localhost:4322/hotel)",
+      "Bash(node -e \"console.log\\(typeof WebSocket\\)\")",
+      "Bash(pkill -f \"remote-debugging-port\")",
+      "Bash(sips --getProperty pixelWidth --getProperty pixelHeight \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\" \"/Users/roman.bashmakov/Desktop/grounded-touch/referecene/ChatGPT Image Jul 9, 2026, 03_25_45 AM.png\" \"/Users/roman.bashmakov/Desktop/grounded-touch/public/images/0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\")",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 \"ChatGPT Image Jul 9, 2026, 05_11_21 PM.png\" --out \"gallery-1-opt.jpg\")",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 \"../../referecene/ChatGPT Image Jul 9, 2026, 03_25_45 AM.png\" --out \"gallery-2-opt.jpg\")",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 \"0bb9ce1f-1809-484f-b23e-36d1d47e71c8 \\(1\\).png\" --out \"gallery-3-opt.jpg\")",
+      "Bash(sips -s format webp \"gallery-1-opt.jpg\" --out \"gallery-1-opt.webp\")",
+      "Bash(sips --getProperty pixelWidth --getProperty pixelHeight gallery-1-opt.jpg gallery-2-opt.jpg gallery-3-opt.jpg)",
+      "Bash(node /tmp/gt_measure.mjs)",
+      "Bash(pkill -f \"remote-debugging-port=9333\")",
+      "Bash(rm -rf /tmp/gt_cdp_profile /tmp/gt_*.mjs /tmp/gt_*.png /tmp/gt_*.log)",
+      "Bash(pkill -f \"remote-debugging-port=9334\")",
+      "Bash(rm -rf /tmp/gt_cdp2 /tmp/gt_*.mjs /tmp/gt_*.png /tmp/gt_*.log)",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car.jpeg  --out public/images/hotel-carousel-1-opt.jpg)",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car2.jpg  --out public/images/hotel-carousel-2-opt.jpg)",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car4.jpeg --out public/images/hotel-carousel-3-opt.jpg)"
     ]
   }
 }

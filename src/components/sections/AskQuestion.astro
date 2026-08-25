@@ -14,9 +14,13 @@ import type { Lang } from '../../i18n/strings';
 
 interface Props {
   lang?: Lang;
+  // Analytics id fired when the accordion row is opened. Defaults to the
+  // existing 'faq_ask_question' so / , /de/ and /long are unchanged; /hotel
+  // passes 'hotel_faq_ask_question' so hotel-ad traffic is distinguishable.
+  summaryTrackId?: string;
 }
 
-const { lang = 'en' } = Astro.props;
+const { lang = 'en', summaryTrackId = 'faq_ask_question' } = Astro.props;
 
 // Dedicated contact-form endpoint (NOT the analytics endpoint). Unchanged.
 const ENDPOINT =
@@ -63,7 +67,7 @@ const c = copy[lang] ?? copy.en;
 ---
 
 <details class="reveal group border-b border-ink/20 py-5 md:py-6">
-  <summary data-track="faq_ask_question" class="flex items-center justify-between gap-6 cursor-pointer list-none">
+  <summary data-track={summaryTrackId} class="flex items-center justify-between gap-6 cursor-pointer list-none">
     <span class="font-serif text-xl md:text-2xl text-ink pr-4">{c.title}</span>
     <span
       class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-ink/60 group-hover:text-ink transition-transform duration-500 ease-gentle group-open:rotate-45"
