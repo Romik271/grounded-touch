@@ -112,7 +112,11 @@
       "Bash(rm -rf /tmp/gt_cdp2 /tmp/gt_*.mjs /tmp/gt_*.png /tmp/gt_*.log)",
       "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car.jpeg  --out public/images/hotel-carousel-1-opt.jpg)",
       "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car2.jpg  --out public/images/hotel-carousel-2-opt.jpg)",
-      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car4.jpeg --out public/images/hotel-carousel-3-opt.jpg)"
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car4.jpeg --out public/images/hotel-carousel-3-opt.jpg)",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car.jpeg --out public/images/hotel-carousel-1-opt.jpg)",
+      "Bash(sips -g pixelWidth -g pixelHeight public/images/hotel-carousel-1-opt.jpg)",
+      "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car.png --out public/images/hotel-carousel-1-opt.jpg)",
+      "Bash(grep -v '^$')"
     ]
   }
 }

@@ -583,6 +583,102 @@ const reviews = [
     </div>
   </section>
 
+  {/* Floating mobile "Book now" CTA. Mobile only. Opens the HOTEL booking flow
+      directly (bookingHref) — it does NOT scroll to the #booking section and
+      does NOT use the standard Grounded Touch booking flow. */}
+  <a
+    id="hotel-float-book"
+    href={bookingHref}
+    data-track="hotel_book_floating"
+    {...(bookingIsExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+    class="btn-primary md:hidden"
+    aria-label="Book a session"
+  >
+    Book a session
+  </a>
+
+  <style>
+    /* Floating book button — MOBILE ONLY. All positioning lives inside the
+       mobile media query so it never overrides the `md:hidden` utility on
+       larger screens (an id selector would otherwise win on specificity).
+       Fixed near the bottom, hidden until the hero has scrolled out of view. */
+    @media (max-width: 767px) {
+      #hotel-float-book {
+        position: fixed;
+        right: 16px;
+        bottom: 20px;
+        z-index: 50;
+        width: auto;
+        min-width: 150px;
+        height: 50px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        box-shadow: 0 8px 24px rgba(28, 22, 17, 0.28);
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition: opacity 300ms cubic-bezier(0.22, 0.61, 0.36, 1),
+                    transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      #hotel-float-book.is-active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+    }
+  </style>
+
+  <script>
+    // ---------------------------------------------------------------------
+    // Page impression — fire ONE "page_view" event per load via the existing
+    // analytics tracker (window.trackById). Same payload schema as every other
+    // event; no new fields, no cookies/storage, endpoint unchanged. An in-memory
+    // window flag guarantees it fires only once.
+    // ---------------------------------------------------------------------
+    (function () {
+      if ((window as any).__hotelPageViewTracked) return;
+      function fire() {
+        if ((window as any).__hotelPageViewTracked) return true;
+        if (typeof (window as any).trackById !== 'function') return false;
+        (window as any).__hotelPageViewTracked = true;
+        try {
+          (window as any).trackById('hotel_page_view', 'page_view');
+        } catch (e) { /* analytics must never break the page */ }
+        return true;
+      }
+      if (fire() !== true) {
+        // trackById may not be attached yet (module load order); retry briefly.
+        var tries = 0;
+        var iv = setInterval(function () {
+          tries += 1;
+          if (fire() === true || tries > 50) clearInterval(iv);
+        }, 100);
+      }
+    })();
+
+    // ---------------------------------------------------------------------
+    // Floating "Book now" button — reveal once the hero has scrolled away.
+    // Clicking the anchor opens the hotel booking flow directly (its href);
+    // no click handler needed, and tracking fires via the delegated
+    // [data-track] listener (button_id: hotel_book_floating).
+    // ---------------------------------------------------------------------
+    (function () {
+      var floatBtn = document.getElementById('hotel-float-book');
+      if (!floatBtn) return;
+      var hero = document.querySelector('main section');
+      function evaluate() {
+        var pastHero = true;
+        if (hero) pastHero = hero.getBoundingClientRect().bottom <= 0;
+        floatBtn.classList.toggle('is-active', pastHero);
+      }
+      evaluate();
+      window.addEventListener('scroll', evaluate, { passive: true });
+      window.addEventListener('resize', evaluate);
+    })();
+  </script>
+
   <script>
     // Track the accordion open-click ONCE (matches the site convention): keep
     // data-track while closed, strip it on open so the closing click is silent,
