@@ -7,9 +7,12 @@
 // analytics, reveal-on-scroll) and the same visual language, but ships a
 // minimal, non-linking header and a minimal footer with legal links only.
 //
-// No Cal.com embed stub is loaded here: the hotel booking CTA is a plain,
-// configurable link (see hotel.astro), so none of the standard booking
-// namespaces are ever initialized on this page.
+// The Cal.com embed uses the SAME lazy popup implementation as the homepage
+// (BaseLayout.astro): the stub makes no network request on load; embed.js is
+// only downloaded on the first click of a [data-cal-link] element, which then
+// opens the booking as an in-page modal. The only difference here is the
+// namespace: /hotel initializes a single "hotel" namespace for the dedicated
+// 90-min / €160 hotel event (see hotel.astro).
 import '../styles/global.css';
 import Analytics from '@vercel/analytics/astro';
 
@@ -56,6 +59,91 @@ const WHATSAPP_URL =
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
     <title>{title}</title>
+
+    {/* Cal.com popup — identical lazy implementation to the homepage
+        (BaseLayout.astro). Defining the stub makes NO network request; embed.js
+        is only fetched on the first click of a [data-cal-link] element, which
+        then opens the booking as an in-page modal. Here a single "hotel"
+        namespace serves the dedicated 90-min / €160 hotel event. */}
+    <script is:inline>
+      (function (C, A, L) {
+        let p = function (a, ar) { a.q.push(ar); };
+        let d = C.document;
+        C.Cal = C.Cal || function () {
+          let cal = C.Cal;
+          let ar = arguments;
+          if (!cal.loaded) {
+            cal.ns = {};
+            cal.q = cal.q || [];
+            d.head.appendChild(d.createElement("script")).src = A;
+            cal.loaded = true;
+          }
+          if (ar[0] === L) {
+            const api = function () { p(api, arguments); };
+            const namespace = ar[1];
+            api.q = api.q || [];
+            if (typeof namespace === "string") {
+              cal.ns[namespace] = cal.ns[namespace] || api;
+              p(cal.ns[namespace], ar);
+              p(cal, ["initNamespace", namespace]);
+            } else p(cal, ar);
+            return;
+          }
+          p(cal, ar);
+        };
+      })(window, "https://app.cal.com/embed/embed.js", "init");
+
+      // Idempotent lazy initializer: on first invocation it triggers the
+      // embed.js download (via the first Cal() call), initializes the "hotel"
+      // namespace, and maps the official embed events onto our existing
+      // analytics (window.trackById). Safe to call again — no-ops after first run.
+      window.__calReady = false;
+      window.__calOnReady = window.__calOnReady || [];
+      window.calEmbedInit = function () {
+        if (window.__calReady) return;
+        window.__calReady = true;
+
+        Cal("init", "hotel", { origin: "https://cal.com" });
+        Cal.ns.hotel("ui", { hideEventTypeDetails: false, layout: "month_view" });
+
+        var track = function (buttonId) {
+          if (typeof window.trackById === "function") window.trackById(buttonId);
+        };
+        var calEvents = {
+          bookerViewed: "cal_opened",
+          bookerReady: "cal_loaded",
+          bookingSuccessfulV2: "booking_completed",
+        };
+        ["hotel"].forEach(function (ns) {
+          Object.keys(calEvents).forEach(function (action) {
+            Cal.ns[ns]("on", {
+              action: action,
+              callback: function () { track(calEvents[action]); },
+            });
+          });
+        });
+
+        var q = window.__calOnReady || [];
+        window.__calOnReady = [];
+        q.forEach(function (cb) { try { cb(); } catch (e) {} });
+      };
+
+      // Lazy open: load embed.js + init only on the FIRST click of a booking
+      // button, then open that button's popup. Once embed.js is present
+      // (Cal.loaded), its own handler opens popups, so we step aside.
+      document.addEventListener("click", function (e) {
+        var target = e.target && e.target.closest ? e.target.closest("[data-cal-link]") : null;
+        if (!target) return;
+        if (window.Cal && window.Cal.loaded) return; // embed.js already loaded → native handler opens it
+        var calLink = target.getAttribute("data-cal-link");
+        var ns = target.getAttribute("data-cal-namespace");
+        var config = {};
+        try { config = JSON.parse(target.getAttribute("data-cal-config") || ""); } catch (_) { config = {}; }
+        window.calEmbedInit(); // appends embed.js + inits namespace (sets Cal.loaded=true)
+        var api = ns ? window.Cal.ns[ns] : window.Cal;
+        if (api) api("modal", { calLink: calLink, config: config });
+      });
+    </script>
   </head>
   <body>
     {/* Minimal header — brand only, intentionally NOT a link back to the

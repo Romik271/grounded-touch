@@ -4,23 +4,21 @@ import EditorialImage from '../components/EditorialImage.astro';
 import AskQuestion from '../components/sections/AskQuestion.astro';
 
 // ── Hotel booking destination ───────────────────────────────────────────────
-// A dedicated Cal.com event for HOTEL sessions does not exist yet. When it is
-// created, paste its full public URL here, e.g.
-//   'https://cal.com/grounded-touch/hotel-thai-massage'
-// Until then the "Book your session" CTA falls back to WhatsApp so no visitor
-// hits a dead end. It must NEVER point at the standard 60/90-min Schwabing
-// events — that fallback is deliberately WhatsApp, not a standard booking link.
-const HOTEL_BOOKING_URL: string | null = null;
+// Dedicated Cal.com event for HOTEL sessions (90 min / €160). Used ONLY by the
+// "Book your session" CTA inside the price card, which opens it as an in-page
+// popup via the same embed implementation as the homepage (see HotelLayout).
+// It must NEVER point at the standard 60/90-min Schwabing events.
+//
+// The embed expects the Cal link in path form (no https://cal.com/ prefix),
+// exactly like the homepage session buttons (SessionsShort.astro).
+const HOTEL_CAL_LINK = 'grounded-touch/mobile-massage-session-90-min-160';
+const HOTEL_CAL_NAMESPACE = 'hotel';
 
 // Shared contact URLs (existing project conventions).
 const WHATSAPP_BOOK =
   'https://wa.me/4915233935530?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20hotel%20massage.';
 const WHATSAPP_ASK =
   'https://wa.me/4915233935530?text=Hi%20Roman%2C%20I%20have%20a%20question%20about%20a%20hotel%20massage.';
-
-// Resolved booking destination for the price-section CTA.
-const bookingHref = HOTEL_BOOKING_URL ?? WHATSAPP_BOOK;
-const bookingIsExternal = true; // both Cal.com and WhatsApp open in a new tab
 
 const steps = [
   { n: '01', title: 'Choose your time', text: 'Book your preferred session time.' },
@@ -79,7 +77,7 @@ const reviews = [
           </p>
 
           <div class="mt-8 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
-            <a href="#booking" data-track="hotel_hero_book" class="btn-primary justify-center">
+            <a href="#booking" id="hotel-hero-book" data-track="hotel_booking_hero" class="btn-primary justify-center">
               Book a hotel session
               <span aria-hidden="true">→</span>
             </a>
@@ -319,15 +317,17 @@ const reviews = [
         </div>
 
         <div class="mt-8 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-4">
-          <a
-            href={bookingHref}
-            data-track="hotel_session_book"
-            {...(bookingIsExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          <button
+            type="button"
+            data-cal-link={HOTEL_CAL_LINK}
+            data-cal-namespace={HOTEL_CAL_NAMESPACE}
+            data-cal-config='{"layout":"month_view"}'
+            data-track="hotel_booking_price"
             class="btn-primary justify-center"
           >
             Book your session
             <span aria-hidden="true">→</span>
-          </a>
+          </button>
 
           <!-- Secondary, subtle contact option. Stays visually secondary to the
                booking CTA above. -->
@@ -583,14 +583,13 @@ const reviews = [
     </div>
   </section>
 
-  {/* Floating mobile "Book now" CTA. Mobile only. Opens the HOTEL booking flow
-      directly (bookingHref) — it does NOT scroll to the #booking section and
-      does NOT use the standard Grounded Touch booking flow. */}
+  {/* Floating mobile "Book a session" CTA. Mobile only. Smoothly scrolls to the
+      "Your hotel session" (#booking) section — it does NOT open Cal.com/WhatsApp
+      directly (matches the homepage hero/floating interaction). */}
   <a
     id="hotel-float-book"
-    href={bookingHref}
-    data-track="hotel_book_floating"
-    {...(bookingIsExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+    href="#booking"
+    data-track="hotel_booking_floating"
     class="btn-primary md:hidden"
     aria-label="Book a session"
   >
@@ -676,6 +675,27 @@ const reviews = [
       evaluate();
       window.addEventListener('scroll', evaluate, { passive: true });
       window.addEventListener('resize', evaluate);
+    })();
+
+    // ---------------------------------------------------------------------
+    // Hero + floating "Book" CTAs — smoothly scroll to the "Your hotel session"
+    // (#booking) section instead of opening Cal.com directly. Matches the
+    // homepage hero/floating interaction. Analytics fires on the document-level
+    // *capture* listener before this bubble handler, so the tracking events
+    // (hotel_booking_hero / hotel_booking_floating) still fire; preventDefault
+    // just cancels the native #hash jump so the scroll is smooth.
+    // ---------------------------------------------------------------------
+    (function () {
+      ['hotel-hero-book', 'hotel-float-book'].forEach(function (elId) {
+        var btn = document.getElementById(elId);
+        if (!btn) return;
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var target = document.getElementById('booking');
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
     })();
 
     // ---------------------------------------------------------------------
