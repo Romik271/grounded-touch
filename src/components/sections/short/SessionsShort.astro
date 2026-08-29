@@ -20,7 +20,7 @@ const rows = tr.rows.map((r, i) => ({
 }));
 ---
 
-<section id="sessions" class="bg-ivory pt-6 pb-8 md:pt-8 md:pb-10">
+<section id="sessions" class="bg-ivory pt-6 pb-8 md:pt-8 md:pb-10 scroll-mt-[28px] md:scroll-mt-[68px]">
   <div class="container-editorial">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-10 md:mb-14">
       <div class="md:col-span-4 reveal"></div>
@@ -31,6 +31,49 @@ const rows = tr.rows.map((r, i) => ({
         <p class="mt-5 lede">
           {tr.lede}
         </p>
+
+        {/* TEMPORARY: September availability notice. Compact editorial note —
+            not a card. It auto-updates and auto-hides by Europe/Berlin date
+            (see the inline script below). To remove later, delete this block,
+            that script, and the `notice` strings in i18n/strings.ts (en + de). */}
+        <div
+          id="sept-availability-notice"
+          data-body-late={tr.notice.bodyLate}
+          data-late-from="2026-09-05"
+          data-hide-from="2026-09-19"
+          class="mt-6 rounded-[6px] border border-terra/30 bg-terra/[0.06] p-5 md:p-6"
+        >
+          <p class="index-label !text-terra">{tr.notice.heading}</p>
+          <p id="sept-availability-body" class="mt-2 text-lg md:text-xl font-medium text-ink">{tr.notice.body}</p>
+        </div>
+
+        {/* Isolated to the notice above: switch to the shortened text from
+            data-late-from, and remove the whole panel from data-hide-from,
+            using the current Europe/Berlin date. Runs synchronously (is:inline)
+            so the adjustment happens before paint — no flash. Touches nothing
+            else on the page. */}
+        <script is:inline>
+          (function () {
+            var el = document.getElementById('sept-availability-notice');
+            if (!el) return;
+            var today;
+            try {
+              // en-CA yields an ISO 'YYYY-MM-DD' string; string compare is safe.
+              today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' });
+            } catch (e) {
+              return; // leave the server-rendered (earliest) state as-is
+            }
+            if (today >= el.getAttribute('data-hide-from')) {
+              el.remove(); // no leftover space, margin, or border
+              return;
+            }
+            if (today >= el.getAttribute('data-late-from')) {
+              var body = document.getElementById('sept-availability-body');
+              var late = el.getAttribute('data-body-late');
+              if (body && late) body.textContent = late;
+            }
+          })();
+        </script>
       </div>
     </div>
 

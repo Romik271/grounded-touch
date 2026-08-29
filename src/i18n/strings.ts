@@ -152,6 +152,14 @@ export const strings = {
       sessions: {
         title: 'Choose your time.',
         lede: 'Each session is slow, attentive, and adapted to what your body needs.',
+        // TEMPORARY: September availability notice. Safe to remove later —
+        // delete this `notice` block and the notice markup in SessionsShort.astro.
+        notice: {
+          heading: 'LIMITED SEPTEMBER AVAILABILITY',
+          body: 'Away Sep 2–6 & Sep 15–21',
+          // Shown from Sep 5 (Europe/Berlin), once the first absence is over.
+          bodyLate: 'Away Sep 15–21',
+        },
         minLabel: 'min',
         bookLabel: 'Book',
         rows: [
@@ -374,6 +382,14 @@ export const strings = {
       sessions: {
         title: 'Wähle deine Zeit.',
         lede: 'Jede Session ist ruhig, aufmerksam und auf das abgestimmt, was dein Körper braucht.',
+        // TEMPORARY: September-Verfügbarkeitshinweis. Später entfernbar —
+        // diesen `notice`-Block und das Notice-Markup in SessionsShort.astro löschen.
+        notice: {
+          heading: 'BEGRENZTE VERFÜGBARKEIT IM SEPTEMBER',
+          body: 'Nicht verfügbar: 2.–6. & 15.–21. September',
+          // Ab dem 5. September (Europe/Berlin), sobald die erste Abwesenheit vorbei ist.
+          bodyLate: 'Nicht verfügbar: 15.–21. September',
+        },
         minLabel: 'Min',
         bookLabel: 'Buchen',
         rows: [

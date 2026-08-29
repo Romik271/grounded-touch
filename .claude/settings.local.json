@@ -118,7 +118,13 @@
       "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car.png --out public/images/hotel-carousel-1-opt.jpg)",
       "Bash(grep -v '^$')",
       "Bash(sips -Z 1200 -s format jpeg -s formatOptions 68 referecene/car4.png --out public/images/hotel-carousel-3-opt.jpg)",
-      "Bash(sips -g pixelWidth -g pixelHeight public/images/hotel-carousel-3-opt.jpg)"
+      "Bash(sips -g pixelWidth -g pixelHeight public/images/hotel-carousel-3-opt.jpg)",
+      "Bash(npx --yes serve dist -l 4399)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:4399/index.html)",
+      "Bash(curl *)",
+      "Bash(pkill -f \"remote-debugging-port=9337\")",
+      "Bash(pkill -f \"serve dist\")",
+      "Bash(pkill -f \"remote-debugging-port=9338\")"
     ]
   }
 }
