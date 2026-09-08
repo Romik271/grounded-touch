@@ -124,7 +124,8 @@
       "Bash(curl *)",
       "Bash(pkill -f \"remote-debugging-port=9337\")",
       "Bash(pkill -f \"serve dist\")",
-      "Bash(pkill -f \"remote-debugging-port=9338\")"
+      "Bash(pkill -f \"remote-debugging-port=9338\")",
+      "Bash(pkill -f \"remote-debugging-port=9339\")"
     ]
   }
 }

@@ -33,44 +33,53 @@ const rows = tr.rows.map((r, i) => ({
         </p>
 
         {/* TEMPORARY: September availability notice. Compact editorial note —
-            not a card. It auto-updates and auto-hides by Europe/Berlin date
-            (see the inline script below). To remove later, delete this block,
-            that script, and the `notice` strings in i18n/strings.ts (en + de). */}
+            not a card. It is only shown during a fixed Europe/Berlin time
+            window (see the inline script below); it renders `hidden` by default
+            so it occupies no space until the script reveals it. To remove later,
+            delete this block, that script, and the `notice` strings in
+            i18n/strings.ts (en + de). */}
         <div
           id="sept-availability-notice"
-          data-body-late={tr.notice.bodyLate}
-          data-late-from="2026-09-05"
-          data-hide-from="2026-09-19"
+          hidden
+          data-visible-from="2026-09-14T18:00"
+          data-hide-from="2026-09-19T08:00"
           class="mt-6 rounded-[6px] border border-terra/30 bg-terra/[0.06] p-5 md:p-6"
         >
           <p class="index-label !text-terra">{tr.notice.heading}</p>
-          <p id="sept-availability-body" class="mt-2 text-lg md:text-xl font-medium text-ink">{tr.notice.body}</p>
+          <p class="mt-2 text-lg md:text-xl font-medium text-ink">{tr.notice.bodyLate}</p>
         </div>
 
-        {/* Isolated to the notice above: switch to the shortened text from
-            data-late-from, and remove the whole panel from data-hide-from,
-            using the current Europe/Berlin date. Runs synchronously (is:inline)
-            so the adjustment happens before paint — no flash. Touches nothing
+        {/* Isolated to the notice above: reveal it ONLY within the Europe/Berlin
+            window [data-visible-from, data-hide-from). The current Berlin time is
+            built as a fixed-width 'YYYY-MM-DDTHH:mm' string so the cutoff compare
+            is a plain lexicographic string compare. Runs synchronously (is:inline)
+            so it resolves before paint — no flash. Outside the window the element
+            is removed entirely (no leftover space/margin/border). Touches nothing
             else on the page. */}
         <script is:inline>
           (function () {
             var el = document.getElementById('sept-availability-notice');
             if (!el) return;
-            var today;
+            var now;
             try {
-              // en-CA yields an ISO 'YYYY-MM-DD' string; string compare is safe.
-              today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' });
+              var parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/Berlin',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+              }).formatToParts(new Date());
+              var v = {};
+              parts.forEach(function (p) { v[p.type] = p.value; });
+              now = v.year + '-' + v.month + '-' + v.day + 'T' + v.hour + ':' + v.minute;
             } catch (e) {
-              return; // leave the server-rendered (earliest) state as-is
-            }
-            if (today >= el.getAttribute('data-hide-from')) {
-              el.remove(); // no leftover space, margin, or border
+              el.remove(); // if the Berlin time can't be read, keep it hidden (no trace)
               return;
             }
-            if (today >= el.getAttribute('data-late-from')) {
-              var body = document.getElementById('sept-availability-body');
-              var late = el.getAttribute('data-body-late');
-              if (body && late) body.textContent = late;
+            var from = el.getAttribute('data-visible-from');
+            var until = el.getAttribute('data-hide-from');
+            if (now >= from && now < until) {
+              el.removeAttribute('hidden'); // within the window → show
+            } else {
+              el.remove(); // outside the window → no leftover space/margin/border
             }
           })();
         </script>
