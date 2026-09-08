@@ -1,7 +1,6 @@
 ---
 import HotelLayout from '../layouts/HotelLayout.astro';
 import EditorialImage from '../components/EditorialImage.astro';
-import AskQuestion from '../components/sections/AskQuestion.astro';
 
 // ── Hotel booking destination ───────────────────────────────────────────────
 // Dedicated Cal.com event for HOTEL sessions (90 min / €160). Used ONLY by the
@@ -574,11 +573,6 @@ const reviews = [
             No. I bring the massage mat, clean linens, cushions and everything needed for the session.
           </div>
         </details>
-
-        {/* Final row: the existing, working "Ask a question" form — same backend,
-            anti-spam, rate limiting, reply options, progressive disclosure and
-            tracking. page=/hotel identifies the source in analytics. */}
-        <AskQuestion summaryTrackId="hotel_faq_ask_question" />
       </div>
     </div>
   </section>
@@ -763,13 +757,12 @@ const reviews = [
   <script>
     // Track the accordion open-click ONCE (matches the site convention): keep
     // data-track while closed, strip it on open so the closing click is silent,
-    // then re-arm on close. Applies to the hotel FAQ rows only. The ask-question
-    // row (hotel_faq_ask_question) is left untouched — its own script owns it.
+    // then re-arm on close. Applies to the hotel FAQ rows only.
     document.querySelectorAll('section details').forEach((details) => {
       const summary = details.querySelector('summary');
       if (!summary) return;
       const trackId = summary.getAttribute('data-track');
-      if (!trackId || trackId === 'hotel_faq_ask_question') return;
+      if (!trackId) return;
       details.addEventListener('toggle', () => {
         if (details.open) summary.removeAttribute('data-track');
         else summary.setAttribute('data-track', trackId);
