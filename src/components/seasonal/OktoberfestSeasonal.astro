@@ -1,0 +1,370 @@
+---
+// ─────────────────────────────────────────────────────────────────────────────
+// OKTOBERFEST SEASONAL — temporary decorative overlay.
+//
+// A small, calm set of hand-drawn Oktoberfest illustrations that gently fall
+// past the hero. An initial burst (the static pieces below) drops during the
+// first ~6s of every fresh page load, then a slow spawner keeps dropping ONE
+// new object every ~6–10s for as long as the visitor stays — never more than a
+// couple on screen at once. Purely decorative: the overlay is fixed,
+// pointer-events:none and sits BELOW the sticky nav / floating CTAs, so it can
+// never intercept taps, scrolling, Cal.com or any Book-a-session button.
+//
+// It plays on every fresh page load (no sessionStorage gate), but a single-loop
+// guard + astro:before-swap cleanup make sure only one spawner ever runs.
+//
+// EVERYTHING Oktoberfest lives in this one folder (src/components/seasonal/).
+// To remove after the season: delete this component + the <OktoberfestSeasonal/>
+// include on the three pages, and the small seasonal copy noted there. Nothing
+// else on the site depends on it.
+//
+// Dev / testing:
+//   • ?okt=off  (or ?oktoberfest=off)  → suppress the effect for this load
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Each falling piece. `mobile:true` pieces also show on small screens (kept to
+// ~5 so the phone viewport never feels crowded); `mobile:false` are desktop-only.
+// Sizes/speeds/drift are varied per piece for an organic, un-synced fall.
+type Piece = {
+  shape: 'pretzel' | 'mug' | 'heart' | 'edelweiss' | 'hat';
+  left: number;    // horizontal start, % of viewport
+  size: number;    // desktop width in px
+  dur: number;     // fall duration, s
+  delay: number;   // stagger, s
+  drift: number;   // horizontal drift, px (sign = direction)
+  r0: number;      // start rotation, deg
+  r1: number;      // end rotation, deg
+  op: number;      // peak opacity (kept subtle)
+  mobile: boolean; // also render on <768px
+};
+
+const PIECES: Piece[] = [
+  { shape: 'pretzel',   left: 7,  size: 46, dur: 7.2, delay: 0.2, drift:  28, r0: -8,  r1:  30, op: 0.85, mobile: true },
+  { shape: 'mug',       left: 21, size: 40, dur: 8.0, delay: 1.5, drift: -20, r0:  6,  r1: -22, op: 0.80, mobile: false },
+  { shape: 'heart',     left: 39, size: 34, dur: 6.9, delay: 0.8, drift:  22, r0: -4,  r1:  20, op: 0.82, mobile: true },
+  { shape: 'edelweiss', left: 55, size: 30, dur: 8.4, delay: 2.3, drift: -26, r0: 10,  r1: -28, op: 0.78, mobile: false },
+  { shape: 'hat',       left: 71, size: 46, dur: 7.6, delay: 0.5, drift:  16, r0: -6,  r1:  24, op: 0.85, mobile: true },
+  { shape: 'pretzel',   left: 88, size: 32, dur: 8.2, delay: 2.0, drift: -16, r0:  8,  r1: -26, op: 0.72, mobile: true },
+  { shape: 'edelweiss', left: 48, size: 26, dur: 7.0, delay: 3.1, drift:  24, r0:-10,  r1:  28, op: 0.70, mobile: false },
+  { shape: 'mug',       left: 32, size: 30, dur: 8.6, delay: 2.7, drift: -18, r0:  4,  r1: -18, op: 0.74, mobile: true },
+];
+---
+
+<!-- Decorative only. aria-hidden + role=presentation so screen readers skip it. -->
+<div class="gt-okt" data-gt-okt aria-hidden="true" role="presentation">
+  {/* Icon library — defined once as <symbol>s and referenced via <use> so each
+      falling piece stays lightweight (no repeated path markup). */}
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      {/* Pretzel — classic Bavarian Brezel: two loops, a crossed twist and a
+          rounded belly, drawn as thick warm-brown dough with a few cream salt
+          marks. Silhouette tuned to still read clearly at ~35px. */}
+      <symbol id="gt-okt-pretzel" viewBox="0 0 48 48">
+        <g
+          fill="none" stroke="#86532B" stroke-width="5"
+          stroke-linecap="round" stroke-linejoin="round"
+        >
+          {/* outer loops + rounded belly */}
+          <path d="M18 12 C 8 13 3.5 24 10 31 C 14 36 19 38.5 24 42 C 29 38.5 34 36 38 31 C 44.5 24 40 13 30 12" />
+          {/* the two crossed arms (the twist) */}
+          <path d="M18 12 C 20 20 24 22 28.5 27" />
+          <path d="M30 12 C 28 20 24 22 19.5 27" />
+        </g>
+        {/* salt */}
+        <g fill="#F4EFE6">
+          <circle cx="12.5" cy="19" r="1.35" />
+          <circle cx="35.5" cy="19" r="1.35" />
+          <circle cx="24" cy="14.5" r="1.25" />
+          <circle cx="18.5" cy="38" r="1.3" />
+          <circle cx="29.5" cy="38" r="1.3" />
+        </g>
+      </symbol>
+
+      {/* Maß beer mug — golden body, cream foam, brown outline */}
+      <symbol id="gt-okt-mug" viewBox="0 0 48 48">
+        <g stroke="#86532B" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+          <path fill="none" d="M31 22h4a6 6 0 0 1 0 12h-3" />
+          <path fill="#C6A15A" d="M12 20h20v18a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4z" />
+          <path fill="#F4EFE6" d="M11 20c-1-3 1-5 3-5 0-3 4-4 6-2 1-2 5-2 6 1 3-1 5 2 3 4 2 1 1 4-2 4H13c-2 0-2-1-2-2z" />
+          <path fill="none" stroke="#86532B" stroke-width="1.4" opacity="0.5" d="M18 26v11M24 26v11" />
+        </g>
+      </symbol>
+
+      {/* Lebkuchenherz — brown heart with cream piped border */}
+      <symbol id="gt-okt-heart" viewBox="0 0 48 48">
+        <path
+          fill="#9A5A2E"
+          d="M24 41C9 30 6 20 12.5 15.5c4-2.8 8.5-.3 9.5 3.3l2 3.7 2-3.7c1-3.6 5.5-6.1 9.5-3.3C42 20 39 30 24 41z"
+        />
+        <path
+          fill="none" stroke="#F4EFE6" stroke-width="1.5"
+          stroke-dasharray="1.4 2.6" stroke-linecap="round"
+          d="M24 36.5C12.5 27.8 10 19.8 15 16.4c3-2 6.4-.4 7.2 2.4l1.8 3 1.8-3c.8-2.8 4.2-4.4 7.2-2.4 5 3.4 2.5 11.4-9 20.1z"
+        />
+      </symbol>
+
+      {/* Edelweiss — ivory petals, golden centre, muted green leaves */}
+      <symbol id="gt-okt-edelweiss" viewBox="0 0 48 48">
+        <g fill="#59684C">
+          <path d="M9 34c4-3 9-2 11 1-4 2-9 1-11-1z" />
+          <path d="M39 34c-4-3-9-2-11 1 4 2 9 1 11-1z" />
+        </g>
+        <g fill="#F4EFE6" stroke="#CFC4AC" stroke-width="0.7">
+          <ellipse cx="24" cy="12.5" rx="3.1" ry="7.5" />
+          <ellipse cx="24" cy="12.5" rx="3.1" ry="7.5" transform="rotate(51.4 24 22)" />
+          <ellipse cx="24" cy="12.5" rx="3.1" ry="7.5" transform="rotate(102.8 24 22)" />
+          <ellipse cx="24" cy="12.5" rx="3.1" ry="7.5" transform="rotate(154.2 24 22)" />
+          <ellipse cx="24" cy="12.5" rx="3.1" ry="7.5" transform="rotate(205.6 24 22)" />
+          <ellipse cx="24" cy="12.5" rx="3.1" ry="7.5" transform="rotate(257 24 22)" />
+          <ellipse cx="24" cy="12.5" rx="3.1" ry="7.5" transform="rotate(308.4 24 22)" />
+        </g>
+        <g fill="#C6A15A">
+          <circle cx="24" cy="22" r="2" />
+          <circle cx="21" cy="21" r="1.3" />
+          <circle cx="27" cy="21" r="1.3" />
+          <circle cx="22.5" cy="24" r="1.3" />
+          <circle cx="25.5" cy="24" r="1.3" />
+        </g>
+      </symbol>
+
+      {/* Bavarian felt hat — muted green, brown band, golden feather */}
+      <symbol id="gt-okt-hat" viewBox="0 0 48 48">
+        <g stroke="#3A2A1C" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+          <path fill="#C6A15A" d="M32 25c3-6 5-11 9-15-1 6-1 12-5 17z" />
+          <path fill="#59684C" d="M15 31c-1-11 4-18 9-18s10 7 9 18z" />
+          <path fill="#4B573D" d="M8 31c4-3 10-4 16-4s12 1 16 4c-4 3-10 4-16 4S12 34 8 31z" />
+          <path fill="#7A4A24" stroke-width="1.2" d="M16 30c5 2 11 2 16 0l-1-3c-4.5 1.7-9.5 1.7-14 0z" />
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  {PIECES.map((p) => (
+    <span
+      class="gt-okt__item"
+      data-mobile={p.mobile ? '' : undefined}
+      style={`--l:${p.left}%;--w:${p.size}px;--dur:${p.dur}s;--delay:${p.delay}s;--drift:${p.drift}px;--r0:${p.r0}deg;--r1:${p.r1}deg;--op:${p.op};`}
+    >
+      <svg class="gt-okt__svg" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <use href={`#gt-okt-${p.shape}`} />
+      </svg>
+    </span>
+  ))}
+</div>
+
+<style>
+  /* Fixed overlay pinned to the viewport. Hidden until the client script decides
+     to play (respects sessionStorage + prefers-reduced-motion). overflow:hidden
+     clips any horizontal drift so a piece can never create a horizontal scrollbar. */
+  .gt-okt {
+    position: fixed;
+    inset: 0;
+    display: none;               /* activated by JS via .is-active */
+    overflow: hidden;
+    pointer-events: none;        /* never intercept taps / clicks / scroll */
+    z-index: 30;                 /* above hero content, below nav (z-50) + CTAs */
+  }
+  .gt-okt.is-active {
+    display: block;
+  }
+
+  .gt-okt__item {
+    position: absolute;
+    top: 0;
+    left: var(--l);
+    width: var(--w);
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: gt-okt-fall var(--dur) cubic-bezier(0.45, 0.05, 0.55, 0.95) var(--delay) 1 both;
+  }
+  .gt-okt__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* soft depth so pieces read as paper, not stickers */
+    filter: drop-shadow(0 1px 2px rgba(28, 22, 17, 0.12));
+  }
+
+  @keyframes gt-okt-fall {
+    0% {
+      transform: translate3d(0, -16vh, 0) rotate(var(--r0));
+      opacity: 0;
+    }
+    12% {
+      opacity: var(--op);
+    }
+    50% {
+      transform: translate3d(var(--drift), 46vh, 0)
+        rotate(calc((var(--r0) + var(--r1)) / 2));
+    }
+    86% {
+      opacity: var(--op);
+    }
+    100% {
+      transform: translate3d(calc(var(--drift) * 0.3), 118vh, 0)
+        rotate(var(--r1));
+      opacity: 0;
+    }
+  }
+
+  /* Mobile: drop the desktop-only pieces and shrink the rest so the small
+     viewport stays calm (leaves ~5 gently falling objects). */
+  @media (max-width: 767px) {
+    .gt-okt__item:not([data-mobile]) {
+      display: none;
+    }
+    .gt-okt__item {
+      width: calc(var(--w) * 0.7);
+    }
+  }
+
+  /* Accessibility: users who ask for reduced motion never see the fall. The JS
+     also bails out, but this is a hard CSS guarantee. */
+  @media (prefers-reduced-motion: reduce) {
+    .gt-okt {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-gt-okt]');
+    if (!root) return;
+
+    // Suppress for this load with ?okt=off / ?oktoberfest=off, or when the
+    // visitor prefers reduced motion.
+    var params = new URLSearchParams(window.location.search);
+    var okt = params.get('okt') || params.get('oktoberfest');
+    if (okt === 'off') return;
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    } catch (e) {}
+
+    // Single-loop guard: only ever one spawner, even if a client-side navigation
+    // (Astro view transitions) somehow re-runs this script.
+    if ((window as any).__gtOktRunning) return;
+    (window as any).__gtOktRunning = true;
+
+    root.classList.add('is-active');
+
+    // Tidy up the initial static burst as each piece finishes its single fall.
+    Array.prototype.forEach.call(
+      root.querySelectorAll('.gt-okt__item'),
+      function (el: Element) {
+        el.addEventListener('animationend', function () {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        });
+      }
+    );
+
+    var SHAPES = ['pretzel', 'mug', 'heart', 'edelweiss', 'hat'];
+    var isMobile = false;
+    try { isMobile = window.matchMedia('(max-width: 767px)').matches; } catch (e) {}
+    // Keep it calm: at most 2 (mobile) / 3 (desktop) spawned pieces on screen.
+    var MAX_LIVE = isMobile ? 2 : 3;
+
+    var live = 0;
+    var timer: number | null = null;
+    var stopped = false;
+
+    function rand(min: number, max: number) { return Math.random() * (max - min) + min; }
+    function pick(arr: string[]) { return arr[(Math.random() * arr.length) | 0]; }
+
+    // ONE shared implementation for EVERY object type (no per-shape sizing).
+    //
+    // Dynamically injected nodes do NOT carry Astro's scoped-style attribute
+    // (data-astro-cid-…), so NONE of this component's scoped CSS
+    // (.gt-okt__item / .gt-okt__svg) applies to them. Therefore every dimension
+    // AND the animation is set inline here, at creation time — independent of
+    // any stylesheet, Tailwind class, inherited size or SVG intrinsic size. Only
+    // the global @keyframes gt-okt-fall (unscoped) is relied upon.
+    var HARD_MAX = 60; // px — nothing may ever render larger, in any dimension.
+
+    function spawn() {
+      if (stopped || live >= MAX_LIVE) return;
+
+      var shape = pick(SHAPES);
+      // Constrained random size — desktop 32–55px, mobile 26–42px — then a hard
+      // runtime clamp so a piece can NEVER exceed 60px regardless of anything.
+      var size = isMobile ? rand(26, 42) : rand(32, 55);
+      size = Math.round(Math.min(size, HARD_MAX));
+      var left = rand(4, 90);
+      var dur = rand(7, 9);
+      var drift = Math.round(rand(14, 30)) * (Math.random() < 0.5 ? -1 : 1);
+      var r0 = Math.round(rand(-10, 10));
+      var r1 = Math.round(rand(-30, 30));
+      var op = rand(0.7, 0.85).toFixed(2);
+
+      // Wrapper — explicit inline box + hard max clamp.
+      var span = document.createElement('span');
+      span.style.position = 'absolute';
+      span.style.top = '0';
+      span.style.left = left + '%';
+      span.style.width = size + 'px';
+      span.style.height = size + 'px';
+      span.style.maxWidth = HARD_MAX + 'px';
+      span.style.maxHeight = HARD_MAX + 'px';
+      span.style.opacity = '0';
+      span.style.pointerEvents = 'none';
+      span.style.willChange = 'transform, opacity';
+      // Custom props consumed by the global gt-okt-fall keyframes.
+      span.style.setProperty('--drift', drift + 'px');
+      span.style.setProperty('--r0', r0 + 'deg');
+      span.style.setProperty('--r1', r1 + 'deg');
+      span.style.setProperty('--op', op);
+      span.style.animation =
+        'gt-okt-fall ' + dur + 's cubic-bezier(0.45, 0.05, 0.55, 0.95) 0s 1 both';
+
+      // SVG — built with createElementNS, explicit width/height ATTRIBUTES and
+      // inline styles, proper viewBox, and a 100%/max-100% cap so it always
+      // scales to fill the wrapper and can never use default replaced sizing.
+      var NS = 'http://www.w3.org/2000/svg';
+      var svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', '0 0 48 48');
+      svg.setAttribute('width', String(size));
+      svg.setAttribute('height', String(size));
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      svg.style.display = 'block';
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      svg.style.maxWidth = '100%';
+      svg.style.maxHeight = '100%';
+      svg.style.filter = 'drop-shadow(0 1px 2px rgba(28, 22, 17, 0.12))';
+      var use = document.createElementNS(NS, 'use');
+      use.setAttribute('href', '#gt-okt-' + shape);
+      // Legacy fallback for older Safari that only honours xlink:href.
+      use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#gt-okt-' + shape);
+      svg.appendChild(use);
+      span.appendChild(svg);
+
+      live++;
+      span.addEventListener('animationend', function () {
+        live--;
+        if (span.parentNode) span.parentNode.removeChild(span);
+      });
+      root.appendChild(span);
+    }
+
+    function schedule() {
+      if (stopped) return;
+      timer = window.setTimeout(function () {
+        spawn();
+        schedule();
+      }, rand(6000, 10000));
+    }
+
+    // Start the slow trickle once the initial burst (~6s) has settled.
+    window.setTimeout(schedule, 6500);
+
+    // Stop cleanly on client-side navigation so no orphan loop survives.
+    function cleanup() {
+      stopped = true;
+      if (timer !== null) window.clearTimeout(timer);
+      (window as any).__gtOktRunning = false;
+      document.removeEventListener('astro:before-swap', cleanup);
+    }
+    document.addEventListener('astro:before-swap', cleanup);
+  })();
+</script>

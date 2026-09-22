@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/sections/Hero.astro';
+import OktoberfestSeasonal from '../../components/seasonal/OktoberfestSeasonal.astro';
 import ApproachShort from '../../components/sections/short/ApproachShort.astro';
 import AboutShort from '../../components/sections/short/AboutShort.astro';
 import LegsShort from '../../components/sections/short/LegsShort.astro';
@@ -13,8 +14,19 @@ const seo = strings.de.seo;
 ---
 
 <BaseLayout lang="de" title={seo.title} description={seo.description}>
+  {/* OKTOBERFEST SEASONAL (temporär) — dekorative fallende Ebene + eine kleine
+      saisonale Zeile im Hero. Zum Entfernen: diesen Include + die seasonalNote-Prop
+      löschen und src/components/seasonal/ entfernen. */}
+  <OktoberfestSeasonal />
   <div id="short-hero-wrap">
-    <Hero lang="de" trustMarker="Ausbildung in Chiang Mai, Thailand" />
+    <Hero
+      lang="de"
+      trustMarker="Ausbildung in Chiang Mai, Thailand"
+      seasonalNote={{
+        eyebrow: 'Oktoberfest Recovery',
+        text: 'Entspanne nach langen Tagen auf den Beinen und im Festzelt.',
+      }}
+    />
   </div>
   <ApproachShort lang="de" />
   <AboutShort lang="de" />

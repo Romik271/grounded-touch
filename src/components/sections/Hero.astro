@@ -9,9 +9,13 @@ interface Props {
   // the CTA. Only passed on /long (experimental) — omitted elsewhere so / and
   // /de/ are unchanged.
   trustMarker?: string;
+  // OKTOBERFEST SEASONAL (temporary): one small, secondary line under the lede.
+  // Passed only by the pages that opt in; omit to remove the copy. See
+  // src/components/seasonal/OktoberfestSeasonal.astro.
+  seasonalNote?: { eyebrow: string; text: string };
 }
 
-const { lang = 'en', trustMarker } = Astro.props;
+const { lang = 'en', trustMarker, seasonalNote } = Astro.props;
 const tr = t(lang).hero;
 ---
 
@@ -26,6 +30,14 @@ const tr = t(lang).hero;
         <p class="mt-6 lede whitespace-pre-line">
           {tr.lede}
         </p>
+
+        {/* OKTOBERFEST SEASONAL (temporary) — small, secondary seasonal line. */}
+        {seasonalNote && (
+          <p class="gt-okt-note mt-5 max-w-prose2 text-[14px] md:text-[15px] leading-snug text-stone">
+            <span class="block index-label text-terra mb-1">{seasonalNote.eyebrow}</span>
+            {seasonalNote.text}
+          </p>
+        )}
 
         {trustMarker && (
           <p class="hero-trust mt-6 mb-2 flex items-center gap-1.5 text-[14px] md:text-[15px] font-normal leading-tight text-stone">
