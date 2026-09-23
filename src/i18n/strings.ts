@@ -227,6 +227,15 @@ export const strings = {
             q: 'Professional boundaries?',
             a: 'Sessions are strictly professional and focused on relaxation, recovery and wellbeing - nothing more.',
           },
+          {
+            q: 'Do you offer gift vouchers?',
+            a: 'Yes - for 60 or 90-minute sessions. A thoughtful gift for a friend, partner or someone you care about.\n\nGet a voucher →',
+            link: {
+              text: 'Get a voucher →',
+              href: 'https://wa.me/4915233935530?text=Hi%20Roman%2C%20I%27d%20like%20to%20get%20a%20Grounded%20Touch%20gift%20voucher.',
+              track: 'gift_voucher_whatsapp',
+            },
+          },
         ],
       },
     },
@@ -456,6 +465,15 @@ export const strings = {
           {
             q: 'Professionelle Grenzen?',
             a: 'Die Sessions sind rein professionell und auf Entspannung, Regeneration und Wohlbefinden ausgerichtet - nicht mehr.',
+          },
+          {
+            q: 'Gibt es Gutscheine?',
+            a: 'Ja - für 60- oder 90-minütige Sessions. Ein schönes Geschenk für einen Freund, Partner oder einen lieben Menschen.\n\nGutschein kaufen →',
+            link: {
+              text: 'Gutschein kaufen →',
+              href: 'https://wa.me/4915233935530?text=Hi%20Roman%2C%20ich%20w%C3%BCrde%20gerne%20einen%20Grounded%20Touch%20Gutschein%20kaufen.',
+              track: 'gift_voucher_whatsapp',
+            },
           },
         ],
       },

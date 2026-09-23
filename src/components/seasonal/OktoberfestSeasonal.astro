@@ -13,13 +13,23 @@
 // It plays on every fresh page load (no sessionStorage gate), but a single-loop
 // guard + astro:before-swap cleanup make sure only one spawner ever runs.
 //
+// SEASONAL WINDOW: active through 2026-10-04 in Europe/Berlin (Munich) local
+// time. From 2026-10-05 00:00 Berlin the treatment goes dormant on its own —
+// no falling decorations, no seasonal copy, no timers/loops ever start — while
+// the code stays in the project for reuse next year. The cutoff is evaluated at
+// RUNTIME against the visitor's Berlin-local date (the site is a static build,
+// so a build-time check would freeze at deploy time), and the decision is made
+// synchronously BEFORE the hero paints so the copy never flashes after expiry.
+//
 // EVERYTHING Oktoberfest lives in this one folder (src/components/seasonal/).
 // To remove after the season: delete this component + the <OktoberfestSeasonal/>
 // include on the three pages, and the small seasonal copy noted there. Nothing
 // else on the site depends on it.
 //
 // Dev / testing:
-//   • ?okt=off  (or ?oktoberfest=off)  → suppress the effect for this load
+//   • ?oktoberfest=1  (or ?okt=1 / ?okt=on) → force the treatment ON, even after
+//     the cutoff date, for testing.
+//   • ?okt=off  (or ?oktoberfest=off)       → suppress the effect for this load.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Each falling piece. `mobile:true` pieces also show on small screens (kept to
@@ -49,6 +59,42 @@ const PIECES: Piece[] = [
   { shape: 'mug',       left: 32, size: 30, dur: 8.6, delay: 2.7, drift: -18, r0:  4,  r1: -18, op: 0.74, mobile: true },
 ];
 ---
+
+<!--
+  Seasonal gate — runs SYNCHRONOUSLY (is:inline, not deferred) at this position,
+  which sits before the hero on every page that includes the component. It marks
+  <html> with .gt-okt-expired the moment the season is over, so the CSS below can
+  hide the hero copy BEFORE it paints (no flash). It also stashes window.__gtOktActive
+  for the deferred animation script to read. Kept inline + tiny so it never blocks.
+-->
+<script is:inline>
+  (function () {
+    var active = true;
+    try {
+      var p = new URLSearchParams(window.location.search);
+      var okt = p.get('okt') || p.get('oktoberfest');
+      if (okt === '1' || okt === 'on') {
+        active = true; // dev override: force ON even past the cutoff
+      } else {
+        // Berlin-local calendar date as YYYYMMDD (locale-independent via parts).
+        var parts = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Europe/Berlin',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).formatToParts(new Date());
+        var f = {};
+        for (var i = 0; i < parts.length; i++) f[parts[i].type] = parts[i].value;
+        var ymd = parseInt(f.year + f.month + f.day, 10);
+        active = ymd <= 20261004; // active through 2026-10-04 Berlin, dormant from the 5th
+      }
+    } catch (e) {
+      active = true; // never break the page — fall back to the pre-cutoff behaviour
+    }
+    window.__gtOktActive = active;
+    if (!active) document.documentElement.classList.add('gt-okt-expired');
+  })();
+</script>
 
 <!-- Decorative only. aria-hidden + role=presentation so screen readers skip it. -->
 <div class="gt-okt" data-gt-okt aria-hidden="true" role="presentation">
@@ -225,12 +271,26 @@ const PIECES: Piece[] = [
       display: none !important;
     }
   }
+
+  /* Seasonal copy is rendered in the hero (by the host pages / Hero.astro), so
+     it lives OUTSIDE this component's scope — hence :global(). Once the season
+     is over, the inline gate above adds .gt-okt-expired to <html> before paint,
+     which removes the copy with no flash. During the season the class is absent,
+     so the copy renders exactly as before (server-side, no JS reveal needed). */
+  :global(html.gt-okt-expired .gt-okt-note) {
+    display: none !important;
+  }
 </style>
 
 <script>
   (function () {
     var root = document.querySelector('[data-gt-okt]');
     if (!root) return;
+
+    // Past the seasonal cutoff (decided synchronously by the inline gate above,
+    // in Europe/Berlin time; ?oktoberfest=1 forces it back on). Bail before any
+    // decoration, timer or loop is created.
+    if ((window as any).__gtOktActive === false) return;
 
     // Suppress for this load with ?okt=off / ?oktoberfest=off, or when the
     // visitor prefers reduced motion.
