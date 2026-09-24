@@ -3,7 +3,53 @@
 // Every tracked click sends one row to the Apps Script endpoint.
 
 const ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbyw-Cpzl1jIEDggnF4aPRuxXet9S1x4fsmxNkjkxOhWgV8QaLTsmZ06FSAZotf5UxV1/exec';
+  'https://script.google.com/macros/s/AKfycbz5OdLh8KWmiWZUhCdV40557043dqzqfRd6VuLJqPPEo8BI1ip88Gh2z6pCdPWbUaU5/exec';
+
+// page_visit_id — an EPHEMERAL, random per-page-lifecycle id used only to group
+// the events of a single page visit into one journey (page_view → book_60min →
+// cal_opened → …). It lives ONLY in this module's memory: it is never written
+// to cookies / sessionStorage / localStorage / IndexedDB / the URL / the DOM,
+// and is never derived from the visitor (UA, IP, screen, language, referrer,
+// device). A full reload / navigation reloads this module and mints a new id —
+// which is intentional; the same visitor is deliberately NOT re-identifiable
+// across reloads. It is generated ONCE here so callers/components never make
+// their own id.
+function generatePageVisitId(): string {
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+  } catch {
+    /* fall through to getRandomValues */
+  }
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      const b = new Uint8Array(16);
+      crypto.getRandomValues(b);
+      // Format as an RFC-4122 v4-style string (purely cosmetic — any random
+      // value works; this just keeps the shape consistent with randomUUID()).
+      b[6] = (b[6] & 0x0f) | 0x40;
+      b[8] = (b[8] & 0x3f) | 0x80;
+      const h: string[] = [];
+      for (let i = 0; i < 16; i++) h.push(b[i].toString(16).padStart(2, '0'));
+      return (
+        h[0] + h[1] + h[2] + h[3] + '-' +
+        h[4] + h[5] + '-' +
+        h[6] + h[7] + '-' +
+        h[8] + h[9] + '-' +
+        h[10] + h[11] + h[12] + h[13] + h[14] + h[15]
+      );
+    }
+  } catch {
+    /* fall through to Math.random */
+  }
+  // Last-resort fallback when Web Crypto is entirely unavailable. Still purely
+  // in-memory and ephemeral; only the randomness quality is lower.
+  return 'pv-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+// Minted ONCE per page lifecycle, held only in JS memory.
+const PAGE_VISIT_ID = generatePageVisitId();
 
 type DeviceKind = 'mobile' | 'tablet' | 'desktop';
 
@@ -38,6 +84,10 @@ export function trackEvent(details: TrackDetails): void {
     language: details.language,
     device: details.device,
     referrer: details.referrer,
+    // Injected centrally so every event of this page visit shares one id and no
+    // caller/component ever generates its own. Sits between referrer and
+    // user_agent to match the destination Sheet's column order.
+    page_visit_id: PAGE_VISIT_ID,
     user_agent: details.user_agent,
     screen_width: details.screen_width,
   };

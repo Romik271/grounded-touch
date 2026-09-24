@@ -8,6 +8,7 @@ import LegsShort from '../components/sections/short/LegsShort.astro';
 import SessionsShort from '../components/sections/short/SessionsShort.astro';
 import ReviewsShort from '../components/sections/short/ReviewsShort.astro';
 import FaqShort from '../components/sections/short/FaqShort.astro';
+import CalExitFeedback from '../components/CalExitFeedback.astro';
 ---
 
 <BaseLayout>
@@ -33,6 +34,14 @@ import FaqShort from '../components/sections/short/FaqShort.astro';
 
   <!-- Mobile-only sticky landing spot for the Hero "Book a session" button. -->
   <div id="short-hero-book-dock" aria-hidden="true"></div>
+
+  {/* Exit-feedback for the Cal booking overlay. Reuses the homepage's own
+      "book a massage" WhatsApp destination + its existing whatsapp_contact
+      tracking event. */}
+  <CalExitFeedback
+    whatsappHref="https://wa.me/4915233935530?text=Hi%20Roman%2C%20I%20would%20like%20to%20book%20a%20massage."
+    whatsappTrack="whatsapp_contact"
+  />
 
   <style>
     /* 1. Hide the "The approach" secondary link inside the Hero.

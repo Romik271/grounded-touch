@@ -2,6 +2,7 @@
 import HotelLayout from '../layouts/HotelLayout.astro';
 import EditorialImage from '../components/EditorialImage.astro';
 import OktoberfestSeasonal from '../components/seasonal/OktoberfestSeasonal.astro';
+import CalExitFeedback from '../components/CalExitFeedback.astro';
 
 // ── Hotel booking destination ───────────────────────────────────────────────
 // Dedicated Cal.com event for HOTEL sessions (90 min / €160). Used ONLY by the
@@ -783,4 +784,12 @@ const reviews = [
       });
     });
   </script>
+
+  {/* Exit-feedback for the Cal booking overlay — same shared component as the
+      homepage. Reuses the hotel page's existing WhatsApp destination + its
+      existing hotel_whatsapp tracking event. */}
+  <CalExitFeedback
+    whatsappHref={WHATSAPP_BOOK}
+    whatsappTrack="hotel_whatsapp"
+  />
 </HotelLayout>

@@ -1,0 +1,424 @@
+---
+// Cal.com exit-feedback — ONE reusable implementation shared by the normal
+// booking flow (homepage) and /hotel. Mounted per page (index.astro,
+// de/index.astro, hotel.astro), NOT via the layout, so /long keeps its own
+// separate booking-recovery experiment untouched.
+//
+// It reuses the existing pieces only — no new tracking columns, no separate
+// analytics system, no change to the Cal config / booking flow:
+//   • window.trackById(id)            → existing tracker (button_id = id)
+//   • window.__calReady / __calOnReady → existing Cal-init bridge
+//   • Cal.ns[ns]("on", …) embed events → existing public embed events API
+//   • <cal-modal-box> visibility       → parent-side close signal. The current
+//     Cal embed closes by keeping the <cal-modal-box> in the DOM (state stays
+//     "loaded") and flipping its own inline style to visibility:hidden. We fire
+//     on that visible→hidden transition, and also keep the legacy
+//     state="closed" attribute as a backwards-compatible fallback.
+//
+// The WhatsApp fallback reuses the page's EXISTING WhatsApp destination + its
+// EXISTING tracking event (passed in via props); the anchor carries data-track
+// so the existing delegated click listener records it — no parallel tracking.
+
+import type { Lang } from '../i18n/strings';
+
+interface Props {
+  lang?: Lang;
+  /** Existing per-page WhatsApp destination (reuse the page's own URL). */
+  whatsappHref: string;
+  /** Existing per-page WhatsApp tracking id (e.g. whatsapp_contact / hotel_whatsapp). */
+  whatsappTrack: string;
+}
+
+const { lang = 'en', whatsappHref, whatsappTrack } = Astro.props;
+
+const copy = {
+  en: {
+    question: 'What stopped you from booking?',
+    noTime: "Couldn't find a suitable time",
+    price: 'Price',
+    browsing: 'Just looking for now',
+    other: 'Something else',
+    skip: 'Skip',
+    close: 'Close',
+    waTitle: 'Need another time?',
+    waText: 'Message me on WhatsApp — I may have additional availability.',
+    waButton: 'Message me on WhatsApp',
+  },
+  de: {
+    question: 'Was hat dich vom Buchen abgehalten?',
+    noTime: 'Keine passende Zeit gefunden',
+    price: 'Preis',
+    browsing: 'Schaue nur',
+    other: 'Etwas anderes',
+    skip: 'Überspringen',
+    close: 'Schließen',
+    waTitle: 'Andere Zeit gesucht?',
+    waText: 'Schreib mir auf WhatsApp — vielleicht habe ich weitere Termine.',
+    waButton: 'Auf WhatsApp schreiben',
+  },
+}[lang === 'de' ? 'de' : 'en'];
+---
+
+<!-- Non-blocking bottom sheet (no full-screen overlay, container is transparent
+     and non-interactive) so it never captures touch/scroll or overlaps Cal.
+     It only ever appears AFTER Cal has fully closed. -->
+<div
+  id="cal-exit"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="cal-exit-title"
+  aria-hidden="true"
+>
+  <div class="cal-exit-card">
+    <button type="button" class="cal-exit-close" data-cal-exit-dismiss aria-label={copy.close}>
+      <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <path d="M2 2l14 14M16 2L2 16" />
+      </svg>
+    </button>
+
+    {/* Step 1 — the question + one-tap answers */}
+    <div data-cal-exit-step="ask">
+      <h2 id="cal-exit-title" class="font-serif text-lg md:text-xl text-ink pr-8">
+        {copy.question}
+      </h2>
+      <div class="cal-exit-options">
+        <button type="button" class="cal-exit-option" data-cal-exit-answer="no_time">{copy.noTime}</button>
+        <button type="button" class="cal-exit-option" data-cal-exit-answer="price">{copy.price}</button>
+        <button type="button" class="cal-exit-option" data-cal-exit-answer="browsing">{copy.browsing}</button>
+        <button type="button" class="cal-exit-option" data-cal-exit-answer="other">{copy.other}</button>
+      </div>
+      <button type="button" class="cal-exit-skip" data-cal-exit-answer="skip">{copy.skip}</button>
+    </div>
+
+    {/* Step 2 — WhatsApp fallback (only shown after "Couldn't find a suitable time") */}
+    <div data-cal-exit-step="whatsapp" hidden>
+      <h2 class="font-serif text-lg md:text-xl text-ink pr-8">{copy.waTitle}</h2>
+      <p class="mt-2 text-sm text-ink/75 leading-relaxed">{copy.waText}</p>
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-track={whatsappTrack}
+        data-cal-exit-wa
+        class="mt-4 inline-flex items-center gap-2 rounded-full bg-ink text-ivory px-6 py-3 text-sm transition-colors duration-500 ease-gentle hover:bg-terra"
+      >
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.892c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411m-8.475 18.297h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.975 1.001-3.635-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.459-9.887 9.942-9.887 2.654 0 5.148 1.032 7.021 2.905a9.82 9.82 0 0 1 2.909 6.99c-.002 5.45-4.458 9.878-9.935 9.878"/>
+        </svg>
+        <span>{copy.waButton}</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Non-blocking bottom sheet — the container is transparent and NOT
+     interactive (pointer-events:none), so page scroll and touch always pass
+     through; only the card itself is interactive. No body overflow lock, no
+     custom touch/scroll handling. */
+  #cal-exit {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60; /* above the sticky header (z-50); Cal is already gone by now */
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    pointer-events: none;
+  }
+
+  .cal-exit-card {
+    position: relative;
+    width: 100%;
+    max-width: 26rem;
+    background: #FBF8F1; /* warm ivory-white, lifts off the ivory page */
+    border: 1px solid rgba(28, 25, 23, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 10px 40px rgba(28, 25, 23, 0.18);
+    padding: 1.25rem 1.25rem 1.35rem;
+    transform: translateY(140%);
+    transition: transform 400ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    pointer-events: auto;
+  }
+  #cal-exit.is-visible .cal-exit-card {
+    transform: translateY(0);
+  }
+
+  .cal-exit-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(28, 25, 23, 0.55);
+    transition: color 300ms ease;
+  }
+  .cal-exit-close:hover {
+    color: rgba(28, 25, 23, 0.9);
+  }
+
+  .cal-exit-options {
+    margin-top: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cal-exit-option {
+    width: 100%;
+    text-align: left;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(28, 25, 23, 0.14);
+    border-radius: 10px;
+    background: #F4EFE6;
+    color: #1C1611;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    transition: border-color 200ms ease, background-color 200ms ease;
+  }
+  .cal-exit-option:hover {
+    border-color: #A54A28;
+    background: #F0E9DB;
+  }
+  .cal-exit-option:active {
+    background: #EDE6D7;
+  }
+
+  .cal-exit-skip {
+    display: block;
+    margin: 0.85rem auto 0;
+    padding: 0.35rem 0.75rem;
+    color: #6B6157;
+    font-size: 0.8rem;
+    transition: color 300ms ease;
+  }
+  .cal-exit-skip:hover {
+    color: #1C1611;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cal-exit-card {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    // Guard against double-initialization (Astro HMR / view transitions).
+    if ((window as any).__gtCalExitInit) return;
+    (window as any).__gtCalExitInit = true;
+
+    const sheet = document.getElementById('cal-exit');
+    if (!sheet) return;
+    const card = sheet.querySelector('.cal-exit-card') as HTMLElement | null;
+    const askStep = sheet.querySelector('[data-cal-exit-step="ask"]') as HTMLElement | null;
+    const waStep = sheet.querySelector('[data-cal-exit-step="whatsapp"]') as HTMLElement | null;
+    if (!card || !askStep || !waStep) return;
+
+    // Shown at most ONCE per page lifecycle. In-memory only — no sessionStorage
+    // / localStorage / cookies / any persistent storage. This flag survives Cal
+    // reopens within the same page load (so closing feedback and reopening then
+    // reclosing Cal won't show it again), and a full reload/navigation resets it
+    // — which is the intended behaviour.
+    let feedbackShown = false;
+
+    function alreadyShown(): boolean {
+      return feedbackShown;
+    }
+    function markShown(): void {
+      feedbackShown = true;
+    }
+
+    function track(id: string): void {
+      try {
+        const t = (window as any).trackById;
+        if (typeof t === 'function') t(id);
+      } catch (e) {
+        /* analytics must never break the page */
+      }
+    }
+
+    // ----- Per-opening state (reset each time the overlay opens) -----
+    let openedAt: number | null = null; // when the current overlay was viewed
+    let bookingSucceeded = false;        // success during the current opening
+
+    function onOpen(): void {
+      if (openedAt === null) openedAt = Date.now();
+      bookingSucceeded = false;
+    }
+    function onBookingSuccess(): void {
+      // A completed booking must always suppress the feedback, even if Cal
+      // closes immediately afterwards.
+      bookingSucceeded = true;
+    }
+
+    // ----- Feedback sheet UI -----
+    function showFeedback(): void {
+      if (alreadyShown()) return;
+      markShown();
+      sheet!.setAttribute('aria-hidden', 'false');
+      void card!.offsetWidth; // force reflow so the slide-up runs from hidden
+      sheet!.classList.add('is-visible');
+    }
+    function hideFeedback(): void {
+      sheet!.classList.remove('is-visible');
+      sheet!.setAttribute('aria-hidden', 'true');
+    }
+    function showWhatsAppStep(): void {
+      askStep!.hidden = true;
+      waStep!.hidden = false;
+    }
+
+    // One-tap answers: record the event, then either close or (for "no time")
+    // transform the same sheet into the WhatsApp fallback.
+    card.addEventListener('click', function (e) {
+      const target = e.target as Element | null;
+
+      const answerEl = target && target.closest ? target.closest('[data-cal-exit-answer]') : null;
+      if (answerEl) {
+        const answer = answerEl.getAttribute('data-cal-exit-answer');
+        if (answer === 'no_time') {
+          track('cal_exit_no_time');
+          showWhatsAppStep();
+        } else if (answer === 'price') {
+          track('cal_exit_price');
+          hideFeedback();
+        } else if (answer === 'browsing') {
+          track('cal_exit_browsing');
+          hideFeedback();
+        } else if (answer === 'other') {
+          track('cal_exit_other');
+          hideFeedback();
+        } else {
+          // skip — not tracked (avoid unnecessary events)
+          hideFeedback();
+        }
+        return;
+      }
+
+      // Close control (X).
+      if (target && target.closest && target.closest('[data-cal-exit-dismiss]')) {
+        hideFeedback();
+        return;
+      }
+
+      // WhatsApp link: tracked by the existing delegated data-track listener;
+      // we only tidy the sheet away once it has opened.
+      if (target && target.closest && target.closest('[data-cal-exit-wa]')) {
+        setTimeout(hideFeedback, 50);
+      }
+    });
+
+    // ----- Reliable close signal (parent-page element, never the iframe) -----
+    // Cal appends <cal-modal-box> to THIS document. On close it keeps the
+    // element in the DOM (state stays "loaded") and hides it via its own inline
+    // style (visibility:hidden); older embeds set state="closed" instead. We
+    // treat either as a close. Internal navigation inside Cal does NOT hide the
+    // box, so we never trigger on normal in-Cal navigation. handleClose() is
+    // idempotent per opening (it nulls openedAt on the first eligible call), so
+    // if both signals fire we do not double-process.
+    function handleClose(): void {
+      if (openedAt === null) return;                 // never opened / already handled
+      const openMs = Date.now() - openedAt;
+      openedAt = null;                               // this opening has ended
+      if (bookingSucceeded) return;                  // completed booking → never
+      if (alreadyShown()) return;                    // once per page lifecycle
+      if (openMs < 8000) return;                     // 8s minimum open time
+      // Wait for Cal's close to fully settle, then show.
+      setTimeout(function () {
+        if (bookingSucceeded) return; // extra guard
+        showFeedback();
+      }, 400);
+    }
+
+    // Decide whether a <cal-modal-box> currently represents a closed overlay.
+    function isBoxClosed(box: Element): boolean {
+      if (box.getAttribute('state') === 'closed') return true; // legacy fallback
+      const inline = (box as HTMLElement).style;
+      if (inline && inline.visibility === 'hidden') return true;
+      try {
+        const cs = window.getComputedStyle(box);
+        if (cs.visibility === 'hidden' || cs.display === 'none') return true;
+      } catch {
+        /* getComputedStyle can throw on detached nodes — ignore */
+      }
+      return false;
+    }
+
+    // Fire handleClose only on the visible→hidden transition of the box itself,
+    // tracked per element via __gtClosed so repeated style mutations while the
+    // box stays hidden (or while it is open) do not re-trigger.
+    function inspectModalBox(node: any): void {
+      if (!node || node.nodeType !== 1 || node.tagName !== 'CAL-MODAL-BOX') return;
+      const closed = isBoxClosed(node);
+      if (closed && !node.__gtClosed) {
+        node.__gtClosed = true;
+        handleClose();
+      } else if (!closed) {
+        node.__gtClosed = false; // reopened / still open → arm for the next close
+      }
+    }
+
+    // Watch the parent document for the <cal-modal-box>: node additions (initial
+    // mount / reopen) and `state`/`style` attribute changes (the close signal).
+    // The attribute filter is limited to state+style, and inspectModalBox
+    // ignores everything that is not the CAL-MODAL-BOX element itself, so the
+    // frequently-restyled inner iframe never counts as a close.
+    try {
+      const mo = new MutationObserver(function (mutations) {
+        for (let i = 0; i < mutations.length; i++) {
+          const m = mutations[i];
+          if (m.type === 'attributes') {
+            inspectModalBox(m.target);
+          } else if (m.type === 'childList') {
+            for (let j = 0; j < m.addedNodes.length; j++) inspectModalBox(m.addedNodes[j]);
+          }
+        }
+      });
+      mo.observe(document.body, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ['state', 'style'],
+      });
+    } catch {
+      /* MutationObserver unavailable → feedback simply never shows */
+    }
+
+    // ----- Register Cal embed events on whatever namespaces exist -----
+    // (sixty/ninety on the homepage, hotel on /hotel) — no hardcoded per-page
+    // list. These are ADDED alongside the layout's existing analytics events;
+    // Cal supports multiple callbacks per action, so cal_opened / cal_loaded /
+    // booking_completed keep firing exactly as before.
+    function registerCalListeners(): void {
+      try {
+        const Cal = (window as any).Cal;
+        if (!Cal || !Cal.ns) return;
+        Object.keys(Cal.ns).forEach(function (ns) {
+          const api = Cal.ns[ns];
+          if (typeof api !== 'function' || api.__gtExitBound) return;
+          api.__gtExitBound = true;
+          api('on', { action: 'bookerViewed', callback: onOpen });
+          api('on', { action: 'bookerReady', callback: onOpen });
+          api('on', { action: 'bookerReopened', callback: onOpen });
+          api('on', { action: 'bookingSuccessfulV2', callback: onBookingSuccess });
+        });
+      } catch {
+        /* Cal API not ready / shape changed → feedback simply never shows */
+      }
+    }
+
+    if ((window as any).__calReady) {
+      registerCalListeners();
+    } else {
+      (window as any).__calOnReady = (window as any).__calOnReady || [];
+      (window as any).__calOnReady.push(registerCalListeners);
+    }
+  })();
+</script>
