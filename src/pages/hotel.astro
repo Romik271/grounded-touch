@@ -61,11 +61,11 @@ const reviews = [
 ---
 
 <HotelLayout>
-  {/* OKTOBERFEST SEASONAL (temporary) — decorative falling overlay only. Kept
-      deliberately light on this conversion page; it never covers the headline,
-      price, CTAs, WhatsApp or the booking section (fixed, pointer-events:none,
-      below the sticky header). Remove this include + the small seasonal line in
-      the hero, and delete src/components/seasonal/, to take it down. */}
+  {/* OKTOBERFEST SEASONAL (temporary) — runtime gate for the small seasonal line
+      in the hero below (.gt-okt-note). Renders no visible element itself; it just
+      auto-hides that line from 2026-10-02 (Europe/Berlin). Remove this include +
+      the seasonal line in the hero, and delete src/components/seasonal/, to take
+      it down. */}
   <OktoberfestSeasonal />
 
   <!-- ============================= HERO ============================= -->

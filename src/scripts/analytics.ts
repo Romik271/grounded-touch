@@ -3,7 +3,7 @@
 // Every tracked click sends one row to the Apps Script endpoint.
 
 const ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbz5OdLh8KWmiWZUhCdV40557043dqzqfRd6VuLJqPPEo8BI1ip88Gh2z6pCdPWbUaU5/exec';
+  'https://script.google.com/macros/s/AKfycbxnQDCv_RF0VpbioBbyfsHYH9ogcf764ahpD5qOpqbLr3YEjiDoF9qnVi4J480kILY/exec';
 
 // page_visit_id — an EPHEMERAL, random per-page-lifecycle id used only to group
 // the events of a single page visit into one journey (page_view → book_60min →
@@ -51,6 +51,22 @@ function generatePageVisitId(): string {
 // Minted ONCE per page lifecycle, held only in JS memory.
 const PAGE_VISIT_ID = generatePageVisitId();
 
+// creative — the ad/campaign creative identifier, read ONLY from the current
+// page URL's ?creative= query parameter (e.g. ?creative=head → "head"). It is
+// never persisted anywhere (no cookies / sessionStorage / localStorage /
+// IndexedDB) and is not derived from the visitor — it is purely the query
+// parameter of the URL this page was loaded with. Absent parameter → null.
+// Read once per page lifecycle here so every event of this visit reports the
+// same value and no caller/component ever passes it in.
+function getCreative(): string | null {
+  try {
+    return new URLSearchParams(window.location.search).get('creative');
+  } catch {
+    return null;
+  }
+}
+const CREATIVE = getCreative();
+
 type DeviceKind = 'mobile' | 'tablet' | 'desktop';
 
 interface TrackDetails {
@@ -86,8 +102,12 @@ export function trackEvent(details: TrackDetails): void {
     referrer: details.referrer,
     // Injected centrally so every event of this page visit shares one id and no
     // caller/component ever generates its own. Sits between referrer and
-    // user_agent to match the destination Sheet's column order.
+    // creative to match the destination Sheet's column order.
     page_visit_id: PAGE_VISIT_ID,
+    // Injected centrally (like page_visit_id) so every event automatically
+    // carries the current page's ?creative= value; components never pass it.
+    // Sits between page_visit_id and user_agent to match the Sheet column order.
+    creative: CREATIVE,
     user_agent: details.user_agent,
     screen_width: details.screen_width,
   };
@@ -172,6 +192,16 @@ function init(): void {
     // (e.g. Cal.com's popup opener).
     true,
   );
+
+  // Central page-view: record ONE custom page-view per load so landing-only
+  // visits (e.g. from Meta ads) are captured even without any interaction.
+  // Uses the same payload/schema as every other event. Pages that send their
+  // own funnel-specific page-view (e.g. /hotel → hotel_page_view) set
+  // window.__gtDisableAutoPageView synchronously in <head> to opt out, so a
+  // page never produces two page-view events.
+  if (!(window as any).__gtDisableAutoPageView) {
+    trackById('page_view', 'page_view');
+  }
 }
 
 if (typeof window !== 'undefined') {

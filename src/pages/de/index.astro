@@ -15,8 +15,10 @@ const seo = strings.de.seo;
 ---
 
 <BaseLayout lang="de" title={seo.title} description={seo.description}>
-  {/* OKTOBERFEST SEASONAL (temporär) — dekorative fallende Ebene + eine kleine
-      saisonale Zeile im Hero. Zum Entfernen: diesen Include + die seasonalNote-Prop
+  {/* OKTOBERFEST SEASONAL (temporär) — Laufzeit-Steuerung für die eine kleine
+      saisonale Zeile im Hero (via seasonalNote-Prop). Rendert selbst kein
+      sichtbares Element; blendet die Zeile ab dem 2026-10-02 (Europe/Berlin)
+      automatisch aus. Zum Entfernen: diesen Include + die seasonalNote-Prop
       löschen und src/components/seasonal/ entfernen. */}
   <OktoberfestSeasonal />
   <div id="short-hero-wrap">

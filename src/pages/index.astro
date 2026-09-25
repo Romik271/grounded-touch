@@ -12,9 +12,11 @@ import CalExitFeedback from '../components/CalExitFeedback.astro';
 ---
 
 <BaseLayout>
-  {/* OKTOBERFEST SEASONAL (temporary) — decorative falling overlay + one small
-      seasonal line in the hero. Remove this include + the seasonalNote prop
-      below and delete src/components/seasonal/ to take it down after the season. */}
+  {/* OKTOBERFEST SEASONAL (temporary) — runtime gate for the one small seasonal
+      line in the hero (passed via seasonalNote below). Renders no visible element
+      itself; it just auto-hides that line from 2026-10-02 (Europe/Berlin). Remove
+      this include + the seasonalNote prop below and delete src/components/seasonal/
+      to take it down after the season. */}
   <OktoberfestSeasonal />
   <div id="short-hero-wrap">
     <Hero

@@ -65,6 +65,11 @@ const WHATSAPP_URL =
         is only fetched on the first click of a [data-cal-link] element, which
         then opens the booking as an in-page modal. Here a single "hotel"
         namespace serves the dedicated 90-min / €160 hotel event. */}
+    {/* The hotel funnel sends its OWN page-view event (hotel_page_view) further
+        down. Set synchronously (before the deferred analytics module runs) so
+        the shared analytics implementation skips its generic auto page-view and
+        this page produces exactly ONE page-view event. */}
+    <script is:inline>window.__gtDisableAutoPageView = true;</script>
     <script is:inline>
       (function (C, A, L) {
         let p = function (a, ar) { a.q.push(ar); };
