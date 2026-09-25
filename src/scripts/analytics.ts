@@ -14,38 +14,36 @@ const ENDPOINT =
 // which is intentional; the same visitor is deliberately NOT re-identifiable
 // across reloads. It is generated ONCE here so callers/components never make
 // their own id.
+//
+// Format: a random 6-character uppercase alphanumeric id (A–Z, 0–9), e.g.
+// "A7K3QF". Randomness comes from crypto.getRandomValues; rejection sampling
+// (bytes >= 252 are discarded) keeps every character uniformly distributed over
+// the 36-char alphabet with no modulo bias.
 function generatePageVisitId(): string {
-  try {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-      return crypto.randomUUID();
-    }
-  } catch {
-    /* fall through to getRandomValues */
-  }
+  const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // 36 chars
+  const LEN = 6;
   try {
     if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
-      const b = new Uint8Array(16);
-      crypto.getRandomValues(b);
-      // Format as an RFC-4122 v4-style string (purely cosmetic — any random
-      // value works; this just keeps the shape consistent with randomUUID()).
-      b[6] = (b[6] & 0x0f) | 0x40;
-      b[8] = (b[8] & 0x3f) | 0x80;
-      const h: string[] = [];
-      for (let i = 0; i < 16; i++) h.push(b[i].toString(16).padStart(2, '0'));
-      return (
-        h[0] + h[1] + h[2] + h[3] + '-' +
-        h[4] + h[5] + '-' +
-        h[6] + h[7] + '-' +
-        h[8] + h[9] + '-' +
-        h[10] + h[11] + h[12] + h[13] + h[14] + h[15]
-      );
+      const out: string[] = [];
+      while (out.length < LEN) {
+        const bytes = new Uint8Array(LEN);
+        crypto.getRandomValues(bytes);
+        for (let i = 0; i < bytes.length && out.length < LEN; i++) {
+          // 252 is the largest multiple of 36 that fits in a byte (0–255);
+          // discard higher values so no character is more likely than another.
+          if (bytes[i] < 252) out.push(ALPHABET[bytes[i] % 36]);
+        }
+      }
+      return out.join('');
     }
   } catch {
     /* fall through to Math.random */
   }
-  // Last-resort fallback when Web Crypto is entirely unavailable. Still purely
-  // in-memory and ephemeral; only the randomness quality is lower.
-  return 'pv-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  // Last-resort fallback when Web Crypto is entirely unavailable. Same shape and
+  // alphabet; purely in-memory and ephemeral, only the randomness quality is lower.
+  let s = '';
+  for (let i = 0; i < LEN; i++) s += ALPHABET[(Math.random() * 36) | 0];
+  return s;
 }
 
 // Minted ONCE per page lifecycle, held only in JS memory.
