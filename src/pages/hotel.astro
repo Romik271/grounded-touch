@@ -1,7 +1,6 @@
 ---
 import HotelLayout from '../layouts/HotelLayout.astro';
 import EditorialImage from '../components/EditorialImage.astro';
-import OktoberfestSeasonal from '../components/seasonal/OktoberfestSeasonal.astro';
 import CalExitFeedback from '../components/CalExitFeedback.astro';
 
 // ── Hotel booking destination ───────────────────────────────────────────────
@@ -61,13 +60,6 @@ const reviews = [
 ---
 
 <HotelLayout>
-  {/* OKTOBERFEST SEASONAL (temporary) — runtime gate for the small seasonal line
-      in the hero below (.gt-okt-note). Renders no visible element itself; it just
-      auto-hides that line from 2026-10-02 (Europe/Berlin). Remove this include +
-      the seasonal line in the hero, and delete src/components/seasonal/, to take
-      it down. */}
-  <OktoberfestSeasonal />
-
   <!-- ============================= HERO ============================= -->
   <section class="bg-ivory">
     <div class="container-editorial pt-4 md:pt-8 pb-8 md:pb-10">
@@ -82,12 +74,6 @@ const reviews = [
           </p>
           <p class="mt-4 lede">
             I come to your hotel with a professional Thai massage mat and everything needed for the session.
-          </p>
-
-          {/* OKTOBERFEST SEASONAL (temporary) — small, secondary line. */}
-          <p class="gt-okt-note mt-5 max-w-prose2 text-[14px] md:text-[15px] leading-snug text-stone">
-            <span class="block index-label text-terra mb-1">Oktoberfest recovery</span>
-            Release tension after long days on your feet and in the beer tents.
           </p>
 
           <div class="mt-8 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">

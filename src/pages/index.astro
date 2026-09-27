@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/sections/Hero.astro';
-import OktoberfestSeasonal from '../components/seasonal/OktoberfestSeasonal.astro';
 import ApproachShort from '../components/sections/short/ApproachShort.astro';
 import AboutShort from '../components/sections/short/AboutShort.astro';
 import LegsShort from '../components/sections/short/LegsShort.astro';
@@ -12,20 +11,8 @@ import CalExitFeedback from '../components/CalExitFeedback.astro';
 ---
 
 <BaseLayout>
-  {/* OKTOBERFEST SEASONAL (temporary) — runtime gate for the one small seasonal
-      line in the hero (passed via seasonalNote below). Renders no visible element
-      itself; it just auto-hides that line from 2026-10-02 (Europe/Berlin). Remove
-      this include + the seasonalNote prop below and delete src/components/seasonal/
-      to take it down after the season. */}
-  <OktoberfestSeasonal />
   <div id="short-hero-wrap">
-    <Hero
-      trustMarker="Trained in Chiang Mai, Thailand"
-      seasonalNote={{
-        eyebrow: 'Oktoberfest recovery',
-        text: 'Release tension after long days on your feet and in the beer tents.',
-      }}
-    />
+    <Hero trustMarker="Trained in Chiang Mai, Thailand" />
   </div>
   <ApproachShort />
   <AboutShort />
