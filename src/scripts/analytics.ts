@@ -1,25 +1,46 @@
-// Privacy-friendly click tracking.
-// No cookies, no persistent identifiers, no fingerprinting.
-// Every tracked click sends one row to the Apps Script endpoint.
+// Consent-based DETAILED analytics for Grounded Touch.
+//
+// This module is the SINGLE, central layer for the OPTIONAL detailed
+// first-party analytics ONLY. Nothing here runs — no custom events, no
+// page_visit_id, no journey_id — unless the visitor has explicitly granted
+// consent. Consent is the only gate; individual components never check consent
+// themselves. They keep calling the shared API (window.trackById / trackEvent),
+// and when consent is not granted those calls safely do nothing (no queue, no
+// replay).
+//
+// NOTE: basic Vercel Web Analytics (aggregated reach/audience measurement) is a
+// SEPARATE, always-on system. It is rendered via the <Analytics /> component in
+// the shared layouts and is deliberately NOT controlled by this module or by
+// the gt_analytics_consent cookie. This module never touches Vercel.
+//
+// Three distinct concepts, kept strictly separate:
+//   • consent      — granted | denied | undecided. Persisted in a first-party
+//                    cookie (gt_analytics_consent) that stores ONLY the literal
+//                    word "granted" or "denied" — nothing else.
+//   • page_visit_id — one id per document lifecycle (this load). Memory-only.
+//   • journey_id    — one id per browsing journey in this tab/session. Stored in
+//                    sessionStorage (gt_analytics_journey_id) so it survives
+//                    reloads and internal navigation within the tab.
+//   • creative      — campaign attribution, resolved from the page URL.
 
 const ENDPOINT =
-  'https://script.google.com/macros/s/AKfycbxnQDCv_RF0VpbioBbyfsHYH9ogcf764ahpD5qOpqbLr3YEjiDoF9qnVi4J480kILY/exec';
+  'https://script.google.com/macros/s/AKfycbzF0CTgaaQhtSGCfJkZlabiLrNbsyzUXGuFnUOzaNcOBdXhQtas5kUsh27RuKyXFMBP/exec';
 
-// page_visit_id — an EPHEMERAL, random per-page-lifecycle id used only to group
-// the events of a single page visit into one journey (page_view → book_60min →
-// cal_opened → …). It lives ONLY in this module's memory: it is never written
-// to cookies / sessionStorage / localStorage / IndexedDB / the URL / the DOM,
-// and is never derived from the visitor (UA, IP, screen, language, referrer,
-// device). A full reload / navigation reloads this module and mints a new id —
-// which is intentional; the same visitor is deliberately NOT re-identifiable
-// across reloads. It is generated ONCE here so callers/components never make
-// their own id.
-//
-// Format: a random 6-character uppercase alphanumeric id (A–Z, 0–9), e.g.
-// "A7K3QF". Randomness comes from crypto.getRandomValues; rejection sampling
-// (bytes >= 252 are discarded) keeps every character uniformly distributed over
-// the 36-char alphabet with no modulo bias.
-function generatePageVisitId(): string {
+// First-party consent cookie. Stores ONLY "granted" | "denied" (never any id,
+// campaign, timestamp, or visitor data). ~6 months so the choice is remembered.
+const CONSENT_COOKIE = 'gt_analytics_consent';
+const CONSENT_MAX_AGE = 60 * 60 * 24 * 180; // seconds (~180 days)
+
+// sessionStorage key for journey_id — scoped to the tab/session only.
+const JOURNEY_KEY = 'gt_analytics_journey_id';
+
+// ---------------------------------------------------------------------------
+// Random 6-character uppercase alphanumeric id (A–Z, 0–9), e.g. "A7K3QF".
+// Shared by page_visit_id and journey_id. Randomness from crypto.getRandomValues
+// with rejection sampling (bytes >= 252 discarded) so every character is
+// uniformly distributed over the 36-char alphabet with no modulo bias.
+// ---------------------------------------------------------------------------
+function generateId6(): string {
   const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // 36 chars
   const LEN = 6;
   try {
@@ -29,8 +50,7 @@ function generatePageVisitId(): string {
         const bytes = new Uint8Array(LEN);
         crypto.getRandomValues(bytes);
         for (let i = 0; i < bytes.length && out.length < LEN; i++) {
-          // 252 is the largest multiple of 36 that fits in a byte (0–255);
-          // discard higher values so no character is more likely than another.
+          // 252 is the largest multiple of 36 that fits in a byte (0–255).
           if (bytes[i] < 252) out.push(ALPHABET[bytes[i] % 36]);
         }
       }
@@ -39,31 +59,60 @@ function generatePageVisitId(): string {
   } catch {
     /* fall through to Math.random */
   }
-  // Last-resort fallback when Web Crypto is entirely unavailable. Same shape and
-  // alphabet; purely in-memory and ephemeral, only the randomness quality is lower.
+  // Last-resort fallback when Web Crypto is entirely unavailable. Same shape.
   let s = '';
   for (let i = 0; i < LEN; i++) s += ALPHABET[(Math.random() * 36) | 0];
   return s;
 }
 
-// Minted ONCE per page lifecycle, held only in JS memory.
-const PAGE_VISIT_ID = generatePageVisitId();
+// ---------------------------------------------------------------------------
+// Consent cookie helpers. The cookie holds ONLY "granted" | "denied".
+// ---------------------------------------------------------------------------
+type Consent = 'granted' | 'denied' | 'undecided';
 
-// creative — the ad/campaign creative identifier, resolved ONLY from the current
-// page URL's query string. It is never persisted anywhere (no cookies /
-// sessionStorage / localStorage / IndexedDB) and is not derived from the visitor
-// — it is purely a function of the URL this page was loaded with. Read once per
-// page lifecycle here so every event of this visit reports the same value and no
-// caller/component ever passes it in.
-//
-// Resolution priority:
-//   A. An explicit non-empty ?creative=<value> wins (e.g. ?creative=head → "head").
-//   B. Otherwise, Instagram bio traffic is recognized via ?utm_content=link_in_bio
-//      → "link_in_bio". Only that exact utm_content value triggers this fallback;
-//      fbclid / referrer / utm_source are never used to infer a creative.
-//   C. Otherwise → null.
-// An explicit creative always beats utm_content, so
-// ?creative=head&utm_content=link_in_bio resolves to "head".
+function readConsentCookie(): 'granted' | 'denied' | null {
+  try {
+    const m = document.cookie.match(/(?:^|;\s*)gt_analytics_consent=(granted|denied)(?:;|$)/);
+    return m ? (m[1] as 'granted' | 'denied') : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeConsentCookie(value: 'granted' | 'denied'): void {
+  try {
+    // Secure only over HTTPS (so it still works on http://localhost in dev).
+    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie =
+      `${CONSENT_COOKIE}=${value}; Path=/; Max-Age=${CONSENT_MAX_AGE}; SameSite=Lax${secure}`;
+  } catch {
+    /* if cookies are unavailable we simply behave as undecided */
+  }
+}
+
+function consentState(): Consent {
+  return readConsentCookie() ?? 'undecided';
+}
+
+// ---------------------------------------------------------------------------
+// Analytics runtime state — all memory-only, reset on every document load.
+// ---------------------------------------------------------------------------
+let analyticsActive = false;      // the single central gate
+let pageVisitId: string | null = null; // memory-only, one per document lifecycle
+let journeyId: string | null = null;    // mirrors sessionStorage[JOURNEY_KEY]
+let pageViewSent = false;         // ensures exactly one page_view per lifecycle
+
+// ---------------------------------------------------------------------------
+// creative — resolved ONLY from the current page URL's query string, once per
+// lifecycle. Never persisted; never derived from the visitor.
+//   A. explicit non-empty ?creative=<value> wins (e.g. ?creative=head).
+//   B. otherwise ?utm_content=link_in_bio → "link_in_bio" (Instagram bio).
+//      Only that exact value; fbclid / referrer / utm_source never infer it.
+//   C. otherwise → null.
+// An explicit creative always beats utm_content.
+// (Resolved eagerly so it is available regardless of consent, but it is only
+// ever ATTACHED to payloads / links while analyticsActive.)
+// ---------------------------------------------------------------------------
 function getCreative(): string | null {
   try {
     const params = new URLSearchParams(window.location.search);
@@ -92,16 +141,40 @@ interface TrackDetails {
 
 function getDeviceType(): DeviceKind {
   const ua = navigator.userAgent || '';
-  // Tablet detection first (some tablets also match /Mobi/).
   if (/iPad|Tablet|PlayBook|Silk/i.test(ua)) return 'tablet';
   if (/Android/i.test(ua) && !/Mobile/i.test(ua)) return 'tablet';
   if (/Mobi|iPhone|iPod|Android|BlackBerry|IEMobile|Opera Mini/i.test(ua)) return 'mobile';
   return 'desktop';
 }
 
-// The tracker accepts ONE object argument matching the sheet columns 1:1.
-// `timestamp` is added here so the caller doesn't have to worry about it.
+// ---------------------------------------------------------------------------
+// journey_id — created / read / written ONLY when consent is granted. Lives in
+// sessionStorage so it persists across reloads and internal navigation within
+// the tab, while page_visit_id changes each load. Never placed in the URL or a
+// cookie; never derived from UA / IP / referrer / device / viewport / language
+// / timestamps. If sessionStorage is unavailable we return null and send
+// journey_id as empty — no fingerprint fallback, and the page never breaks.
+// ---------------------------------------------------------------------------
+function getOrCreateJourneyId(): string | null {
+  try {
+    const existing = sessionStorage.getItem(JOURNEY_KEY);
+    if (existing && /^[A-Z0-9]{6}$/.test(existing)) return existing;
+    const id = generateId6();
+    sessionStorage.setItem(JOURNEY_KEY, id);
+    return id;
+  } catch {
+    return null; // storage blocked/full → journey_id null, no fallback
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The tracker. Central gate: if analytics is not active, it does nothing.
+// The payload maps 1:1 to the Sheet columns; page_visit_id, journey_id and
+// creative are injected here so no caller/component ever supplies them.
+// ---------------------------------------------------------------------------
 export function trackEvent(details: TrackDetails): void {
+  if (!analyticsActive) return; // consent gate — no queue, no replay
+
   const payload = {
     timestamp: new Date().toISOString(),
     event: details.event,
@@ -110,25 +183,18 @@ export function trackEvent(details: TrackDetails): void {
     language: details.language,
     device: details.device,
     referrer: details.referrer,
-    // Injected centrally so every event of this page visit shares one id and no
-    // caller/component ever generates its own. Sits between referrer and
-    // creative to match the destination Sheet's column order.
-    page_visit_id: PAGE_VISIT_ID,
-    // Injected centrally (like page_visit_id) so every event automatically
-    // carries the current page's ?creative= value; components never pass it.
-    // Sits between page_visit_id and user_agent to match the Sheet column order.
+    // Injected centrally, in Sheet column order:
+    page_visit_id: pageVisitId,
+    journey_id: journeyId,
     creative: CREATIVE,
     user_agent: details.user_agent,
     screen_width: details.screen_width,
   };
 
-  console.log('TRACKING PAYLOAD', payload);
-
   const body = JSON.stringify(payload);
 
-  // sendBeacon is the recommended API: fires reliably even during navigation,
-  // never blocks. Apps Script accepts text/plain; using that content-type
-  // avoids the CORS preflight that application/json would trigger.
+  // sendBeacon fires reliably even during navigation and never blocks. Apps
+  // Script accepts text/plain, which avoids a CORS preflight.
   try {
     if (typeof navigator.sendBeacon === 'function') {
       const blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
@@ -136,11 +202,9 @@ export function trackEvent(details: TrackDetails): void {
       if (ok) return;
     }
   } catch {
-    // fall through to fetch
+    /* fall through to fetch */
   }
 
-  // Fallback for older browsers / cases where sendBeacon rejects the payload.
-  // keepalive lets the request survive page navigation.
   try {
     fetch(ENDPOINT, {
       method: 'POST',
@@ -156,10 +220,9 @@ export function trackEvent(details: TrackDetails): void {
   }
 }
 
-// Fire a tracking event for a given button_id, building the exact same payload
-// structure every tracked click uses. Shared by the DOM click delegation and by
-// non-DOM sources (e.g. the Cal.com Embed Events API) so the payload is identical
-// across all events.
+// Fire an event for a button_id, building the identical payload every event
+// uses. Shared by the DOM click delegation and non-DOM sources (Cal.com Embed
+// Events API). Gates automatically via trackEvent.
 function trackById(buttonId: string, event = 'click'): void {
   if (!buttonId) return;
   trackEvent({
@@ -174,28 +237,23 @@ function trackById(buttonId: string, event = 'click'): void {
   });
 }
 
-// Build the payload object from a triggering element and fire trackEvent.
 function trackFromElement(el: HTMLElement): void {
   const buttonId = el.dataset.track;
   if (!buttonId) return;
   trackById(buttonId, el.dataset.trackEvent || 'click');
 }
 
-// Carry the resolved creative across INTERNAL navigation by writing it into the
-// href of same-origin links. This is the ONLY mechanism that preserves
-// attribution across page loads — nothing is stored in the browser; each page
-// lifecycle re-resolves creative from its own URL (see getCreative). When
-// creative is null we touch nothing, so plain visits never start growing a
-// ?creative= parameter.
-//
-// Deliberately skipped: cross-origin/external links (Cal.com, WhatsApp,
-// Instagram, Google, …), in-page #anchors, mailto:/tel:/javascript: links, and
-// anything that isn't a real navigation to another same-origin document. Links
-// are decorated in place so the visible href, middle-click, and the address bar
-// all stay consistent. An explicit, different creative already present on a
-// destination link is left untouched.
+// ---------------------------------------------------------------------------
+// Creative propagation — carry the resolved creative across INTERNAL navigation
+// by writing it into same-origin link hrefs. Runs ONLY while analytics is
+// active AND a creative was resolved. Never touches external links (Cal.com,
+// WhatsApp, Instagram, Google, …), in-page #anchors, or mailto:/tel:/javascript:.
+// Propagates ONLY the normalized creative — never UTM/fbclid/journey_id/
+// page_visit_id. Existing query params are preserved; a destination's explicit
+// different creative is left untouched; no duplicate creative param is added.
+// ---------------------------------------------------------------------------
 function decorateInternalLinks(): void {
-  if (!CREATIVE) return;
+  if (!analyticsActive || !CREATIVE) return;
   const anchors = document.querySelectorAll('a[href]');
   for (let i = 0; i < anchors.length; i++) {
     decorateAnchor(anchors[i] as HTMLAnchorElement);
@@ -205,7 +263,6 @@ function decorateInternalLinks(): void {
 function decorateAnchor(a: HTMLAnchorElement): void {
   const rawHref = a.getAttribute('href');
   if (!rawHref) return;
-  // In-page anchors and non-navigation schemes are never rewritten.
   const lower = rawHref.trim().toLowerCase();
   if (
     lower.startsWith('#') ||
@@ -218,30 +275,93 @@ function decorateAnchor(a: HTMLAnchorElement): void {
 
   let url: URL;
   try {
-    // a.href is already resolved to an absolute URL against the current page.
     url = new URL(a.href, window.location.href);
   } catch {
     return;
   }
 
-  // Internal only — same origin as the page the visitor is currently on.
+  // Internal only — same origin. Never append anything to external URLs.
   if (url.origin !== window.location.origin) return;
 
-  // Preserve an explicit, non-empty creative the destination already carries
-  // rather than overwriting it; otherwise add/set ours (no duplicates).
   const existing = url.searchParams.get('creative');
-  if (existing && existing.trim() !== '') return;
+  if (existing && existing.trim() !== '') return; // keep destination's own creative
   url.searchParams.set('creative', CREATIVE as string);
 
-  // Keep it same-origin-relative; existing query params are preserved by URL.
   a.setAttribute('href', url.pathname + url.search + url.hash);
 }
 
-// Auto-init: attach a single delegated click listener that fires trackEvent
-// for any element carrying data-track (or a descendant of one).
-// Runs on every page because this module is imported from BaseLayout.
+// ---------------------------------------------------------------------------
+// Enable / disable the analytics runtime.
+// ---------------------------------------------------------------------------
+function enableAnalytics(opts: { fresh: boolean }): void {
+  analyticsActive = true;
+
+  // page_visit_id: one per document lifecycle. `fresh` (a state transition such
+  // as denied→granted) forces a new one; on a normal load it is simply minted
+  // because none exists yet.
+  if (opts.fresh || !pageVisitId) pageVisitId = generateId6();
+
+  // journey_id: reuse the tab's existing id, or create one now.
+  journeyId = getOrCreateJourneyId();
+
+  // Carry creative across internal links (no-op when creative is null).
+  decorateInternalLinks();
+
+  // Exactly one page_view per document lifecycle.
+  if (!pageViewSent) {
+    pageViewSent = true;
+    const buttonId = (window as any).__gtPageViewButtonId || 'page_view';
+    trackById(buttonId, 'page_view');
+  }
+}
+
+function disableAnalytics(): void {
+  analyticsActive = false; // trackEvent now no-ops (detailed analytics only)
+  try {
+    sessionStorage.removeItem(JOURNEY_KEY);
+  } catch {
+    /* ignore */
+  }
+  journeyId = null;
+  pageVisitId = null;
+  // Allow a later re-grant in this same lifecycle to send a fresh page_view.
+  pageViewSent = false;
+}
+
+// ---------------------------------------------------------------------------
+// Public consent API (window.gtConsent). The consent UI + the "Privacy
+// settings" control drive analytics exclusively through this.
+// ---------------------------------------------------------------------------
+function grant(): void {
+  const previous = consentState();
+  writeConsentCookie('granted');
+  // A transition into granted (from undecided or denied) starts a fresh visit.
+  enableAnalytics({ fresh: previous !== 'granted' });
+}
+
+function deny(): void {
+  writeConsentCookie('denied');
+  disableAnalytics();
+  // No withdrawal event is sent.
+}
+
+function openSettings(): void {
+  try {
+    document.dispatchEvent(new CustomEvent('gt:open-consent'));
+  } catch {
+    /* ignore */
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Init — attaches the delegated click listener always (trackEvent gates), then
+// resolves the three page_view cases from the stored consent:
+//   A) granted   → initialize now (ids + Vercel + one page_view).
+//   B) undecided → nothing yet; the consent banner shows itself. On "Allow"
+//                  grant() initializes and sends exactly one page_view.
+//   C) denied    → nothing.
+// ---------------------------------------------------------------------------
 function init(): void {
-  // Guard against double-initialization (Astro dev HMR, view transitions).
   if ((window as any).__gtAnalyticsInit) return;
   (window as any).__gtAnalyticsInit = true;
 
@@ -254,34 +374,29 @@ function init(): void {
       if (!el) return;
       trackFromElement(el);
     },
-    // Capture=true so we fire before any handler that might stopPropagation
-    // (e.g. Cal.com's popup opener).
-    true,
+    true, // capture, so we fire before handlers that stopPropagation
   );
 
-  // Central page-view: record ONE custom page-view per load so landing-only
-  // visits (e.g. from Meta ads) are captured even without any interaction.
-  // Uses the same payload/schema as every other event. Pages that send their
-  // own funnel-specific page-view (e.g. /hotel → hotel_page_view) set
-  // window.__gtDisableAutoPageView synchronously in <head> to opt out, so a
-  // page never produces two page-view events.
-  if (!(window as any).__gtDisableAutoPageView) {
-    trackById('page_view', 'page_view');
+  if (consentState() === 'granted') {
+    enableAnalytics({ fresh: false }); // CASE A
   }
-
-  // Carry the resolved creative into internal links so attribution survives
-  // navigation without any browser storage. No-op when creative is null.
-  decorateInternalLinks();
+  // CASE B / C: do nothing here.
 }
 
 if (typeof window !== 'undefined') {
+  (window as any).gtConsent = {
+    state: consentState,
+    grant,
+    deny,
+    openSettings,
+  };
+  // Exposed for non-DOM event sources (Cal.com Embed Events API) and debugging.
+  (window as any).trackEvent = trackEvent;
+  (window as any).trackById = trackById;
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });
   } else {
     init();
   }
-  // Expose on window for ad-hoc console debugging and for non-DOM event sources
-  // (e.g. the Cal.com Embed Events API wired up in BaseLayout).
-  (window as any).trackEvent = trackEvent;
-  (window as any).trackById = trackById;
 }

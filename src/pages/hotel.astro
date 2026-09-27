@@ -626,31 +626,12 @@ const reviews = [
 
   <script>
     // ---------------------------------------------------------------------
-    // Page impression — fire ONE "page_view" event per load via the existing
-    // analytics tracker (window.trackById). Same payload schema as every other
-    // event; no new fields, no cookies/storage, endpoint unchanged. An in-memory
-    // window flag guarantees it fires only once.
+    // Page impression — the shared, consent-gated analytics layer fires exactly
+    // ONE page-view for this page using button_id "hotel_page_view" (set via
+    // window.__gtPageViewButtonId in HotelLayout.astro). It fires only after
+    // analytics becomes active (consent granted), so there is no bespoke firing
+    // here anymore and no duplicate page-view.
     // ---------------------------------------------------------------------
-    (function () {
-      if ((window as any).__hotelPageViewTracked) return;
-      function fire() {
-        if ((window as any).__hotelPageViewTracked) return true;
-        if (typeof (window as any).trackById !== 'function') return false;
-        (window as any).__hotelPageViewTracked = true;
-        try {
-          (window as any).trackById('hotel_page_view', 'page_view');
-        } catch (e) { /* analytics must never break the page */ }
-        return true;
-      }
-      if (fire() !== true) {
-        // trackById may not be attached yet (module load order); retry briefly.
-        var tries = 0;
-        var iv = setInterval(function () {
-          tries += 1;
-          if (fire() === true || tries > 50) clearInterval(iv);
-        }, 100);
-      }
-    })();
 
     // ---------------------------------------------------------------------
     // Floating "Book now" button — reveal once the hero has scrolled away.

@@ -235,10 +235,13 @@ const copy = {
       feedbackShown = true;
     }
 
-    function track(id: string): void {
+    // Forwards to the shared, consent-gated tracker. `event` defaults to the
+    // tracker's own default ('click') when omitted. No analytics fires unless
+    // consent is granted — trackById → trackEvent is centrally gated.
+    function track(id: string, event?: string): void {
       try {
         const t = (window as any).trackById;
-        if (typeof t === 'function') t(id);
+        if (typeof t === 'function') t(id, event);
       } catch (e) {
         /* analytics must never break the page */
       }
@@ -265,6 +268,12 @@ const copy = {
       sheet!.setAttribute('aria-hidden', 'false');
       void card!.offsetWidth; // force reflow so the slide-up runs from hidden
       sheet!.classList.add('is-visible');
+      // A real, visible impression of the feedback popup. Fires exactly once per
+      // page lifecycle: this is the single point the sheet becomes visible, it is
+      // guarded by alreadyShown()/markShown() above, and it is only reached after
+      // handleClose() has passed the booking-success and 8s-eligibility checks.
+      // Never fires when merely eligible, on UI rerenders, or when suppressed.
+      track('cal_exit_feedback_shown', 'view');
     }
     function hideFeedback(): void {
       sheet!.classList.remove('is-visible');
@@ -296,7 +305,8 @@ const copy = {
           track('cal_exit_other');
           hideFeedback();
         } else {
-          // skip — not tracked (avoid unnecessary events)
+          // skip
+          track('cal_exit_feedback_skip');
           hideFeedback();
         }
         return;
@@ -304,6 +314,7 @@ const copy = {
 
       // Close control (X).
       if (target && target.closest && target.closest('[data-cal-exit-dismiss]')) {
+        track('cal_exit_feedback_closed');
         hideFeedback();
         return;
       }
@@ -393,9 +404,10 @@ const copy = {
 
     // ----- Register Cal embed events on whatever namespaces exist -----
     // (sixty/ninety on the homepage, hotel on /hotel) — no hardcoded per-page
-    // list. These are ADDED alongside the layout's existing analytics events;
-    // Cal supports multiple callbacks per action, so cal_opened / cal_loaded /
-    // booking_completed keep firing exactly as before.
+    // list. These callbacks drive ONLY the exit-feedback UX (detecting that the
+    // widget opened / a booking succeeded); they do not emit analytics events.
+    // Cal supports multiple callbacks per action, so they run alongside the
+    // layout's own booking_completed analytics listener without interfering.
     function registerCalListeners(): void {
       try {
         const Cal = (window as any).Cal;
