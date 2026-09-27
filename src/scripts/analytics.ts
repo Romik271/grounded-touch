@@ -49,16 +49,28 @@ function generatePageVisitId(): string {
 // Minted ONCE per page lifecycle, held only in JS memory.
 const PAGE_VISIT_ID = generatePageVisitId();
 
-// creative — the ad/campaign creative identifier, read ONLY from the current
-// page URL's ?creative= query parameter (e.g. ?creative=head → "head"). It is
-// never persisted anywhere (no cookies / sessionStorage / localStorage /
-// IndexedDB) and is not derived from the visitor — it is purely the query
-// parameter of the URL this page was loaded with. Absent parameter → null.
-// Read once per page lifecycle here so every event of this visit reports the
-// same value and no caller/component ever passes it in.
+// creative — the ad/campaign creative identifier, resolved ONLY from the current
+// page URL's query string. It is never persisted anywhere (no cookies /
+// sessionStorage / localStorage / IndexedDB) and is not derived from the visitor
+// — it is purely a function of the URL this page was loaded with. Read once per
+// page lifecycle here so every event of this visit reports the same value and no
+// caller/component ever passes it in.
+//
+// Resolution priority:
+//   A. An explicit non-empty ?creative=<value> wins (e.g. ?creative=head → "head").
+//   B. Otherwise, Instagram bio traffic is recognized via ?utm_content=link_in_bio
+//      → "link_in_bio". Only that exact utm_content value triggers this fallback;
+//      fbclid / referrer / utm_source are never used to infer a creative.
+//   C. Otherwise → null.
+// An explicit creative always beats utm_content, so
+// ?creative=head&utm_content=link_in_bio resolves to "head".
 function getCreative(): string | null {
   try {
-    return new URLSearchParams(window.location.search).get('creative');
+    const params = new URLSearchParams(window.location.search);
+    const explicit = params.get('creative');
+    if (explicit && explicit.trim() !== '') return explicit;
+    if (params.get('utm_content') === 'link_in_bio') return 'link_in_bio';
+    return null;
   } catch {
     return null;
   }
@@ -169,6 +181,62 @@ function trackFromElement(el: HTMLElement): void {
   trackById(buttonId, el.dataset.trackEvent || 'click');
 }
 
+// Carry the resolved creative across INTERNAL navigation by writing it into the
+// href of same-origin links. This is the ONLY mechanism that preserves
+// attribution across page loads — nothing is stored in the browser; each page
+// lifecycle re-resolves creative from its own URL (see getCreative). When
+// creative is null we touch nothing, so plain visits never start growing a
+// ?creative= parameter.
+//
+// Deliberately skipped: cross-origin/external links (Cal.com, WhatsApp,
+// Instagram, Google, …), in-page #anchors, mailto:/tel:/javascript: links, and
+// anything that isn't a real navigation to another same-origin document. Links
+// are decorated in place so the visible href, middle-click, and the address bar
+// all stay consistent. An explicit, different creative already present on a
+// destination link is left untouched.
+function decorateInternalLinks(): void {
+  if (!CREATIVE) return;
+  const anchors = document.querySelectorAll('a[href]');
+  for (let i = 0; i < anchors.length; i++) {
+    decorateAnchor(anchors[i] as HTMLAnchorElement);
+  }
+}
+
+function decorateAnchor(a: HTMLAnchorElement): void {
+  const rawHref = a.getAttribute('href');
+  if (!rawHref) return;
+  // In-page anchors and non-navigation schemes are never rewritten.
+  const lower = rawHref.trim().toLowerCase();
+  if (
+    lower.startsWith('#') ||
+    lower.startsWith('mailto:') ||
+    lower.startsWith('tel:') ||
+    lower.startsWith('javascript:')
+  ) {
+    return;
+  }
+
+  let url: URL;
+  try {
+    // a.href is already resolved to an absolute URL against the current page.
+    url = new URL(a.href, window.location.href);
+  } catch {
+    return;
+  }
+
+  // Internal only — same origin as the page the visitor is currently on.
+  if (url.origin !== window.location.origin) return;
+
+  // Preserve an explicit, non-empty creative the destination already carries
+  // rather than overwriting it; otherwise add/set ours (no duplicates).
+  const existing = url.searchParams.get('creative');
+  if (existing && existing.trim() !== '') return;
+  url.searchParams.set('creative', CREATIVE as string);
+
+  // Keep it same-origin-relative; existing query params are preserved by URL.
+  a.setAttribute('href', url.pathname + url.search + url.hash);
+}
+
 // Auto-init: attach a single delegated click listener that fires trackEvent
 // for any element carrying data-track (or a descendant of one).
 // Runs on every page because this module is imported from BaseLayout.
@@ -200,6 +268,10 @@ function init(): void {
   if (!(window as any).__gtDisableAutoPageView) {
     trackById('page_view', 'page_view');
   }
+
+  // Carry the resolved creative into internal links so attribution survives
+  // navigation without any browser storage. No-op when creative is null.
+  decorateInternalLinks();
 }
 
 if (typeof window !== 'undefined') {
