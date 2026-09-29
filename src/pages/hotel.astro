@@ -626,11 +626,10 @@ const reviews = [
 
   <script>
     // ---------------------------------------------------------------------
-    // Page impression — the shared, consent-gated analytics layer fires exactly
-    // ONE page-view for this page using button_id "hotel_page_view" (set via
-    // window.__gtPageViewButtonId in HotelLayout.astro). It fires only after
-    // analytics becomes active (consent granted), so there is no bespoke firing
-    // here anymore and no duplicate page-view.
+    // Page impression — the shared analytics layer fires exactly ONE page-view
+    // for this page on load using button_id "hotel_page_view" (set via
+    // window.__gtPageViewButtonId in HotelLayout.astro), so there is no bespoke
+    // firing here and no duplicate page-view.
     // ---------------------------------------------------------------------
 
     // ---------------------------------------------------------------------

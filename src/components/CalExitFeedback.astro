@@ -235,9 +235,9 @@ const copy = {
       feedbackShown = true;
     }
 
-    // Forwards to the shared, consent-gated tracker. `event` defaults to the
-    // tracker's own default ('click') when omitted. No analytics fires unless
-    // consent is granted — trackById → trackEvent is centrally gated.
+    // Forwards to the shared first-party tracker. `event` defaults to the
+    // tracker's own default ('click') when omitted. trackById → trackEvent is
+    // the single central analytics layer.
     function track(id: string, event?: string): void {
       try {
         const t = (window as any).trackById;

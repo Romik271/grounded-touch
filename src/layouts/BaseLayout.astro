@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import AnalyticsConsent from '../components/AnalyticsConsent.astro';
 import Analytics from '@vercel/analytics/astro';
 
 import type { Lang } from '../i18n/strings';
@@ -122,9 +121,8 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
         Cal.ns.ninety("ui", { hideEventTypeDetails: false, layout: "month_view" });
 
         // Cal.com Embed Events API → analytics. Only the meaningful booking
-        // completion is tracked (booking_completed); it gates automatically via
-        // the consent-aware trackById. Registered per namespace (sixty, ninety)
-        // before any popup opens.
+        // completion is tracked (booking_completed) via the shared trackById.
+        // Registered per namespace (sixty, ninety) before any popup opens.
         var trackBookingCompleted = function () {
           if (typeof window.trackById === "function") window.trackById("booking_completed");
         };
@@ -166,18 +164,11 @@ const ogImageUrl = new URL('/images/hero-opt.jpg', Astro.site).href;
     </main>
     <Footer lang={lang} />
 
-    {/* Basic Vercel Web Analytics — ALWAYS ON, independent of the Grounded
-        Touch detailed-analytics consent. Provides aggregated reach/audience
-        measurement (visits, page views, referrers, device/browser). It sets no
-        webAnalyticsBeforeSend gate, so it is not tied to gt_analytics_consent.
-        Rendered once per page (single initialization). */}
+    {/* Basic Vercel Web Analytics — always on. Provides aggregated
+        reach/audience measurement (visits, page views, referrers,
+        device/browser). Independent of the first-party detailed analytics
+        below. Rendered once per page (single initialization). */}
     <Analytics />
-
-    {/* Analytics consent banner — shows when undecided; drives the central
-        consent API for the OPTIONAL DETAILED first-party analytics only
-        (page_visit_id / journey_id / custom events). It does NOT control the
-        always-on Vercel Web Analytics above. */}
-    <AnalyticsConsent lang={lang} />
 
     <script>
       import '../scripts/analytics.ts';

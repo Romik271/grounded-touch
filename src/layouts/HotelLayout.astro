@@ -14,7 +14,6 @@
 // namespace: /hotel initializes a single "hotel" namespace for the dedicated
 // 90-min / €160 hotel event (see hotel.astro).
 import '../styles/global.css';
-import AnalyticsConsent from '../components/AnalyticsConsent.astro';
 import Analytics from '@vercel/analytics/astro';
 
 interface Props {
@@ -67,9 +66,9 @@ const WHATSAPP_URL =
         then opens the booking as an in-page modal. Here a single "hotel"
         namespace serves the dedicated 90-min / €160 hotel event. */}
     {/* The hotel funnel uses "hotel_page_view" as its page-view button_id. Set
-        synchronously (before the deferred analytics module runs) so the shared,
-        consent-gated analytics layer fires exactly ONE page-view with this id
-        when analytics becomes active — no separate page-view firing on /hotel. */}
+        synchronously (before the deferred analytics module runs) so the shared
+        analytics layer fires exactly ONE page-view with this id on load — no
+        separate page-view firing on /hotel. */}
     <script is:inline>window.__gtPageViewButtonId = 'hotel_page_view';</script>
     <script is:inline>
       (function (C, A, L) {
@@ -112,8 +111,8 @@ const WHATSAPP_URL =
         Cal("init", "hotel", { origin: "https://cal.com" });
         Cal.ns.hotel("ui", { hideEventTypeDetails: false, layout: "month_view" });
 
-        // Only the meaningful booking completion is tracked (booking_completed);
-        // it gates automatically via the consent-aware trackById.
+        // Only the meaningful booking completion is tracked (booking_completed)
+        // via the shared trackById.
         var trackBookingCompleted = function () {
           if (typeof window.trackById === "function") window.trackById("booking_completed");
         };
@@ -201,11 +200,6 @@ const WHATSAPP_URL =
         <div class="flex items-center gap-6 text-sm text-ink/85">
           <a href="/impressum" class="hover:text-terra transition-colors duration-500 ease-gentle">Impressum</a>
           <a href="/datenschutz" class="hover:text-terra transition-colors duration-500 ease-gentle">Datenschutz / Privacy</a>
-          <button
-            type="button"
-            data-gt-open-consent
-            class="text-ink/85 hover:text-terra transition-colors duration-500 ease-gentle underline underline-offset-2"
-          >Privacy settings</button>
         </div>
       </div>
 
@@ -231,15 +225,9 @@ const WHATSAPP_URL =
       document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     </script>
 
-    {/* Basic Vercel Web Analytics — ALWAYS ON, independent of the Grounded
-        Touch detailed-analytics consent. Aggregated reach/audience measurement
-        only; sets no webAnalyticsBeforeSend gate, so it is not tied to
-        gt_analytics_consent. Rendered once per page (single initialization). */}
+    {/* Basic Vercel Web Analytics — always on. Aggregated reach/audience
+        measurement only. Independent of the first-party detailed analytics.
+        Rendered once per page (single initialization). */}
     <Analytics />
-
-    {/* Analytics consent banner — shows when undecided; drives the central
-        consent API for the OPTIONAL DETAILED first-party analytics only. It
-        does NOT control the always-on Vercel Web Analytics above. */}
-    <AnalyticsConsent lang="en" />
   </body>
 </html>
