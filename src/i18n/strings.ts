@@ -125,7 +125,7 @@ export const strings = {
           'My approach is calm and attentive: every session is shaped by the person in front of me, not by a fixed routine.',
         ],
         bullets: [
-          'Certified Thai massage training in Chiang Mai, Thailand',
+          'Male massage therapist with certified Thai massage training in Chiang Mai, Thailand',
           'Calm, attentive, individual sessions',
           'Focus on recovery instead of routines',
           'Working with breath, movement and tissue response',
@@ -364,7 +364,7 @@ export const strings = {
           'Mein Ansatz ist ruhig und achtsam: Jede Session wird von dem Menschen geprägt, der vor mir liegt - nicht von einem festen Ablauf.',
         ],
         bullets: [
-          'Zertifizierte Thai-Massage-Ausbildung in Chiang Mai, Thailand',
+          'Männlicher Masseur mit zertifizierter Thai-Massage-Ausbildung in Chiang Mai, Thailand',
           'Ruhige, achtsame, individuelle Sessions',
           'Fokus auf Erholung statt festen Abläufen',
           'Arbeit mit Atem, Bewegung und Gewebeantwort',
