@@ -180,6 +180,67 @@ function getDeviceType(): DeviceKind {
 }
 
 // ---------------------------------------------------------------------------
+// Timestamp formatting — the receiver stores the submitted `timestamp` string
+// verbatim as plain Sheet text (the raw UTC ISO value with its trailing "Z" and
+// milliseconds was observed byte-for-byte in the Sheet), so the displayed value
+// is whatever this field contains. We therefore emit the event instant as an
+// ISO-8601 string in Europe/Berlin WALL-CLOCK time with millisecond precision
+// and an explicit numeric UTC offset (+02:00 in summer, +01:00 in winter).
+//
+// Intl with timeZone 'Europe/Berlin' makes the output independent of the
+// visitor's own device timezone and handles DST automatically — the offset is
+// derived from the instant, never hardcoded. toISOString() is deliberately NOT
+// used for the final string (it emits UTC) and the result is never suffixed
+// with "Z". The underlying instant is preserved: the offset-bearing string
+// parses back to exactly the same moment as the original UTC timestamp.
+// ---------------------------------------------------------------------------
+function toBerlinIsoString(d: Date): string {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Berlin',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+      .formatToParts(d)
+      .reduce((acc: Record<string, string>, p) => {
+        if (p.type !== 'literal') acc[p.type] = p.value;
+        return acc;
+      }, {});
+
+    // Some engines render midnight as hour "24"; normalise to "00".
+    const hour = parts.hour === '24' ? '00' : parts.hour;
+
+    // DST-correct offset: reinterpret the Berlin wall-clock as if it were UTC,
+    // subtract the real instant → the active offset for this exact date.
+    const asUtcMs = Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(hour),
+      Number(parts.minute),
+      Number(parts.second),
+    );
+    const offsetMin = Math.round((asUtcMs - d.getTime()) / 60000);
+    const sign = offsetMin >= 0 ? '+' : '-';
+    const abs = Math.abs(offsetMin);
+    const offH = String(Math.floor(abs / 60)).padStart(2, '0');
+    const offM = String(abs % 60).padStart(2, '0');
+
+    const ms = String(d.getUTCMilliseconds()).padStart(3, '0');
+
+    return `${parts.year}-${parts.month}-${parts.day}T${hour}:${parts.minute}:${parts.second}.${ms}${sign}${offH}:${offM}`;
+  } catch {
+    // Last-resort fallback: preserve the instant (UTC ISO) rather than throw.
+    return d.toISOString();
+  }
+}
+
+// ---------------------------------------------------------------------------
 // journey_id handoff across internal navigation (full-document loads).
 //   • getInboundJourneyId — read gt_jid from the current URL, if present & sane.
 //   • stripJourneyParamFromUrl — remove gt_jid from the visible URL immediately,
@@ -221,7 +282,7 @@ export function trackEvent(details: TrackDetails): void {
   if (IS_EXCLUDED_BOT) return;  // excluded Meta crawler → never deliver an event
 
   const payload = {
-    timestamp: new Date().toISOString(),
+    timestamp: toBerlinIsoString(new Date()),
     event: details.event,
     page: details.page,
     button_id: details.button_id,
