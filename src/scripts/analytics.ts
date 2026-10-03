@@ -126,6 +126,38 @@ function getCreative(): string | null {
 }
 const CREATIVE = getCreative();
 
+// ---------------------------------------------------------------------------
+// Bot exclusion — suppress ALL custom analytics for identifiable Meta crawlers.
+// Narrow, case-insensitive match on explicit crawler identifier TOKENS only;
+// version suffixes such as "/1.1" are tolerated because they follow the token.
+// Detection is by the explicit bot identifier, NEVER the claimed OS, so both
+// the Windows and the macOS-claiming meta-externalagent are caught.
+// Deliberately NOT matched: broad "meta" / "facebook" / "instagram" / "Chrome"
+// / device / screen-width signals, nor the in-app browser markers (Instagram,
+// FBAN, FBAV, FBIOS), Facebook/Instagram referrers, fbclid or paid-ad UTM —
+// real in-app visitors stay fully tracked.
+// ---------------------------------------------------------------------------
+const BOT_UA_TOKENS = [
+  'meta-externalagent',
+  'meta-externalfetcher',
+  'facebookexternalhit',
+  'facebot',
+];
+
+function isExcludedBot(ua: string): boolean {
+  const s = (ua || '').toLowerCase();
+  for (let i = 0; i < BOT_UA_TOKENS.length; i++) {
+    if (s.indexOf(BOT_UA_TOKENS[i]) !== -1) return true;
+  }
+  return false;
+}
+
+// Resolved once per load from the real UA string. When true, no ids are minted,
+// no listeners / journey-link decoration are attached, and every delivery path
+// no-ops before sendBeacon/fetch.
+const IS_EXCLUDED_BOT =
+  typeof navigator !== 'undefined' && isExcludedBot(navigator.userAgent || '');
+
 type DeviceKind = 'mobile' | 'tablet' | 'desktop';
 
 interface TrackDetails {
@@ -186,6 +218,7 @@ function stripJourneyParamFromUrl(): void {
 // ---------------------------------------------------------------------------
 export function trackEvent(details: TrackDetails): void {
   if (!analyticsActive) return; // nothing tracks before init() runs
+  if (IS_EXCLUDED_BOT) return;  // excluded Meta crawler → never deliver an event
 
   const payload = {
     timestamp: new Date().toISOString(),
@@ -323,6 +356,12 @@ function decorateAnchor(a: HTMLAnchorElement): void {
 function init(): void {
   if ((window as any).__gtAnalyticsInit) return;
   (window as any).__gtAnalyticsInit = true;
+
+  // Excluded Meta crawler: skip all custom-analytics setup — no click listener,
+  // no page_visit_id / journey_id, no gt_jid stripping, no internal-link
+  // decoration, no page_view. analyticsActive stays false, so window.trackById
+  // and window.trackEvent remain safe no-ops for any booking/UI caller.
+  if (IS_EXCLUDED_BOT) return;
 
   document.addEventListener(
     'click',
