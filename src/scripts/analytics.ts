@@ -235,8 +235,32 @@ function toBerlinIsoString(d: Date): string {
 
     return `${parts.year}-${parts.month}-${parts.day}T${hour}:${parts.minute}:${parts.second}.${ms}${sign}${offH}:${offM}`;
   } catch {
-    // Last-resort fallback: preserve the instant (UTC ISO) rather than throw.
-    return d.toISOString();
+    // Last-resort fallback for engines lacking Intl time-zone (ICU) data, where
+    // the formatter above would throw. Compute the Europe/Berlin offset from the
+    // EU DST rule directly so the output still carries a correct +01:00 / +02:00
+    // offset instead of silently reverting to UTC — and never drop the event.
+    // DST runs from 01:00 UTC on the last Sunday of March to 01:00 UTC on the
+    // last Sunday of October (CET = UTC+1, CEST = UTC+2). The offset is derived
+    // from the instant, never hardcoded; the instant and milliseconds are
+    // preserved and the string parses back to the same moment.
+    const lastSundayUtcMs = (y: number, monthIndex: number): number => {
+      const probe = new Date(Date.UTC(y, monthIndex + 1, 0, 1, 0, 0));
+      probe.setUTCDate(probe.getUTCDate() - probe.getUTCDay());
+      return probe.getTime();
+    };
+    const y = d.getUTCFullYear();
+    const t = d.getTime();
+    const isSummer = t >= lastSundayUtcMs(y, 2) && t < lastSundayUtcMs(y, 9);
+    const offsetMin = isSummer ? 120 : 60;
+    const local = new Date(t + offsetMin * 60000);
+    const p2 = (n: number) => String(n).padStart(2, '0');
+    const ms = String(d.getUTCMilliseconds()).padStart(3, '0');
+    const offH = p2(Math.floor(offsetMin / 60));
+    return (
+      `${local.getUTCFullYear()}-${p2(local.getUTCMonth() + 1)}-${p2(local.getUTCDate())}` +
+      `T${p2(local.getUTCHours())}:${p2(local.getUTCMinutes())}:${p2(local.getUTCSeconds())}.${ms}` +
+      `+${offH}:00`
+    );
   }
 }
 
