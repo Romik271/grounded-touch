@@ -220,4 +220,69 @@ import CalExitFeedback from '../components/CalExitFeedback.astro';
       update();
     })();
   </script>
+
+  <script>
+    // ---------------------------------------------------------------------
+    // Scroll-depth tracking — fire scroll_25 / scroll_50 / scroll_75 once each
+    // when the visitor first reaches that share of the page. Mirrors the
+    // /hotel convention exactly: window.trackById(id, id) so the payload
+    // schema, context (page_visit_id, journey_id, language, creative,
+    // timestamp), delivery and Meta bot filtering are identical to every other
+    // event — no new fields and no backend change. In-memory flags only (no
+    // cookies/storage); each milestone fires at most once per page_visit_id
+    // (one document load), even when scrolling back up and down. A scroll that
+    // jumps across several thresholds records each newly crossed one once.
+    // ---------------------------------------------------------------------
+    (function () {
+      var milestones = [
+        { pct: 25, id: 'scroll_25' },
+        { pct: 50, id: 'scroll_50' },
+        { pct: 75, id: 'scroll_75' },
+      ];
+      var fired = {};
+
+      function send(id) {
+        // Only mark as fired once the event is actually dispatched, so a
+        // not-yet-ready tracker (module load order) doesn't swallow a milestone.
+        if (typeof (window as any).trackById !== 'function') return false;
+        try {
+          (window as any).trackById(id, id);
+        } catch (e) { /* analytics must never break the page */ }
+        return true;
+      }
+
+      function allFired() {
+        return milestones.every(function (m) { return fired[m.pct]; });
+      }
+
+      function evaluate() {
+        var doc = document.documentElement;
+        var docH = Math.max(doc.scrollHeight, document.body.scrollHeight);
+        var viewport = window.innerHeight || doc.clientHeight;
+        // No scrollable range → never auto-fire thresholds.
+        if (docH <= viewport) return;
+        // % of the page the bottom of the viewport has reached (same depth
+        // definition as /hotel).
+        var pct = ((window.scrollY || doc.scrollTop) + viewport) / docH * 100;
+        for (var i = 0; i < milestones.length; i++) {
+          var m = milestones[i];
+          if (!fired[m.pct] && pct >= m.pct && send(m.id)) {
+            fired[m.pct] = true;
+          }
+        }
+      }
+
+      evaluate();
+      window.addEventListener('scroll', evaluate, { passive: true });
+      window.addEventListener('resize', evaluate);
+      // Cover already-scrolled loads where trackById wasn't attached yet on the
+      // first pass; stops as soon as everything has fired.
+      var tries = 0;
+      var iv = setInterval(function () {
+        tries += 1;
+        evaluate();
+        if (allFired() || tries > 30) clearInterval(iv);
+      }, 150);
+    })();
+  </script>
 </BaseLayout>
