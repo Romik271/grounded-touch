@@ -137,27 +137,79 @@ const seo = strings.de.seo;
         restoreBtn();
       };
 
-      const evaluate = () => {
+      // Visibility state. The floating shortcut is eligible only once the hero
+      // (which contains the original top "Book a session" CTA) has scrolled
+      // fully above the viewport, AND while neither the 60- nor the 90-minute
+      // card is intersecting the viewport. That hides it over the cards (and the
+      // small gap between them) and shows it both above and below the cards.
+      let heroPassed = false;
+      let cardsVisible = false;
+
+      const update = () => {
+        // Desktop: never dock (CSS also hides the dock >= 768px).
         if (!mediaQuery.matches) {
           reset();
           return;
         }
-        const rect = heroWrap.getBoundingClientRect();
-        if (rect.bottom <= 0) {
+        if (heroPassed && !cardsVisible) {
           dockBtn();
         } else {
           undockBtn();
         }
       };
 
-      evaluate();
-      window.addEventListener('scroll', evaluate, { passive: true });
-      window.addEventListener('resize', evaluate);
-      if (mediaQuery.addEventListener) {
-        mediaQuery.addEventListener('change', evaluate);
-      } else if (mediaQuery.addListener) {
-        mediaQuery.addListener(evaluate);
+      // Hero: "passed" means scrolled FULLY above the viewport top — a position
+      // test, so a hero still below the fold on a short screen does NOT count as
+      // passed. IntersectionObserver fires only on crossings (no per-scroll
+      // work) and also fires once right after observe(), covering initial load
+      // and restored scroll positions.
+      const heroObserver = new IntersectionObserver(
+        (entries) => {
+          const e = entries[0];
+          if (!e) return;
+          const rb = e.rootBounds;
+          heroPassed =
+            !e.isIntersecting && e.boundingClientRect.bottom <= (rb ? rb.top : 0);
+          update();
+        },
+        { threshold: 0 },
+      );
+      heroObserver.observe(heroWrap);
+
+      // Cards: any part of either stacked card visible → hide. Observing both
+      // real card buttons (stable data-track attributes, no text matching)
+      // covers a card taller than the viewport and the gap between the two.
+      const cards = document.querySelectorAll(
+        '#sessions button[data-track="book_60min"], #sessions button[data-track="book_90min"]',
+      );
+      if (cards.length) {
+        const cardState = new WeakMap();
+        const cardObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => cardState.set(e.target, e.isIntersecting));
+            let anyVisible = false;
+            cards.forEach((c) => {
+              if (cardState.get(c)) anyVisible = true;
+            });
+            cardsVisible = anyVisible;
+            update();
+          },
+          { threshold: 0 },
+        );
+        cards.forEach((c) => cardObserver.observe(c));
       }
+
+      // Re-evaluate at the mobile/desktop boundary (orientation/resize that
+      // changes element intersection is handled by the observers themselves).
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', update);
+      } else if (mediaQuery.addListener) {
+        // Safari <14 fallback.
+        mediaQuery.addListener(update);
+      }
+
+      // Initial state (observers also fire shortly after observe()).
+      update();
     })();
   </script>
 </BaseLayout>
