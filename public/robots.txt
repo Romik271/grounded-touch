@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+User-agent: meta-externalagent
+Allow: /
+Crawl-delay: 120
+
 Sitemap: https://www.groundedtouch.de/sitemap-index.xml
