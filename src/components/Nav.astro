@@ -27,7 +27,7 @@ const deHref = '/de/';
       Grounded Touch<span class="text-terra">.</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-10">
+    <nav class="hidden lg:flex items-center gap-6">
       {links.map((l) => (
         <a
           href={l.href}
@@ -36,9 +36,21 @@ const deHref = '/de/';
           {l.label}
         </a>
       ))}
+      <a
+        href="/impressum"
+        class="text-[13px] text-ink/70 hover:text-ink transition-colors duration-500"
+      >
+        Impressum
+      </a>
+      <a
+        href="/datenschutz"
+        class="text-[13px] text-ink/70 hover:text-ink transition-colors duration-500"
+      >
+        Datenschutz
+      </a>
     </nav>
 
-    <div class="hidden md:flex items-center gap-5">
+    <div class="hidden lg:flex items-center gap-5">
       <div class="flex items-center gap-2 text-[12px] tracking-widelabel">
         <a href={enHref} class={`transition-colors duration-500 ${lang === 'en' ? 'text-ink' : 'text-ink/40 hover:text-ink'}`}>EN</a>
         <span class="text-ink/25">/</span>
@@ -59,7 +71,7 @@ const deHref = '/de/';
     <button
       id="mobile-menu-toggle"
       aria-label={tr.nav.menuOpen}
-      class="md:hidden flex flex-col gap-1.5 p-2"
+      class="lg:hidden flex flex-col gap-1.5 p-2"
     >
       <span class="block w-6 h-px bg-ink"></span>
       <span class="block w-6 h-px bg-ink"></span>
@@ -68,7 +80,7 @@ const deHref = '/de/';
 
   <div id="header-rule" class="h-px w-full bg-line transition-colors duration-500"></div>
 
-  <div id="mobile-menu" class="md:hidden hidden border-t border-line bg-ivory">
+  <div id="mobile-menu" class="lg:hidden hidden border-t border-line bg-ivory">
     <nav class="container-editorial flex flex-col py-6 gap-5">
       {links.map((l) => (
         <a href={l.href} class="text-sm text-ink/80 hover:text-ink">
@@ -94,6 +106,14 @@ const deHref = '/de/';
   </div>
 </header>
 <div class="h-16 md:h-20"></div>
+
+<!-- Compact legal links shown below the mobile/tablet header (desktop shows
+     these in the main nav instead). Deliberately small and understated. -->
+<div class="lg:hidden container-editorial flex justify-end items-center gap-2 py-1.5 text-[11px] font-normal leading-[1.3] text-ink/70">
+  <a href="/impressum" class="px-1 py-1 -my-1 hover:text-ink transition-colors duration-500">Impressum</a>
+  <span class="text-ink/30" aria-hidden="true">·</span>
+  <a href="/datenschutz" class="px-1 py-1 -my-1 hover:text-ink transition-colors duration-500">Datenschutz</a>
+</div>
 
 <script>
   const toggle = document.getElementById('mobile-menu-toggle');

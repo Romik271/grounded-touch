@@ -70,6 +70,17 @@ const seo = strings.de.seo;
         display: none !important;
       }
     }
+
+    /* Mobile only: tighten the gap below the "Impressum · Datenschutz" legal
+       row by trimming the hero's top padding by 8px (pt-4 = 1rem → 0.5rem). The
+       hero content simply shifts up; nothing else is adjusted to compensate.
+       Scoped to #short-hero-wrap so the shared Hero on /long is unaffected, and
+       limited to mobile so md:pt-8 (tablet/desktop) is unchanged. */
+    @media (max-width: 767px) {
+      :global(#short-hero-wrap section > .container-editorial:first-child) {
+        padding-top: 0.5rem;
+      }
+    }
   </style>
 
   <script>
