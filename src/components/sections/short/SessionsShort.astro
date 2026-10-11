@@ -86,6 +86,37 @@ const rows = tr.rows.map((r, i) => ({
       </div>
     </div>
 
+    {/* TEMPORARY: Chiang Mai training / availability notice. ONE compact card
+        placed above the complete 60/90-minute card group (full container width →
+        above both cards on desktop, before the first card on mobile). Only the
+        two dates in the final line carry modest font-weight emphasis. Rendered
+        `hidden` so it occupies no space until the shared expiration script
+        (below the cards) reveals it; past the Europe/Berlin cutoff it and both
+        card notes are removed entirely (no leftover space). The negative top
+        margin pulls the card up to ~16px below the intro (nets 16px whether the
+        heading block's mb-10/md:mb-14 collapses or adds); removing the notice on
+        expiry restores the section's original spacing untouched. Copy lives in
+        i18n/strings.ts (short.sessions.trainingNotice, en + de). To remove later,
+        delete this block, the card note, the script, and both trainingNotice +
+        cardNote string blocks. */}
+    <div
+      data-training-expire
+      hidden
+      class="-mt-6 md:-mt-10 mb-4 rounded-[6px] border-l-2 border-terra bg-terra/[0.06] p-3.5"
+    >
+      <p class="text-[15px] font-semibold leading-[1.45] text-ink">{tr.trainingNotice.heading}</p>
+      <p class="mt-1.5 text-[14px] leading-[1.45] text-ink/80">{tr.trainingNotice.body}</p>
+      <p class="mt-1.5 text-[14px] leading-[1.45] text-ink/80">
+        {tr.trainingNotice.finalLine.map((seg) =>
+          seg.strong ? (
+            <strong class="font-medium text-ink">{seg.text}</strong>
+          ) : (
+            <Fragment>{seg.text}</Fragment>
+          ),
+        )}
+      </p>
+    </div>
+
     <div class="space-y-4 md:space-y-5">
       {rows.map((r) => (
         <button
@@ -104,19 +135,103 @@ const rows = tr.rows.map((r, i) => ({
             <h3 class="font-serif text-2xl md:text-3xl text-ink leading-tight">{r.title}</h3>
             <p class="mt-3 text-ink/70 leading-relaxed max-w-prose2">{r.text}</p>
           </div>
-          <div class="col-span-12 md:col-span-3 flex items-baseline justify-between md:justify-end gap-6 md:gap-8">
+          <div class="col-span-12 md:col-span-3 flex items-end justify-between md:justify-end gap-6 md:gap-8">
             <div>
               <span class="font-serif text-4xl md:text-5xl text-terra tabular-nums leading-none">{r.price}</span>
               <span class="ml-1 text-2xl md:text-3xl text-terra">€</span>
             </div>
-            <span class="btn-link !text-terra">
-              {tr.bookLabel}
-              <span aria-hidden="true">→</span>
-            </span>
+            {/* Right-hand group: the temporary November note sits ABOVE the
+                booking link within this one footer row, filling the empty space
+                beside the tall price instead of adding a row below (which had
+                made the cards taller). items-end keeps the booking link at the
+                bottom, aligned with the price bottom. */}
+            <div class="flex flex-col items-end">
+              {/* TEMPORARY: November availability note. Non-interactive text (the
+                  whole card is the booking control; this sits outside the booking
+                  link). `hidden` until the shared expiration script reveals it,
+                  removed entirely at the cutoff so the card returns to its
+                  original layout. Copy: i18n short.sessions.cardNote (en + de). */}
+              <p
+                data-training-expire
+                data-show-from="2026-10-16T08:00:00+02:00"
+                hidden
+                class="mb-1 text-right text-[14px] font-medium leading-[1.45] text-terra"
+              >
+                {tr.cardNote}
+              </p>
+              <span class="btn-link !text-terra">
+                {tr.bookLabel}
+                <span aria-hidden="true">→</span>
+              </span>
+            </div>
           </div>
         </button>
       ))}
     </div>
+
+    {/* Shared expiration for all temporary elements: the notice above the cards
+        AND both per-card November notes (every [data-training-expire] element).
+        Placed after the cards so all three exist when the script first runs.
+        All disappear together at the fixed cutoff (9 Nov 2026 00:00 Europe/Berlin,
+        written with its explicit +01:00 offset so the compare is the SAME absolute
+        instant in every visitor timezone), removed so no empty wrapper or reserved
+        spacing remains. An element may additionally carry data-show-from to delay
+        its appearance until a start instant (the card notes: 16 Oct 2026 08:00
+        Berlin); before then it stays `hidden` (display:none → no empty row/gap).
+        Elements ship `hidden`, so nothing flashes before the first check. Re-checks
+        on initial load, when a backgrounded tab returns, on bfcache restore, and on
+        client-side navigation (astro:page-load, if ever added). A browser-limit-safe
+        chained timeout wakes at the next boundary (a note's start, or the cutoff)
+        for a page kept open across it. Idempotent — listeners bind once. */}
+    <script is:inline>
+      (function () {
+        var CUTOFF = Date.parse('2026-11-09T00:00:00+01:00');
+        var MAX_DELAY = 2147483647; // setTimeout 32-bit cap (~24.8 days)
+        var timer = null;
+
+        function clear() { if (timer) { clearTimeout(timer); timer = null; } }
+
+        function apply() {
+          var els = document.querySelectorAll('[data-training-expire]');
+          if (!els.length) { clear(); return; }
+          var now = Date.now();
+          if (now >= CUTOFF) {
+            clear();
+            els.forEach(function (el) { el.remove(); }); // no leftover space
+            return;
+          }
+          // Shared cutoff is the next boundary unless an element is still waiting
+          // for its own start time (data-show-from) sooner.
+          var next = CUTOFF;
+          els.forEach(function (el) {
+            var from = el.getAttribute('data-show-from');
+            var start = from ? Date.parse(from) : 0; // no attr → show immediately
+            if (now >= start) {
+              el.removeAttribute('hidden'); // within its window → show
+            } else {
+              el.setAttribute('hidden', ''); // before its start → hidden, no space
+              if (start < next) next = start; // wake to reveal it on time
+            }
+          });
+          clear();
+          // Chain the timeout so a wait longer than the 32-bit cap never
+          // overflows (an overflow would fire immediately and hide it early).
+          var remaining = next - now;
+          timer = setTimeout(apply, remaining > MAX_DELAY ? MAX_DELAY : remaining);
+        }
+
+        apply();
+
+        if (!window.__trainingNoticeBound) {
+          window.__trainingNoticeBound = true;
+          document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') apply();
+          });
+          window.addEventListener('pageshow', apply);
+          document.addEventListener('astro:page-load', apply);
+        }
+      })();
+    </script>
 
     <div class="reveal mt-5 md:mt-6">
       <a

@@ -160,6 +160,25 @@ export const strings = {
           // Shown from Sep 5 (Europe/Berlin), once the first absence is over.
           bodyLate: 'Away Sep 15–21',
         },
+        // TEMPORARY: Chiang Mai training / availability notice + per-card note.
+        // The final line is split into segments so only the two dates carry
+        // modest emphasis; the exact approved wording is preserved. All three
+        // temporary elements (notice + both card notes) share one Europe/Berlin
+        // cutoff in SessionsShort.astro (9 Nov 2026 00:00). Safe to remove later:
+        // delete this `trainingNotice` block + `cardNote`, their twins in `de`,
+        // and the notice markup + card note + inline script in SessionsShort.astro.
+        trainingNotice: {
+          heading: 'Further training in Chiang Mai',
+          body: 'No sessions: 16 October–9 November.',
+          finalLine: [
+            { strong: false, text: 'Book a session up to ' },
+            { strong: true, text: '15 October' },
+            { strong: false, text: ' or from ' },
+            { strong: true, text: '10 November' },
+            { strong: false, text: ' — bookings are open now.' },
+          ],
+        },
+        cardNote: 'November: from 10 Nov',
         minLabel: 'min',
         bookLabel: 'Book',
         rows: [
@@ -399,6 +418,22 @@ export const strings = {
           // Ab dem 5. September (Europe/Berlin), sobald die erste Abwesenheit vorbei ist.
           bodyLate: 'Nicht verfügbar: 15.–21. September',
         },
+        // TEMPORÄR: Chiang-Mai-Weiterbildungs-/Verfügbarkeitshinweis + Kartennotiz.
+        // Siehe den englischen `trainingNotice`-Block. Später entfernen: diesen
+        // Block + `cardNote`, ihre englischen Gegenstücke und das Notice-Markup +
+        // Kartennotiz + Inline-Skript in SessionsShort.astro löschen.
+        trainingNotice: {
+          heading: 'Weiterbildung in Chiang Mai',
+          body: 'Keine Sessions: 16. Oktober–9. November.',
+          finalLine: [
+            { strong: false, text: 'Termine bis einschließlich ' },
+            { strong: true, text: '15. Oktober' },
+            { strong: false, text: ' und ab dem ' },
+            { strong: true, text: '10. November' },
+            { strong: false, text: ' kannst du bereits jetzt buchen.' },
+          ],
+        },
+        cardNote: 'November: ab 10. Nov.',
         minLabel: 'Min',
         bookLabel: 'Buchen',
         rows: [
